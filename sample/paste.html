@@ -1,0 +1,107 @@
+<!DOCTYPE html>  
+<html>  
+<head>  
+<title>剪贴板</title>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />  
+<script src="../javascripts/jquery.js" type="text/javascript"></script>  
+<script type="text/javascript">  
+$(document).ready(  
+    function(){  
+		$.browser = $.browser || {};
+		$.browser.msie = /msie/.test(navigator.userAgent.toLowerCase());  
+
+        $("#show_clipbrd").click(function(){  
+            if($.browser.msie){
+                ie_Show();  
+            }else{  
+                ff_show();  
+            }  
+        });  
+          
+        $("#set_clipbrd").click(function(){  
+            if($.browser.msie){  
+                ie_set();  
+            }else{  
+                ff_set();  
+            }  
+        });  
+    }  
+);
+function ie_Show()  
+{  
+    //得到剪贴板的内容  
+    var str1=window.clipboardData.getData("text");  
+    alert(str1);  
+	    alert(window.clipboardData.getData("url"));  
+
+}  
+  
+function ff_show() {  
+    netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');  
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);  
+    if (!clip) return;  
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable); 
+    if (!trans) return;  
+    trans.addDataFlavor('text/unicode');  
+    clip.getData(trans, clip.kGlobalClipboard);  
+    var str = new Object();  
+    var len = new Object();  
+    try {  
+        trans.getTransferData('text/unicode', str, len);  
+    } catch(error) {  
+        return null;  
+    }  
+    if (str) {  
+        if (Components.interfaces.nsISupportsWString) strstr = str.value.QueryInterface(Components.interfaces.nsISupportsWString);  
+        else if (Components.interfaces.nsISupportsString) strstr = str.value.QueryInterface(Components.interfaces.nsISupportsString);  
+        else str = null;  
+    }  
+    if (str) {  
+        alert(str.data.substring(0, len.value / 2));  
+        return (str.data.substring(0, len.value / 2));  
+    }  
+    return null;  
+}  
+  
+function ie_set(){  
+    //显示剪贴板的内容是text类型的,给剪贴板的赋值为后面的字符串  
+    var str1=window.clipboardData.setData("text","<strong>my name is huangbiao</strong>");  
+    alert(window.clipboardData.getData("text"));  
+}  
+  
+function ff_set(){  
+    //将copy变量的值放到内存当中去  
+    var copy="<strong>my name is huangbiao</strong>";  
+    netscape.security.PrivilegeManager.enablePrivilege('UniversalXPConnect');  
+    var clip = Components.classes['@mozilla.org/widget/clipboard;1'].createInstance(Components.interfaces.nsIClipboard);  
+    if (!clip) return;  
+    var trans = Components.classes['@mozilla.org/widget/transferable;1'].createInstance(Components.interfaces.nsITransferable); 
+    if (!trans) return;  
+    trans.addDataFlavor('text/unicode');  
+    var str = new Object();  
+    var len = new Object();  
+    var str = Components.classes["@mozilla.org/supports-string;1"].createInstance(Components.interfaces.nsISupportsString);  
+    var copycopytext = copy;  
+    str.data = copytext;  
+    trans.setTransferData("text/unicode", str, copytext.length * 2);  
+    var clipid = Components.interfaces.nsIClipboard;  
+    if (!clip) return false;  
+    clip.setData(trans, null, clipid.kGlobalClipboard);  
+    alert("copy的信息为（可以用ctrl + v测试） ："+copy);  
+}  
+</script>  
+<title>浏览器访问剪贴板</title>  
+</head>  
+<body>  
+    <div>  
+        <span>在IE中是对外有接口的，可以通过window.clipboardData对象得到剪贴板的内容，这样就容易导致开发人员在后台写一个程序记录用户剪贴板的内容，这样可以把海量的数据集中起来做数据挖掘，这个对用户的安全来说是很可怕的，因此在访问的时候会提示用户是否允许访问剪贴板的内容。 www.jquerycn.cn
+        </span>  
+    </div><br>  
+    <div>  
+        <span> 在IE意外的浏览器是不允许访问剪贴板内容的，只有拒绝才是最安全的，所以在火狐等其他浏览器中不能通过window.clipboardData对象来访问剪贴板的内容  
+        </span>  
+    </div>  
+    <button id="show_clipbrd">显示剪贴板的内容</button>  
+    <button id="set_clipbrd">给剪贴板设置信息</button>  
+</body>  
+</html> 

@@ -1,0 +1,114 @@
+<!doctype html>
+<!-- saved from url=(0044)http://kenedict.com/networks/worldcup14/vis/ , thanks Andre!-->
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html; charset=UTF8">
+<title>Network | Static smooth curves - World Cup Network</title>
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/vis.css">
+
+<script type="text/javascript" src="/discover/viz/js/vis.js"></script>
+
+<script type="text/javascript" src="/discover/viz/js/d3.v3.js"></script>
+
+<style type="text/css">
+#mynetwork {
+	width: 800px;
+	height: 800px;
+	border: 1px solid lightgray;
+}
+</style>
+</head>
+
+<body>
+
+	<div id="mynetwork"></div>
+
+	<script type="text/javascript">
+		var network;
+		var color = d3.scale.category20();
+
+		function redrawAll() {
+
+			//d3.json('/discover/rest/network/getCategorys.discover', drawGraph);
+			d3.json('/discover/data/miserables.json', drawGraph);
+
+		}
+
+		function drawGraph(error, graph) {
+			// remove positoins
+			var c;
+			var d;
+			for ( var i = 0; i < graph.nodes.length; i++) {
+				d = graph.nodes[i];
+				delete d.x;
+				delete d.y;
+				d.id = d.id || d.name;
+				d.label = d.name;
+				d.title = d.name;
+				c = color(d.group);
+				d.color = c;
+				d.size = 6;
+				d.font = {
+					size : 16
+				}
+			}
+
+			for ( var i = 0; i < graph.edges.length; i++) {
+				d = graph.edges[i];
+				d.from = graph.nodes[d.source].id;
+				d.to = graph.nodes[d.target].id;
+			}
+
+			// Note: data is coming from ./datasources/WorldCup2014.js
+			network = new vis.Network(document.getElementById('mynetwork'), graph, {
+				nodes : {
+					borderWidth : 2,
+					shape : 'dot',
+					scaling : {
+						min : 1,
+						max : 3
+					},
+					font : {
+						color : 'gray',
+						face : '微软雅黑'
+					},
+					shadow : {
+						enabled : false,
+						size : 10,
+						x : 5,
+						y : 5
+					},
+				},
+				edges : {
+					width : 1,
+					color : {
+						color : '#999',
+					},
+					smooth : {
+						type : 'continuous'
+					},
+					arrows : 'middle'
+				},
+				physics : {
+					stabilization : false,
+					barnesHut : {
+						gravitationalConstant : -2000,
+						springConstant : 0.001,
+						springLength : 40
+					},
+					repulsion : {
+						nodeDistance : 40,
+						springLength : 40
+					}
+				},
+				interaction : {
+					tooltipDelay : 100,
+					hideEdgesOnDrag : true
+				}
+			});
+		}
+
+		redrawAll();
+	</script>
+</body>
+</html>

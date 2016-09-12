@@ -1,0 +1,211 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+zoomAndPan="disable">
+	<defs>
+		<style type="text/css">
+		<![CDATA[
+/*内嵌样式方便导出svg*/
+* {
+    shape-rendering: optimizeQuality;
+    color-rendering: optimizeQuality;
+	text-rendering: optimizeQuality;
+	cursor: default;
+}
+
+.guide {
+	display: block;
+	fill: black;
+	pointer-events: all;
+}
+
+.node {
+	stroke: gray;
+	stroke-width: 1;
+	filter: url(#f1);
+	cursor: pointer;
+}
+
+.text {
+	font-size: 12px;
+	font-family: simsun;
+	text-anchor: middle;
+	stroke-width: 0.5;
+	pointer-events: none;
+	/*stroke: gray;*/
+	fill: gray;
+	text-size-adjust: 100%;
+	/*-moz-user-select:   none;*/
+}
+
+.toolbar {
+	stroke-width: 1;
+	stroke: gray;
+	fill: white;
+	pointer-events: all;
+}
+
+.toolbarBg {
+	fill:white;
+}
+
+.toolbarBg.select {
+	fill: #FFC600;
+}
+
+.resourceFlow {
+	stroke: green;
+	stroke-width: 2;
+	marker-end: url(#markerArrow);
+	/*marker-mid: url(#markerCircle);*/
+	/*marker-start: url(#markerCircle);*/
+	fill: none;
+	stroke-linecap: square;
+	cursor: pointer;
+}
+
+.line {
+	pointer-events: none;
+	stroke: green;
+	stroke-width: 2;
+	marker-end: url(#markerArrow);
+	stroke-dasharray:2 2;
+}
+
+.markerArrow {
+	fill: green;
+}
+
+.bound {
+	fill: none;
+	stroke: green;
+	stroke-width: 4;
+	stroke-opacity: 0.5;
+}
+
+.tip.guide {
+	fill: aqua;
+}
+
+.sw-resize.DragBound {
+	cursor: sw-resize;
+}
+.se-resize.DragBound {
+	cursor: se-resize;
+}
+.nw-resize.DragBound {
+	cursor: nw-resize;
+}
+.ne-resize.DragBound {
+	cursor: ne-resize;
+}
+.s-resize.DragBound {
+	cursor: s-resize;
+}
+.w-resize.DragBound {
+	cursor: w-resize;
+}
+.n-resize.DragBound {
+	cursor: n-resize;
+}
+.e-resize.DragBound {
+	cursor: e-resize;
+}
+.DragNewLine {
+	cursor: crosshair;
+}
+.aerialViewBg {
+    fill: #DCDCDC;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.aerialViewFg {
+    fill: white;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.redBox {
+    fill: none;
+    stroke: red;
+}
+	]]>
+	</style>
+	</defs>
+
+	<defs>
+		<pattern id="bgRect" width="20" height="20" patternUnits="userSpaceOnUse">
+			<rect fill="white" x="0" y="0" width="20" height="20" style="stroke:0;stroke-width:0;" />
+			<polyline points="0 20,20 20,20 0" style="fill:none;stroke:#CDE2F3;stroke-width:2;stroke-dasharray:10 0;"/>
+		</pattern>
+		<marker id="markerArrow" markerWidth="5" markerHeight="5" refX="8" refY="5" orient="auto" viewBox="0 0 10 10">
+			<path d="M0,0 L10,5 L0,10 z" class="markerArrow"/>
+		</marker>
+		<marker id="markerCircle" markerWidth="8" markerHeight="8" refX="4" refY="4" markerUnits="userSpaceOnUse">
+			<circle cx="4" cy="4" r="3" class="markerArrow"/>
+		</marker>
+		<filter id="f1" x="0" y="0" width="200%" height="200%">
+			<feOffset result="offOut" in="SourceAlpha" dx="1" dy="1" />
+			<feGaussianBlur result="blurOut" in="offOut" stdDeviation="1" />
+			<feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+		</filter>
+	</defs>
+	<rect id="bg" x="40" y="0" width="2000" height="1000" style="fill:url(#bgRect);stroke:gray;"/>
+	<svg id="mainPanel" x="40" y="0" width="1200" height="800" viewBox="0 0 1200 800">
+		<g id="workspace">
+			<!--<rect x="0" y="0" width="2000" height="1000" style="pointer-events:all;fill:none;stroke:gray;"/>-->
+			<g id="nodeGroup"/>
+			<g id="edgeGroup"/>
+		</g>
+	</svg>
+	<g id="toolbarGroup">
+		<rect id="toolbarBg" x="0" y="0" width="40" height="1000" style="fill:white;"></rect>
+	</g>
+	<text id="showMsg" x="100" y="600" style="fill:black;stroke:black;">1231231231231231231</text>
+	<menu id="menuNode">
+		<item onactivate="Model.moveBottom()">移动到底层</item>
+		<item onactivate="Model.moveTop()">移动到顶层</item>
+		<item onactivate="Model.editNode()">编辑属性</item>
+	</menu>
+	<menu id="menuPoint">
+		<item onactivate="Model.removePoint()">删除转折点</item>
+	</menu>
+	<menu id="menuLine">
+		<item onactivate="Model.addPoint()">添加转折点</item>
+		<item onactivate="Model.editLine()">编辑属性</item>
+	</menu>
+
+	<script type="text/javascript" xlink:href="../js/commons/json2.js"></script>
+	<script type="text/javascript" xlink:href="../js/commons/underscore-min.js"></script>
+	<script type="text/javascript" xlink:href="../js/svg.js"></script>
+	<script type="text/javascript" xlink:href="../js/model.js"></script>
+	<script type="text/javascript" xlink:href="../js/toolbar.js"></script>
+	<script type="text/javascript" xlink:href="../js/event.js"></script>
+	<script type="text/javascript" xlink:href="../js/aerialView.js"></script>
+
+	<script type="text/javascript">
+	<![CDATA[
+function init(graph) {
+	if (!window.getSVGViewerVersion) {
+		var ocssRules=document.styleSheets[0].cssRules || document.styleSheets[0].rules || window.CSSRule.STYLE_RULE;
+		// firefox鼠标移动时不再触发选中文字事件
+		ocssRules[0].style.MozUserSelect = 'none';
+		ocssRules[0].style.KhtmlUserSelect = 'none';
+		ocssRules[0].style.WebkitUserSelect = 'none';
+		ocssRules[0].style.MsUserSelect = 'none';
+	}
+	Model.AllModel.all = parent.modelMap;
+	Model.clear();
+	if (graph) {
+		Model.importJson(graph);
+	}
+	aerialView = new AerialView('aerialView', $$.$('mainPanel'), $$.$('nodeGroup'), 1600, 0, 0);
+}
+
+function showMsg(txt) {
+	new $$.Text('showMsg', document.documentElement).text(txt, 250);
+}
+]]>
+	</script>
+</svg>

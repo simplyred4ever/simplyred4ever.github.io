@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<!-- saved from url=(0059)http://marvl.infotech.monash.edu/webcola/examples/unix.html -->
+<html xmlns="http://www.w3.org/1999/xhtml"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>Unix Family Tree</title>    
+    <style>
+        @import url(../style.css);
+    .background {
+        stroke: white;
+        stroke-width: 1px;
+        fill: white;
+    }
+
+    .node {
+        stroke: black;
+        stroke-width: 1.5px;
+        cursor: move;
+        fill: lightcoral;
+    }
+
+    .link {
+        fill: none;
+        stroke: #000;
+        stroke-width: 3px;
+        opacity: 0.7;
+        marker-end: url(#end-arrow);
+    }
+
+    .label {
+        fill: black;
+        font-family: Verdana;
+        font-size: 25px;
+        text-anchor: middle;
+        cursor: move;
+    }
+    </style> 
+    <meta name="chromesniffer" id="chromesniffer_meta" content="{}"><script type="text/javascript" src="chrome-extension://homgcnaoacgigpkkljjjekpignblkeae/detector.js"></script></head> 
+<body> 
+    <h1>Unix Family Tree</h1>
+    <h2>Directed graph flow layout and shortest-path edge routing</h2>
+    <script src="./Unix Family Tree_files/graphlib-dot.min.js"> </script> 
+    <script src="./Unix Family Tree_files/d3.v3.js"></script>
+    <script src="./Unix Family Tree_files/cola.v3.min.js"></script>
+    <script src="./Unix Family Tree_files/descent.js"></script>
+    <script src="./Unix Family Tree_files/adaptor.js"></script>
+    <script src="./Unix Family Tree_files/rectangle.js"></script>
+    <link rel="stylesheet" href="http://marvl.infotech.monash.edu/webcola/extern/hljs/styles/github.css">
+    <script src="./Unix Family Tree_files/highlight.pack.js"></script>
+    <script>
+        hljs.initHighlightingOnLoad();
+        var d3cola = cola.d3adaptor().convergenceThreshold(0.1);
+
+        var width = 960, height = 700;
+
+        var outer = d3.select("body").append("svg")
+            .attr("width", width)
+            .attr("height", height)
+            .attr("pointer-events", "all");
+
+        outer.append('rect')
+            .attr('class', 'background')
+            .attr('width', "100%")
+            .attr('height', "100%")
+            .call(d3.behavior.zoom().on("zoom", redraw));
+
+        var vis = outer
+            .append('g')
+            .attr('transform', 'translate(250,250) scale(0.3)');
+
+        function redraw() {
+            vis.attr("transform", "translate(" + d3.event.translate + ")" + " scale(" + d3.event.scale + ")");
+        }
+
+        outer.append('svg:defs').append('svg:marker')
+            .attr('id', 'end-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 8)
+            .attr('markerWidth', 6)
+            .attr('markerHeight', 6)
+            .attr('orient', 'auto')
+          .append('svg:path')
+            .attr('d', 'M0,-5L10,0L0,5L2,0')
+            .attr('stroke-width', '0px')
+            .attr('fill', '#000');
+
+        d3.text("graphdata/unix.dot", function (f) {
+            var digraph = graphlibDot.parse(f);
+
+            var nodeNames = digraph.nodes();
+            var nodes = new Array(nodeNames.length);
+            nodeNames.forEach(function (name, i) {
+                var v = nodes[i] = digraph._nodes[nodeNames[i]];
+                v.id = i;
+                v.name = name;
+            });
+
+            var edges = [];
+            for (var e in digraph._edges) {
+                var edge = digraph._edges[e];
+                edges.push({ source: digraph._nodes[edge.u].id, target: digraph._nodes[edge.v].id });
+            }
+
+            d3cola
+                .avoidOverlaps(true)
+                .flowLayout('x', 150)
+                .size([width, height])
+                .nodes(nodes)
+                .links(edges)
+                .jaccardLinkLengths(150);
+
+            var link = vis.selectAll(".link")
+                .data(edges)
+                .enter().append("path")
+                .attr("class", "link");
+
+            var margin = 10, pad = 12;
+            var node = vis.selectAll(".node")
+                .data(nodes)
+                .enter().append("rect")
+                .attr("class", "node")
+                .attr("rx", 5).attr("ry", 5)
+                .call(d3cola.drag);
+
+            var label = vis.selectAll(".label")
+                .data(nodes)
+                .enter().append("text")
+                .attr("class", "label")
+                .text(function (d) { return d.name; })
+                .call(d3cola.drag)
+                .each(function (d) {
+                    var b = this.getBBox();
+                    var extra = 2 * margin + 2 * pad;
+                    d.width = b.width + extra;
+                    d.height = b.height + extra;
+                });
+
+            var lineFunction = d3.svg.line()
+                .x(function (d) { return d.x; })
+                .y(function (d) { return d.y; })
+                .interpolate("linear");
+
+            var routeEdges = function () {
+                d3cola.prepareEdgeRouting(margin/3);
+                link.attr("d", function (d) {
+                    return lineFunction(d3cola.routeEdge(d)
+                    // // show visibility graph
+                    //, function (g) {
+                    //    if (d.source.id === 10 && d.target.id === 11) {
+                    //        g.E.forEach(function (e) {
+                    //            vis.append("line").attr("x1", e.source.p.x).attr("y1", e.source.p.y)
+                    //                .attr("x2", e.target.p.x).attr("y2", e.target.p.y)
+                    //                .attr("stroke", "green");
+                    //        });
+                    //    }
+                    // })); 
+                )});
+                if (isIE()) link.each(function (d) { this.parentNode.insertBefore(this, this) });
+            }
+            d3cola.start(10, 30, 100).on("tick", function () {
+                node.each(function (d) { d.innerBounds = d.bounds.inflate(-margin); })
+                    .attr("x", function (d) { return d.innerBounds.x; })
+                    .attr("y", function (d) { return d.innerBounds.y; })
+                    .attr("width", function (d) { return d.innerBounds.width(); })
+                    .attr("height", function (d) { return d.innerBounds.height(); });
+
+                link.attr("d", function (d) {
+                    cola.vpsc.makeEdgeBetween(d, d.source.innerBounds, d.target.innerBounds, 5);
+                    var lineData = [{ x: d.sourceIntersection.x, y: d.sourceIntersection.y }, { x: d.arrowStart.x, y: d.arrowStart.y }];
+                    return lineFunction(lineData);
+                });
+                if (isIE()) link.each(function (d) { this.parentNode.insertBefore(this, this) });
+
+                label
+                    .attr("x", function (d) { return d.x })
+                    .attr("y", function (d) { return d.y + (margin + pad) / 2 });
+
+            }).on("end", routeEdges);
+        });
+        function isIE() { return ((navigator.appName == 'Microsoft Internet Explorer') || ((navigator.appName == 'Netscape') && (new RegExp("Trident/.*rv:([0-9]{1,}[\.0-9]{0,})").exec(navigator.userAgent) != null))); }
+    </script><svg width="960" height="700" pointer-events="all"><rect class="background" width="100%" height="100%"></rect><g transform="translate(250,250) scale(0.3)"><path class="link" d="M-326.7151603260533,388.12747038650843L-177.22278569275588,491.19036077295254"></path><path class="link" d="M-353.2391651161362,317.45559538650843L-255.56743304594463,177.89914370402167"></path><path class="link" d="M-120.16897880638471,564.7002418002353L-115.53390112311655,662.038784466902L-82.19015112311655,752.7106604669019L-26.77009385798289,777.155915871891"></path><path class="link" d="M3.492140543550107,550.3908422139489L128.53501803403796,571.3669084669019L171.83068221021676,578.0335761335688L207.63725322122988,604.8420926971177"></path><path class="link" d="M-120.16897880638471,564.7002418002353L-115.53390112311655,662.038784466902L-80.2591804024979,673.9873339484175"></path><path class="link" d="M-63.394777428401916,564.7002418002353L-34.58742722248421,582.1136850386323"></path><path class="link" d="M-65.90413316653365,494.0283668002353L50.3705374114693,420.5903001556111"></path><path class="link" d="M203.20332486937235,347.24842296562764L367.5558513673713,284.5710773695998L434.0689678292817,191.30340259106399"></path><path class="link" d="M148.40107186176138,347.24842296562764L219.0347143087413,281.31620884689556"></path><path class="link" d="M146.6565714577298,417.92029796562764L220.86061391353354,490.5313991920524"></path><path class="link" d="M385.8891847007046,513.9036332228333L399.2225190340378,512.2590175440084L549.8996023673711,512.2590175440084L653.2960410311249,555.7346348009834L777.3168743644582,555.7346348009834L897.5917169397808,539.255340027979"></path><path class="link" d="M299.2380190846107,564.7002418002353L339.17443321021676,601.1721047162598L391.756597687922,712.7199075996145"></path><path class="link" d="M385.8891847007046,513.9036332228333L399.2225190340378,512.2590175440084L549.8996023673711,512.2590175440084L654.9629059510712,513.194647576879"></path><path class="link" d="M385.8891847007046,513.9036332228333L399.2225190340378,512.2590175440084L549.8996023673711,512.2590175440084L653.2960410311249,555.7346348009834L1072.5740242430963,600.7640880693028"></path><path class="link" d="M385.8891847007046,543.9460579202481L400.9226801683445,545.6949662380279"></path><path class="link" d="M380.83321889434046,494.0283668002353L401.0918961372019,488.0771444239543"></path><path class="link" d="M770.6502076977915,528.9564646972675L895.8787690340379,563.4054128596501L1072.6182720532388,593.9070624717527"></path><path class="link" d="M1071.5120912656653,486.0668711929835L1130.3810210329802,438.3811703894911"></path><path class="link" d="M332.5077665435501,651.8252112597116L581.0601530569429,681.0100665425417"></path><path class="link" d="M733.3697871797274,695.046608275003L929.2279025241683,707.8153406106655"></path><path class="link" d="M1079.7659353899992,678.9115058323665L1121.8800178537724,650.225425946432"></path><path class="link" d="M1086.3460177287527,749.5833808323665L1115.1533679346699,766.9968240707633"></path><path class="link" d="M442.9861396867727,787.9144836385053L524.7233078755806,876.9464411063561"></path><path class="link" d="M634.2173097007046,931.5165570562222L649.3251127590639,934.7055768869986"></path><path class="link" d="M764.2729474803368,915.9532806768443L837.918618675491,844.42854801563"></path><path class="link" d="M900.8048454657944,840.9450399949314L1002.2529839149586,997.3780258429804"></path><path class="link" d="M935.9046669603948,770.2731649949314L965.6034364688036,752.184305945766"></path><path class="link" d="M891.0473897354198,770.2731649949314L927.5506440340379,672.2448391656999L1001.6148472391268,560.9018336642464"></path><path class="link" d="M1086.3460177287525,1001.5731004685199L1115.15336793467,984.159657230123"></path><path class="link" d="M1066.8526280358135,1072.24497546852L1135.2220063546536,1134.2491500075723"></path><path class="link" d="M-127.62606839901946,156.00253092660304L-109.57409193105624,159.15723241269103"></path><path class="link" d="M-204.82625045661098,103.13086387330839L-103.85289118905906,-51.03673557039036"></path><path class="link" d="M96.03876385402336,202.18581562416466L155.3458488579026,216.7443602313841"></path><path class="link" d="M-51.09456680448042,-125.89132657674384L42.128090401747215,-248.4617135751873"></path><path class="link" d="M17.373931600980555,-103.9340112156625L32.42244158211654,-106.04561610629627"></path><path class="link" d="M121.523171422442,-323.1133174613621L168.4678946130325,-356.6298985085267"></path><path class="link" d="M270.6248750830624,-359.5352075404241L319.3915837506491,-324.0741881146313"></path><path class="link" d="M484.03018160098054,-259.4171653117987L499.1633642198822,-255.85268807790462"></path><path class="link" d="M408.5652742537753,-321.13363757766507L481.90106552086837,-392.0624008178156"></path><path class="link" d="M144.02190441141246,-84.78309329706686L175.16120776251753,12.55544936959979L200.07182352186493,23.82749535054374"></path><path class="link" d="M352.6530754957966,96.56065870293313L387.7735343258421,114.30581300636739"></path><path class="link" d="M339.12162340345844,207.23253570293315L379.03532128948945,189.28323124850058"></path><path class="link" d="M364.85067557447553,5.888782702933128L384.7280992676472,19.222117036266457L439.02508543248086,112.24247476158648"></path><path class="link" d="M508.6337902169822,116.56065970293312L723.9319749531536,-47.18037713221969"></path><path class="link" d="M662.0140852853624,-191.02459207583806L733.088428475214,-124.30120309627517"></path><path class="link" d="M415.6892973979403,-250.46176257766507L497.36351593431385,-184.3579254091714L692.6645909970209,-114.69033873391953"></path><path class="link" d="M814.6046186494435,-120.87900893626701L880.3865747748611,-178.65746907675228"></path><path class="link" d="M969.7243903541868,-252.62895271338778L1025.0793856293062,-295.76017454137747"></path><path class="link" d="M1132.2253823422884,-369.5051847868173L1162.2554920574628,-387.84771699229566"></path><rect class="node" rx="5" ry="5" x="-503.31356839901946" y="317.45559538650843" width="250.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-247.19535945644986" y="494.0283668002353" width="250.68749999999997" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-328.31356839901946" y="103.13086387330839" width="200.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-22.19535945644988" y="766.0439948002354" width="100.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="185.16401654355008" y="607.8387713829264" width="147.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-75.52348445644988" y="675.3721188002353" width="207.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-108.86723445644988" y="584.7002428002354" width="274.03125" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-1.4701902992954246" y="347.24842296562764" width="224.03125" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="331.8278744291842" y="116.56065970293312" width="260.68750000000006" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="160.20168470070462" y="207.23253570293315" width="200.6875" height="70.67187499999994"></rect><rect class="node" rx="5" ry="5" x="135.20168470070462" y="494.0283668002353" width="250.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="902.5454357007045" y="486.0668711929835" width="250.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="358.5454347007046" y="717.2426086385053" width="104" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="659.9627076977915" y="478.39609313431674" width="110.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1077.5454357007045" y="576.7387471929834" width="200.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="405.8891857007045" y="518.9256842106751" width="137.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="405.8891857007045" y="420.8771265820709" width="207.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1052.5454357007045" y="364.5621122514464" width="250.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="586.0260371797274" y="654.9077222176402" width="147.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="934.2173107007045" y="678.9115058323665" width="187.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1084.2173107007045" y="769.5833818323664" width="187.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="486.8735597007046" y="880.6296443788291" width="147.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="654.2173107007045" y="915.9532806768443" width="147.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="784.2173107007045" y="770.2731649949314" width="187.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="934.2173107007045" y="1001.5731004685199" width="187.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1084.2173107007045" y="910.9012244685199" width="187.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1077.5454357007045" y="1137.608068308719" width="200.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-104.64873614597664" y="142.21776274814985" width="200.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="-173.31356839901946" y="-125.89132657674384" width="190.6875" height="70.67187499999999"></rect><rect class="node" rx="5" ry="5" x="-39.969818399019445" y="-323.1133174613621" width="224" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="37.37393260098057" y="-155.45496829706684" width="190.6875" height="70.67187499999999"></rect><rect class="node" rx="5" ry="5" x="110.03018160098054" y="-430.2070825404241" width="224" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="260.03018160098054" y="-321.13363757766507" width="224" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="504.03018260098054" y="-261.6964670758381" width="240.6875" height="70.67187500000003"></rect><rect class="node" rx="5" ry="5" x="370.03018160098054" y="-466.2103361745836" width="304" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="187.37393260098054" y="25.888783702933125" width="190.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="181.8278744291842" y="-64.78309229706687" width="260.6875" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="697.3739326009805" y="-120.87900893626701" width="154" height="70.67187499999999"></rect><rect class="node" rx="5" ry="5" x="795.7020576009805" y="-252.62895271338778" width="257.3437499999999" height="70.67187499999997"></rect><rect class="node" rx="5" ry="5" x="945.7020576009807" y="-369.5051847868173" width="257.34375" height="70.671875"></rect><rect class="node" rx="5" ry="5" x="1095.7020576009807" y="-461.1258900362375" width="257.34375" height="70.671875"></rect><text class="label" x="-377.9698182637507" y="363.79153273342445">5th Edition</text><text class="label" x="-121.85160949823337" y="540.3643042835608">6th Edition</text><text class="label" x="-227.96981826375074" y="149.46680118615387">PWB 1.0</text><text class="label" x="28.148390501766627" y="812.3799322835608">LSX</text><text class="label" x="258.8358915017666" y="654.1747088765156">1 BSD</text><text class="label" x="28.148390501766627" y="721.7080562835608">Mini Unix</text><text class="label" x="28.148390501766627" y="631.036180283561">Wollongong</text><text class="label" x="110.5454346073675" y="393.58436041052215">Interdata</text><text class="label" x="462.1716244542968" y="162.89659711229112">Unix/TS 3.0</text><text class="label" x="260.54543460736755" y="253.56847311229106">PWB 2.0</text><text class="label" x="260.54543460736755" y="540.3643042835608">7th Edition</text><text class="label" x="1027.8891856073674" y="532.4028087712012">8th Edition</text><text class="label" x="410.5454346073675" y="763.5785461374895">32V</text><text class="label" x="715.306457600539" y="524.7320306868917">V7M</text><text class="label" x="1177.8891856073674" y="623.0746847712012">Ultrix-11</text><text class="label" x="474.5610606073674" y="565.2616216714194">Xenix</text><text class="label" x="509.5610606073674" y="467.2130640440253">UniPlus+</text><text class="label" x="1177.8891856073674" y="410.89804987425117">9th Edition</text><text class="label" x="659.6979120992359" y="701.2436597746308">2 BSD</text><text class="label" x="1027.8891856073674" y="725.2474434434444">2.8 BSD</text><text class="label" x="1177.8891856073674" y="815.9193194434442">2.9 BSD</text><text class="label" x="560.5454346073675" y="926.9655819039141">3 BSD</text><text class="label" x="727.8891856073674" y="962.289218279715">4 BSD</text><text class="label" x="877.8891856073674" y="816.6091026195421">4.1 BSD</text><text class="label" x="1027.8891856073674" y="1047.9090381469348">4.2 BSD</text><text class="label" x="1177.8891856073674" y="957.2371621469347">4.3 BSD</text><text class="label" x="1177.8891856073674" y="1183.9440060090983">Ultrix-32</text><text class="label" x="-4.304986116572508" y="188.55370010588078">PWB 1.2</text><text class="label" x="-77.9698182637507" y="-79.5553892584778">USG 1.0</text><text class="label" x="72.0301817362493" y="-276.77738013138463">CB Unix 1</text><text class="label" x="132.71768273624932" y="-109.11903088770889">USG 2.0</text><text class="label" x="222.03018173624926" y="-383.8711451812574">CB Unix 2</text><text class="label" x="372.0301817362493" y="-274.7977001647453">CB Unix 3</text><text class="label" x="624.3739327362492" y="-215.36052963301086">Unix/TS++</text><text class="label" x="522.0301817362492" y="-419.87439876665763">PDP-11 Sys V</text><text class="label" x="282.7176827362493" y="72.22472111229109">USG 3.0</text><text class="label" x="312.1716244542968" y="-18.447154887708894">Unix/TS 1.0</text><text class="label" x="774.3739327362492" y="-74.54307146728364">TS 4.0</text><text class="label" x="924.3739327362492" y="-206.29301513923167">System V.0</text><text class="label" x="1074.3739327362493" y="-323.1692471135245">System V.2</text><text class="label" x="1224.3739327362493" y="-414.78995228556624">System V.3</text></g><defs><marker id="end-arrow" viewBox="0 -5 10 10" refX="8" markerWidth="6" markerHeight="6" orient="auto"><path d="M0,-5L10,0L0,5L2,0" stroke-width="0px" fill="#000"></path></marker></defs></svg>
+    This is a cola.js rendering of the classic graphviz dot <a href="http://www.graphviz.org/content/unix">example</a>.  We use <a href="https://github.com/cpettitt/graphlib-dot">graphlib-dot.js</a> to parse the dot file.
+    The initialization for cola here is interesting:
+    <pre><code class="javascript">d3cola
+    .avoidOverlaps(<span class="literal">true</span>)
+    .flowLayout(<span class="string">'x'</span>, <span class="number">150</span>)
+    .size([width, height])
+    .nodes(nodes)
+    .links(edges)             
+    .jaccardLinkLengths(<span class="number">150</span>);
+</code></pre>
+    In particular, the call to <code>flowLayout</code> causes all edges not involved in a cycle (strongly connected component) to have a separation constraint generated between their source and sink, 
+    with a minimum spacing set to 150.  Specifying the <code>'x'</code> axis achieves a left-to-right flow layout.  The default is top-to-bottom flow layout (i.e. <code>'y'</code>).
+    You can also specify a function as the second argument to <code>flowLayout</code> that returns different separations for each edge.  Specify a different minimum as a second parameter to <code>flowLayout</code>.
+    <p>
+    Another feature of this example is <i>shortest-path edge routing</i>.  That is, after layout stops, the edge paths are routed to avoid passing through node boundaries.
+    To do this, we call the following function on the layout "end" event:
+    </p>
+<pre><code class="javascript"><span class="keyword">var</span> routeEdges = <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>         
+    d3cola.prepareEdgeRouting(margin / <span class="number">3</span>);
+    link.attr(<span class="string">"d"</span>, <span class="function"><span class="keyword">function</span> <span class="params">(d)</span> {</span> <span class="keyword">return</span> lineFunction(d3cola.routeEdge(d)); });
+    <span class="keyword">if</span> (isIE()) link.each(<span class="function"><span class="keyword">function</span> <span class="params">(d)</span> {</span> <span class="keyword">this</span>.parentNode.insertBefore(<span class="keyword">this</span>, <span class="keyword">this</span>) });
+}</code></pre>
+    <p>
+        The function <code>prepareEdgeRouting(padding)</code> creates a <i>tangent visibility graph</i> over the polygonal boundaries of the nodes.  
+        The <code>padding</code> parameter controls how close edges can come to the node boundaries. 
+        Here we set it to be a third of the minimum spacing that layout allows between nodes.
+        This visibility graph looks like this:
+    </p>
+<img src="./Unix Family Tree_files/unixVisibilityGraph.png" width="400px">
+<p>
+    The call to <code>d3adaptor.routeEdge</code> for each edge, uses the Dijkstra algorithm to find a shortest path through the visibility graph from the 
+    centre of the source node to the centre of the target node.
+    </p><p></p>
+    The last bit: <code>if (isIE()) link.each(...</code> is an IE10/11 specific hack to force it to redraw the edges.  This is necessary because
+    IE has trouble with SVG markers (in this case the arrow heads).
+<p></p>
+
+
+</body></html>

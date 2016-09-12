@@ -1,0 +1,443 @@
+
+<!doctype html>
+<html lang="en">
+<head>
+
+<title>Elegans</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="A C. elegans connectome explorer / neural network visualization">
+<meta name="keywords"
+	content="C. elegans, Caenorhabditis, nematode, explorer, visualization, network, graph, neural, nervous system, brain, connectome">
+<meta name="author" content="Thomas Buhrmann">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/jquery-ui.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/d3.css">
+<link rel="shortcut icon" href="/discover/viz/images/worm-32.png">
+<script type=text/javascript>
+	$SCRIPT_ROOT = "";
+</script>
+</head>
+
+<body>
+
+
+
+	<div id="graph"></div>
+	<canvas width="1000" height="1000" style="display: none"></canvas>
+
+
+	<div class="uiwidget uiwidget-left" id="left-widget">
+		<div class="formpanel">
+			<h3>
+				Find neuron <small><a href="#searchpanel" data-toggle="collapse" aria-expanded="true"
+					aria-controls="nodepanel"> <span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="searchpanel" class="panel-collapse collapse in">
+				<p>
+				<div class="input-group input-group-sm">
+					<input id="search-node" type="text" placeholder="name" value="ASEL" size="4" class="form-control" /> <span
+						class="input-group-btn">
+						<button type="button" id="snbutton" class="btn btn-default" onclick="searchNode();">Search</button>
+					</span>
+				</div>
+				</p>
+			</div>
+		</div>
+		<div class="uihandle uihandle-left" id="lefthandle">
+			<a href="#"> <span class="handlelabel">Controls</span> <span class='glyphicon glyphicon-chevron-right'></span>
+			</a>
+		</div>
+
+		<div class="formpanel">
+			<h3>
+				Subgraph <small><a href="#subpanel" data-toggle="collapse" aria-expanded="true" aria-controls="subpanel">
+						<span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="subpanel" class="panel-collapse collapse in">
+				Choose two sets of (comma-separated) neuron groups and find the subgraph connecting them.
+				<p>
+				<div class="">
+					<input id="group1" type="search" placeholder="Group1" value="ASE" class="form-control input-sm" />
+					<div id="conn-dir-sel" class="input-group-btn">
+						<button type="button" id="dirButton" class="btn btn-default dropdown-toggle" data-toggle="dropdown"
+							aria-expanded="false" title="Choose directed or undirected connections">&#8595;</button>
+						<ul class="dropdown-menu" role="menu">
+							<li><a href="#">&#8595;</a></li>
+							<li><a href="#">&#8597;</a></li>
+						</ul>
+					</div>
+					<input id="group2" type="search" placeholder="Group2" value="SMB" class="form-control input-sm" />
+				</div>
+				</p>
+
+				<div class="form-group">
+					<label for="rec-sel">Include these receptors:</label> <input id="rec-sel" type="search" placeholder="Receptors"
+						class="form-control input-sm" />
+				</div>
+
+				<div class="form-group">
+					<label for="mus-sel">Include these muscles:</label>
+					<div>
+						<label class="checkbox-inline"><input type="checkbox" id="mhead-check">Head</label> <label
+							class="checkbox-inline"><input type="checkbox" id="mneck-check">Neck</label> <label
+							class="checkbox-inline"><input type="checkbox" id="mbody-check">Body</label>
+					</div>
+				</div>
+
+				<div class="form-group" id="subw">
+					<label for="subwslider">Synapse min weight [1-10]: </label>
+					<output for="subwSlider" id="subwlabel">1</output>
+					<input type="range" id="subwslider" name="subw" value="1" min="1" max="10"
+						oninput="document.getElementById('subwlabel').value = value;">
+				</div>
+				<div class="form-group" id="subj">
+					<label for="subjslider">Junction min weight [1-10]: </label>
+					<output for="subjSlider" id="subjlabel">1</output>
+					<input type="range" id="subjslider" name="subj" value="1" min="1" max="10"
+						oninput="document.getElementById('subjlabel').value = value;">
+				</div>
+				<div class="form-group" id="subp">
+					<label for="subpslider">Max path length [1-4]: </label>
+					<output for="subpSlider" id="subplabel">3</output>
+					<input type="range" id="subpslider" name="subp" value="3" min="1" max="4"
+						oninput="document.getElementById('subplabel').value = value;">
+				</div>
+
+				<p>
+				<div class="dropdown" id="preset-dd">
+					<label for="presetButton" style="width: 100%">Or simply select a preset:</label>
+					<button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" id="presetButton"
+						data-toggle="dropdown" aria-expanded="true">
+						Presets <span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu" aria-labelledby="presetButton" id="presetList">
+					</ul>
+				</div>
+				</p>
+
+				<div class="btn-group btn-group-justified btn-group-sm" role="group">
+					<a href="#" id="fetchbutton" class="btn btn-default btn-sm" type="button"
+						title="Query subgraph with selected  parameters" onclick="subGraph();">Fetch</a> <a href="#" id="expandbutton"
+						class="btn btn-default disabled" type="button" title="Fetch ALL connections for fetched subgraph"
+						onclick="expand();">Expand</a> <a href="#" id="resetbutton" class="btn btn-default" type="button"
+						title="Return to full network" onclick="graphReset();">Reset</a>
+				</div>
+			</div>
+		</div>
+
+		<div class="formpanel">
+			<h3>
+				Visibility <small><a href="#vispanel" data-toggle="collapse" aria-expanded="true" aria-controls="vispanel">
+						<span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="vispanel" class="panel-collapse collapse in">
+				Select which neurons and synapses to display.
+				<p>
+				<div class="btn-group btn-group-sm btn-group-justified" id="prune-radio" data-toggle="buttons-radio">
+					<!-- <button id="prune1" type="button" data-toggle="button" name="option" value="1" class="btn btn-default active" title="Remove filtered network elements from layout">Prune</button>
+            <button id="prune2" type="button" data-toggle="button" name="option" value="2" class="btn btn-default" title="Make filtered network elements invisible">Hide</button> -->
+					<a href="#" id="prune1" type="button" data-toggle="button" name="option" value="1" class="btn btn-default active"
+						title="Remove filtered network elements from layout">Prune</a> <a hre="#" id="prune2" type="button"
+						data-toggle="button" name="option" value="2" class="btn btn-default"
+						title="Make filtered network elements invisible">Hide</a>
+				</div>
+				</p>
+				<div class="form-group" id="ndeg">
+					<label for="ndegslider">Node degree [0-200]:</label>
+					<output for="thresholdSlider" id="ndeglabel">2</output>
+					<input type="range" id="ndegslider" name="ndeg" value="2" min="0" max="200" oninput="filterNDeg(value)">
+				</div>
+				<div class="form-group" id="wmin">
+					<label for="wminslider">Synapse min weight [0-40]:</label>
+					<output for="wminslider" id="wminlabel">3</output>
+					<input type="range" id="wminslider" name="wmin" value="3" min="0" max="40" oninput="filterWMin(value)">
+				</div>
+				<div class="form-group" id="jmin">
+					<label for="jminslider">Junction min weight [0-25]:</label>
+					<output for="jminslider" id="jminlabel">2</output>
+					<input type="range" id="jminslider" name="jmin" value="2" min="0" max="25" oninput="filterJMin(value)">
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" onchange="toggleSynapses(this)" checked>Chemical synapses</label>
+				</div>
+				<div class="checkbox">
+					<label><input type="checkbox" onchange="toggleJunctions(this)" checked>Electrical junctions</label>
+				</div>
+				<div class="checkbox">
+					<label title="Indicate directionality"><input type="checkbox" onchange="toggleArrows(this)">Arrows</label>
+				</div>
+				<div class="checkbox">
+					<label title="Disambiguate multiple connections between two neurons"><input type="checkbox"
+						onchange="arcsplease(this)">Arcs</label>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="uiwidget uiwidget-right" id="right-widget">
+		<div class="formpanel">
+			<h3>
+				Statistics <small><a href="#statpanel" data-toggle="collapse" aria-expanded="true" aria-controls="statpanel">
+						<span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="statpanel" class="panel-collapse collapse in">
+				<ul class="list-group list-group-sm">
+					<li class="list-group-item"><span class="badge badge-sm stats-item" id="stats-n">14</span>Neurons</li>
+					<li class="list-group-item"><span class="badge stats-item" id="stats-m">7</span>Muscles</li>
+					<li class="list-group-item"><span class="badge stats-item" id="stats-s">7</span>Chemical synapses</li>
+					<li class="list-group-item"><span class="badge stats-item" id="stats-ej">7</span>Electrical junctions</li>
+					<li class="list-group-item"><span class="badge stats-item" id="stats-nmj">7</span>NM junctions</li>
+				</ul>
+			</div>
+		</div>
+		<div class="uihandle uihandle-right" id="righthandle">
+			<a href="#"> <span class='glyphicon glyphicon-chevron-left'></span> <span class="handlelabel"> Info</span>
+			</a>
+		</div>
+
+		<div class="formpanel">
+			<h3>
+				<span id="node-heading">Node info</span> <small><a href="#nodepanel" data-toggle="collapse"
+					aria-expanded="true" aria-controls="nodepanel"> <span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="nodepanel" class="panel-collapse collapse in">
+				<span id="nodeinfo">Click to select...</span>
+			</div>
+		</div>
+
+		<div class="formpanel">
+			<h3>
+				Export <small><a href="#exppanel" data-toggle="collapse" aria-expanded="true" aria-controls="exppanel">
+						<span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="exppanel" class="panel-collapse collapse in">
+				Output current network as text file in new window.
+				<form action="/export" method="get" role="form" name="exportform" target="_blank">
+					<p>
+					<div class="dropdown" id="export-dd">
+						<label for="presetButton" style="width: 100%">Select format:</label>
+						<button class="btn btn-default btn-sm btn-block dropdown-toggle" type="button" id="exportFormatDD"
+							data-toggle="dropdown" aria-expanded="true">
+							JSON (list) <span class="caret"></span>
+						</button>
+						<input type="hidden" id="selected-format" name="format" value="json-list" />
+						<ul class="dropdown-menu" role="menu" aria-labelledby="exportFormatDD" id="exprtFormatList">
+							<li role="presentation"><a href="#" id="exp1" value="json-list" role="menuitem" tabindex=-1>JSON (list)</a></li>
+							<li role="presentation"><a href="#" id="exp1" value="json-graph" role="menuitem" tabindex=-1>JSON (adj)</a></li>
+							<li role="presentation"><a href="#" id="exp2" value="graphml" role="menuitem" tabindex=-1>GraphML</a></li>
+							<li role="presentation"><a href="#" id="exp3" value="gml" role="menuitem" tabindex=-1>Gml</a></li>
+							<li role="presentation"><a href="#" id="exp4" value="adj" role="menuitem" tabindex=-1>Adjacency list</a></li>
+						</ul>
+					</div>
+					</p>
+					<a href="javascript:{ document.exportform.submit();}" type="submit" target="_blank"
+						class="btn btn-sm btn-default btn-block" role="button" title="Export current graph">Export</a>
+				</form>
+
+				<!-- <form action="/downloadSvg" method="get" role="form" name="downloadform" target="_blank">
+          <input type="hidden" id="svg-source" name="svg-source" value=""/>
+          <a href="javascript:{ $('#svg-source').attr('value', exportSvg()); document.downloadform.submit();}" class="btn btn-sm btn-default btn-block" role="button" title="Export to svg">Export Svg</a>
+          </form> -->
+				<p>
+					<br> Or simply download an image file<br>
+				</p>
+				<a href="javascript:downloadPng();" class="btn btn-sm btn-default btn-block" role="button" title="Download Png">Download
+					as .png</a>
+
+			</div>
+		</div>
+
+	</div>
+
+
+	<div class="topwrapper out">
+		<div class="introheader">
+			<h3>
+				Elegans - a connectome explorer for the nematode worm <em>C. elegans</em>
+			</h3>
+			<p>
+				Elegans is a tool that allows visual and interactive exploration of the connectome of <em>C. elegans</em>. In its
+				current form its main purpose is to give researchers interested in modelling a specific worm behaviour the tool to
+				extract subcircuits that may underlie the behaviour in question. For background information about this app see the <a
+					href="/about">About section</a>.
+			</p>
+			<br>
+			<p class="text-center">
+				<a href="javascript:toggleTopPanel();" type="button" class="btn btn-warning">Start Now</a>
+			</p>
+
+			<h4>Usage</h4>
+			<p>
+			<dl class="dl-horizontal" style="text-align: left">
+				<dt>Hover</dt>
+				<dd>Highlights first-degree neighbourhood of hovered neuron.</dd>
+				<dt>Click</dt>
+				<dd>Shows neuron metadata in the Neuron panel on the right. The selected neuron will be indicated by a dashed
+					outline.</dd>
+				<dt>Drag</dt>
+				<dd>Manually moves and pins a neuron to a specific position. Pinned neurons are indicated with a solid black
+					outline.</dd>
+				<dt>Dbl-click</dt>
+				<dd>Releases a pinned neuron.</dd>
+			</dl>
+			In addition, dragging or swiping the background moves and zooms the network view respectively.
+			</p>
+			<h5>UI controls</h5>
+			<p>The panels on the left control which part of the full network is currently available in the browser (Subgraph
+				panel), and which elements of the network are currently visible (Visibility panel). It also allows you to find a
+				single neuron by name.</p>
+			<h5>Extracting a subcircuit</h5>
+			<p>First choose two or more neuron groups in the Subgraph panel. Select whether you care about the direction of
+				connectivity (e.g. from sensory to motor neurons), or whether you require all bidirectional paths. Then choose
+				filter settings to constrain the subcircuits maximal path lengths (longer is more costly) and minimum number of
+				synapses per connection. Now Fetch the results. In order to then add back in all existing connections between the
+				returned neurons (irrespective of filter settings), click Expand.</p>
+			<h5>Information panels</h5>
+			<p>The UI panels on the right display information about the currently visible network as well as individual
+				nodes. It also offers a means to export the current network in various formats.</p>
+			<!--  For information about the data used to construct the network visualization, and the underlying technology, <a href="/about">check here</a>. -->
+		</div>
+		<div class="uihandle uihandle-top" id="tophandle">
+			<a href="#"> <span class="handlelabel">Start<br></span> <span class='glyphicon glyphicon-chevron-up'></span>
+			</a>
+		</div>
+	</div>
+
+
+
+	<script type='text/javascript' src="/discover/viz/js/jquery.js">
+		
+	</script>
+	<script type='text/javascript' src="/discover/viz/js/jquery-ui.min.js">
+		
+	</script>
+	<script type="text/javascript" src=/discover/viz/js/bootstrap.min.js></script>
+
+	<script type="text/javascript" src=/discover/viz/js/d3.v3.js></script>
+	<script type="text/javascript" src=/discover/viz/js/crossfilter.min.js></script>
+	<!--<script type="text/javascript" src=/static/js/colorbrewer.v1.min.js></script>  -->
+	<script>
+		// Register event handlers
+		$(function() {
+
+			$('#prune-radio a').click(function() {
+				$(this).addClass('active').siblings().removeClass('active');
+			});
+
+			$('#search-node').click(function() {
+				$(this).removeClass("alert-danger");
+			});
+
+			$SCRIPT_ROOT = "";
+
+			$(".dropdown-menu li a").click(function() {
+				$(this).parents(".input-group-btn").find('.btn').text($(this).text());
+				$(this).parents(".input-group-btn").find('.btn').val($(this).text());
+			});
+
+			$(".dropdown li a").click(function() {
+				$(this).parents(".dropdown").find('.btn').html(($(this).text() + ' <span class="caret"></span>'));
+				$(this).parents(".dropdown").find('.btn').val($(this).text());
+			});
+
+			$("#export-dd li a").click(function() {
+				var selectedOption = $(this).attr('value');
+				$("#selected-format").attr('value', selectedOption);
+			});
+
+			// Change minimize/maximize buttons
+			$('.collapse').on('hidden.bs.collapse', function() {
+				$(this).parent().find("span.glyphicon").removeClass("glyphicon-resize-small").addClass("glyphicon-resize-full");
+			});
+			$('.collapse').on('show.bs.collapse', function() {
+				$(this).parent().find("span.glyphicon").removeClass("glyphicon-resize-full").addClass("glyphicon-resize-small");
+			});
+
+			$("#preset-dd li a[role='menuitem']").click(function(e) {
+				applyPreset($(this).attr("id"));
+				e.preventDefault();
+			});
+
+			$(".btn").mouseup(function() {
+				$(this).blur();
+			});
+
+			$("#lefthandle").click(function() {
+				toggleLeftPanel();
+			});
+
+			$("#righthandle").click(function() {
+				toggleRightPanel();
+			});
+
+			$("#tophandle").click(function() {
+				toggleTopPanel();
+			});
+
+			toggleLeftPanel = function(visible) {
+				var s = $("#lefthandle").find("span.glyphicon");
+				var visnow = s.hasClass("glyphicon-chevron-left");
+				if (visible === undefined || (visible != visnow)) {
+					$("#left-widget").toggleClass("out");
+					if (!visnow) {
+						s.removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-left");
+						$("#lefthandle").find("a span.handlelabel").css("display", "none");
+					} else {
+						s.removeClass("glyphicon-chevron-left").addClass("glyphicon-chevron-right");
+						$("#lefthandle").find("a span.handlelabel").css("display", "inline");
+					}
+				}
+			}
+
+			toggleRightPanel = function(visible) {
+				var s = $("#righthandle").find("span.glyphicon");
+				var visnow = s.hasClass("glyphicon-chevron-right");
+				if (visible === undefined || (visible != visnow)) {
+					$("#right-widget").toggleClass("out");
+					if (visnow) {
+						s.removeClass("glyphicon-chevron-right").addClass("glyphicon-chevron-left");
+						$("#righthandle").find("a span.handlelabel").css("display", "inline");
+					} else {
+						s.removeClass("glyphicon-chevron-left").addClass("glyphicon-chevron-right");
+						$("#righthandle").find("a span.handlelabel").css("display", "none");
+					}
+				}
+			}
+
+			toggleTopPanel = function() {
+				$(".topwrapper").toggleClass("out");
+				var s = $("#tophandle").find("span.glyphicon");
+				if (s.hasClass("glyphicon-chevron-up")) {
+					s.removeClass("glyphicon-chevron-up").addClass("glyphicon-chevron-down");
+					$("#tophandle").find("a span.handlelabel").css("display", "none");
+					$("#tophandle").css("height", "20px");
+					toggleLeftPanel(true);
+					toggleRightPanel(true);
+				} else {
+					s.removeClass("glyphicon-chevron-down").addClass("glyphicon-chevron-up");
+					$("#tophandle").find("a span.handlelabel").css("display", "inline");
+					$("#tophandle").css("height", "40px");
+					toggleLeftPanel(false);
+					toggleRightPanel(false);
+				}
+			}
+
+		});
+	</script>
+	<script type="text/javascript" src=/discover/viz/js/saveSvgAsPng.js></script>
+	<script type="text/javascript" src=/discover/viz/js/d3graph.js></script>
+	<script type="text/javascript">
+		d3.json('/discover/data/Elegans.json', function(error, data) {
+			graph("#graph", data);
+		});
+	</script>
+
+</body>
+</html>

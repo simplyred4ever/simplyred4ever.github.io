@@ -1,0 +1,131 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+
+<style>
+svg {
+	font: 10px sans-serif;
+	padding: 10px;
+}
+
+.axis, .frame {
+	shape-rendering: crispEdges;
+}
+
+.axis line { //
+	stroke: #ddd;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis path {
+	display: none;
+}
+
+.frame {
+	fill: none;
+	stroke: #000;
+}
+
+circle {
+	fill-opacity: .0;
+	stroke-width: 1;
+	stroke: #000;
+}
+
+circle.hidden {
+	fill: #ccc !important;
+}
+
+.extent {
+	fill: #000;
+	fill-opacity: .125;
+	stroke: #fff;
+}
+
+#heatmapContainerWrapper {
+	width: 100%;
+	height: 100%;
+	position: absolute;
+	background: rgba(0, 0, 0, .1);
+}
+
+#heatmapContainer {
+	width: 100%;
+	height: 100%;
+}
+</style>
+<script src="/discover/viz/js/d3.v3.js"></script>
+<script src="/discover/viz/js/json2.js"></script>
+<script src="/discover/viz/js/heatmap.min.js"></script>
+
+<script type="text/javascript">
+	window.onload = function() {
+		//Width and height
+		var w = 600;
+		var h = 600;
+		//var dataset = [ [5, 20], [48.0, -90], [-250, 50], [100, 33], [-33.0, -95], [41.0, 12], [47.5, 44], [25, 67], [85, 21], [-220, 88] ];
+
+		d3.csv("/discover/data/SPSS3.csv", function(error, dataset) {
+			// 最大坐标
+			var axisSize = Math.max(d3.max(dataset, function(d) {
+				return d.X;
+			}), Math.abs(d3.min(dataset, function(d) {
+				return d.X;
+			})), d3.max(dataset, function(d) {
+				return d.Y;
+			}), Math.abs(d3.min(dataset, function(d) {
+				return d.Y;
+			}))) * 1.1;
+			var z = axisSize * 2 / w;
+
+			var points = [];
+			for ( var n in dataset) {
+				points.push({
+					x : w / 2 + 1 * dataset[n].X / z,
+					y : h / 2 - dataset[n].Y / z,
+					value : 0.5,
+					radius : 20
+				});
+			}
+
+			// minimal heatmap instance configuration
+			var heatmapInstance = h337.create({
+				// only container is required, the rest will be defaults
+				container : document.getElementById('heatmapContainer'),
+				backgroundColor : 'black',
+				// custom gradient colors
+				gradient : {
+					// enter n keys between 0 and 1 here
+					// for gradient color customization
+					'.3' : 'green',
+					'.5' : 'lime',
+					'.7' : 'yellow',
+					'.95' : 'orange'
+				},
+				// the maximum opacity (the value with the highest intensity will have it)
+				maxOpacity : .9,
+				// minimum opacity. any value > 0 will produce 
+				// no transparent gradient transition
+				minOpacity : .3
+			});
+			heatmapInstance.setData({
+				max : 1,
+				data : points
+			});
+
+		});
+	}
+</script>
+</head>
+<body>
+	<div id="heatmapContainerWrapper">
+		<div id="heatmapContainer"></div>
+	</div>
+
+</body>
+</html>

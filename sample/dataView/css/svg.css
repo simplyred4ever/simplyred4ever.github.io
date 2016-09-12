@@ -1,0 +1,66 @@
+* {
+	shape-rendering: optimizeQuality;
+	color-rendering: optimizeQuality
+}
+
+image {
+	image-rendering: optimizeQuality
+}
+
+text {
+	font-family: SimSun;
+	stroke-width: 0.5;
+	text-rendering: optimizeQuality;
+	fill:#333333;
+	font-size:14px;
+	font-weight:800;
+}
+
+.defTitle{
+	fill: #cccccc;
+}
+
+.defBorder{
+	stroke: #cccccc;
+	shape-rendering: crispEdges;
+}
+.unFill {
+	fill:none;
+}
+
+.targetTitle{
+	fill: #ffcc00;
+}
+.targetBorder{
+	stroke: #ffcc00;
+	shape-rendering: crispEdges;
+}
+
+
+.flowLine {
+	stroke-width: 2;
+}
+
+
+.selectedLine {
+	fill: #447632;
+	stroke: #447632;
+	marker-end: url(#arrow)
+}
+.aColor {
+	fill:#0000ff;
+	stroke-width: 0.3;
+	font-size: 14px;
+	text-decoration: underline;
+	cursor: pointer;
+}
+
+.typeCla{
+	fill : none;
+	stroke:#000;
+	stroke-width: 0.3;
+}
+
+.typeFill{
+	fill : #fff;
+}

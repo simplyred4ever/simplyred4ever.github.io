@@ -1,0 +1,222 @@
+<!DOCTYPE html>
+<html>
+<head>
+</head>
+ <body>
+    <h1 id="message"></h1>
+	<h1 id="message2"></h1>
+	<!--[if lte IE 8]>
+	<script src="../js/commons/es5-shim.min.js"></script>
+	<script src="../js/commons/es5-sham.min.js"></script>
+	<script src="../js/commons/json3.min.js"></script>
+	<script src="../js/commons/json2.js"></script>
+	<![endif]-->
+    <script src="../js/commons/traceur.js"></script>
+    <script src="../js/commons/BrowserSystem.js"></script>
+    <script src="../js/commons/bootstrap.js"></script>
+    <script type="text/traceur">
+	class Greeter {
+		constructor(message) {
+			this.message = message;
+		}
+
+		greet() {
+			var element = document.querySelector('#message');
+			element.innerHTML = this.message;
+		}
+	};
+
+	var greeter = new Greeter('Hello, world!');
+	greeter.greet();
+	let funcs = [];
+	for (let i of [4,5,6]) {
+		funcs.push(function() { return i; });
+	}
+	for (var func of funcs) {
+		console.log(func()); // 4, 5, 6
+	}
+	
+	function f(list, indexA = 0, indexB = list.length) {
+	  return [list, indexA, indexB];
+	}
+	console.log(JSON.stringify(f([1,2,3])));
+	console.log(JSON.stringify(f([1,2,3], 1)));
+	console.log(JSON.stringify(f([1,2,3], 1, 2)));
+	
+	var pt = {x: 123, y: 444};
+	var rect = {topLeft: {x: 1, y: 2}, bottomRight: {x: 3, y: 4}};
+	// ... other code ...
+	var {x, y} = pt; // unpack the point
+	var {topLeft: {x: x1, y: y1}, bottomRight: {x: x2, y: y2}} = rect;
+	console.log('x + y : ' + (x + y));
+	console.log("[x1, y1, x2, y2].join(',') : " + [x1, y1, x2, y2].join(','));
+	
+	function iterateElements(array) {
+	  return {
+		[Symbol.iterator]: function() {
+		  var index = 0;
+		  var current;
+		  return {
+			next: function() {
+			  if (index < array.length) {
+				current = array[index++];
+				return {
+				  value: current,
+				  done: false
+				};
+			  }
+			  return {
+				value: undefined,
+				done: true
+			  }
+			}
+		  };
+		}
+	  };
+	}
+	// Usage:
+	var g = iterateElements([1,2,3]);
+
+	var res = [];
+	for (var a of g) {
+	  res.push(a);
+	}
+	console.log(JSON.stringify(res));
+	
+	// A binary tree class.
+	function Tree(left, label, right) {
+	  this.left = left;
+	  this.label = label;
+	  this.right = right;
+	}
+	// A recursive generator that iterates the Tree labels in-order.
+	function* inorder(t) {
+	  if (t) {
+		yield* inorder(t.left);
+		yield t.label;
+		yield* inorder(t.right);
+	  }
+	}
+
+	// Make a tree
+	function make(array) {
+	  // Leaf node:
+	  if (array.length == 1) return new Tree(null, array[0], null);
+	  return new Tree(make(array[0]), array[1], make(array[2]));
+	}
+	let tree = make([[['a'], 'b', ['c']], 'd', [['e'], 'f', ['g']]]);
+
+	// Iterate over it
+	var result = [];
+	for (let node of inorder(tree)) {
+	  result.push(node); // a, b, c, d, ...
+	}
+	console.log(JSON.stringify(result));
+	
+	var binary = [
+	  0b0,
+	  0b1,
+	  0b11
+	];
+	console.log(JSON.stringify(binary));
+
+	var octal = [
+	  0o0,
+	  0o1,
+	  0o10,
+	  0o77
+	];
+	console.log(JSON.stringify([0, 1, 8, 63]));
+	
+	var object = {
+	  value: 42,
+	  toString() {
+		return this.value;
+	  }
+	};
+	console.log(JSON.stringify(object.toString()));
+	
+	function getPoint() {
+	  var x = 1;
+	  var y = 10;
+
+	  return {x, y};
+	}
+	console.log(JSON.stringify(getPoint()));
+	
+	function add(x, y) {
+	  return x + y;
+	}
+	
+	function push(array, ...items) {
+	  items.forEach(function(item) {
+		array.push(item);
+	  });
+	}
+	var numbers = [4, 38];
+
+	console.log(JSON.stringify(add(...numbers)));
+	
+	var name = 'world';
+	var greeting = `hello ${name}`;
+	console.log(JSON.stringify('hello world'));
+	
+	function timeout(ms) {
+	  return new Promise((resolve) => {
+		setTimeout(resolve, ms);
+	  });
+	}
+	timeout(100).then(() => {
+	  console.log('done');
+	});
+	
+	/*var arrayXY = [for (x of [0, 1, 2]) for (y of [0, 1, 2]) x + ',' + y];
+	console.log(JSON.stringify(arrayXY));*/
+	
+	/*var list = [1, 2, 3, 4];
+	var res = (for (x of list) x);
+
+	var acc = '';
+	for (var x of res) {
+	  acc += x;
+	}
+	console.log(JSON.stringify(acc));*/
+	
+	/*function g1(n, m) {
+	  return n === 0 ? m : g2(n - 1, n + m);
+	}
+	function g2(n, m) {
+	  return n === 0 ? m : g1(n - 1, n + m);
+	}
+	function f(n) {
+	  return g1(n, 0);
+	}
+	function sum(n) {
+	  return n * (n + 1) / 2;
+	}
+	assert.equal(f(100000), sum(100000));*/
+	
+	/*// --symbols
+	var s = Symbol();
+	var object = {};
+	object[s] = 42;
+	console.log(JSON.stringify(object[s]));*/
+	
+	var arr = [1, [[2, 3], 4], [5, 6]];
+	var flat = function* (a){
+		var length = a.length;
+		for(var i =0;i<length;i++){
+			var item = a[i];
+			if (typeof item !== 'number'){
+				yield* flat(item);
+			} else {
+				yield item;
+			}
+		}
+	};
+	for (var f of flat(arr)){
+		console.log(f);
+	}
+    </script>
+ </body>
+</html>

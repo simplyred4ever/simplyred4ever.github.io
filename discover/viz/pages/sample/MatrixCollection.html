@@ -1,0 +1,147 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta charset="utf-8">
+        <meta http-equiv="pragram" content="no-cache">
+        <meta http-equiv="cache-control" content="no-cache, must-revalidate">
+        <meta http-equiv="expires" content="0">
+        <style>
+			.node {
+				stroke: white;
+				stroke-width: 2px;
+			}
+			.nodeactive {
+				stroke: orange;
+				stroke-width: 2px;
+			}
+			.link {
+				stroke: #999;
+				stroke-opacity: .6;
+			}
+        </style>
+    </head>
+    <body>
+        <script src="/discover/viz/js/d3.v3.js"></script>
+        <script src="/discover/viz/js/cola.v3.min.js"></script>
+
+        <script>
+			var width = window.innerWidth, height = window.innerHeight;
+
+			var color = d3.scale.category20();
+
+			var force = d3.layout.force().charge(-10).linkDistance(10).linkStrength(0.9).friction(0.9).gravity(0.01).size([width, height]);
+
+			//force = cola.d3adaptor().size([width, height]).symmetricDiffLinkLengths(6).linkDistance(15).jaccardLinkLengths(15, 5);
+
+			d3.csv('/discover/data/mtx/1138_bus.mtx', function(error, graph) {
+				var graphNodes = [];
+				var graphEdges = graph;
+				var maxX = d3.max(graph, function(d) {
+					return Math.max(+d.source, +d.target);
+				});
+
+				for (var i = 0; i <= maxX; i++) {
+					graphNodes.push({
+						id : 'node' + i
+					});
+				}
+
+				for (var i = 0; i < graphEdges.length; i++) {
+					graphEdges[i].id = 'line' + i;
+					graphEdges[i].source = +graphEdges[i].source;
+					graphEdges[i].target = +graphEdges[i].target;
+					if (graphEdges[i].target == graphEdges[i].source) {
+						graphNodes[graphEdges[i].target].weight = graphEdges[i].weight;
+					}
+					graphEdges[i].weight = +graphEdges[i].weight;
+					if (graphEdges[i].weight > -10) {
+						graphEdges[i].color = 'red';
+					} else if (graphEdges[i].weight > -100) {
+						graphEdges[i].color = 'orange';
+					} else if (graphEdges[i].weight > -1000) {
+						graphEdges[i].color = 'lime';
+					} else if (graphEdges[i].weight > -10000) {
+						graphEdges[i].color = 'aqua';
+					} else {
+						graphEdges[i].color = 'blue';
+					}
+				}
+
+				for (var i = 0; i < graphNodes.length; i++) {
+					if (graphNodes[i].weight > 10000) {
+						graphNodes[i].color = 'blue';
+					} else if (graphNodes[i].weight > 1000) {
+						graphNodes[i].color = 'aqua';
+					} else if (graphNodes[i].weight > 100) {
+						graphNodes[i].color = 'lime';
+					} else if (graphNodes[i].weight > 10) {
+						graphNodes[i].color = 'orange';
+					} else {
+						graphNodes[i].color = 'red';
+					}
+				}
+				graph = {
+					nodes : graphNodes,
+					edges : graphEdges
+				};
+				// canvas画布
+				var canvas = d3.select("body").append("canvas").attr("width", width).attr("height", height).call(d3.behavior.zoom().scaleExtent([0.25, 4]).on("zoom", zoom));
+
+				var context = canvas.node().getContext("2d");
+
+				// 设置力学图
+				force.nodes(graph.nodes).links(graph.edges).start();
+
+				force.on("tick", tick);
+
+				function zoom() {
+					context.save();
+					context.clearRect(0, 0, width, height);
+
+					context.translate(d3.event.translate[0], d3.event.translate[1]);
+					context.scale(d3.event.scale, d3.event.scale);
+					tick();
+					context.restore();
+
+				}
+
+				function tick() {
+					context.clearRect(0, 0, width, height);
+
+					// draw links
+					graph.edges.forEach(function(d, i) {
+						if (d.source == d.target)
+							return;
+						context.beginPath();
+						context.lineWidth = 1;
+						context.strokeStyle = d.color;
+						context.moveTo(d.source.x, d.source.y);
+						context.lineTo(d.target.x, d.target.y);
+						context.stroke();
+					});
+
+					/*// draw nodes
+					graph.nodes.forEach(function(d, i) {
+					    if (i == 0) return;
+						context.beginPath();
+						context.fillStyle = d.color;
+						context.strokeStyle = 'white';
+						context.moveTo(d.x, d.y);
+						context.arc(d.x, d.y, 2, 0, 2 * Math.PI);
+						context.stroke();
+						context.fill();
+					});*/
+					graph.nodes.forEach(function(d, i) {
+					    if (i == 0) return;
+						context.beginPath();
+						context.fillStyle = 'gray';
+						context.font = "8px simsun";
+						context.fillText(i, d.x, d.y);
+						context.fill();
+					});
+				}
+
+			});
+        </script>
+    </body>
+</html>

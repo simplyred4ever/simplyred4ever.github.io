@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+		<meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+        <script src="../../javascripts/avalon-2.1.5.js"></script>
+        <script>
+            var vm = avalon.define({
+                $id: "test",
+                w: 100,
+                h: 100,
+                click: function () {
+                    vm.w = vm.w + 10;
+                    vm.h = vm.h + 10;
+                }
+            })
+
+        </script>
+    </head>
+    <body>
+        <div ms-controller="test">
+            <div style=" background: #a9ea00;" ms-css='{width:@w,height:@h}' ms-click="@click"></div>
+            <p>{{ @w }} x {{ @h }}</p>
+            <!--change过滤器相当于原来data-duplex-event='change'-->
+            <p>W: <input type="text" ms-duplex-number="@w|change" /></p>
+            <p>H: <input type="text" ms-duplex-number="@h" /></p>
+        </div>
+    </body>
+</html>

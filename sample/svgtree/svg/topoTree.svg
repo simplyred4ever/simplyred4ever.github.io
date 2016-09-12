@@ -1,0 +1,339 @@
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11.dtd">
+<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+zoomAndPan="disable">
+	<defs>
+		<style type="text/css">
+		<![CDATA[
+/*内嵌样式方便导出svg*/
+* {
+    shape-rendering: optimizeQuality;
+    color-rendering: optimizeQuality;
+	text-rendering: optimizeQuality;
+	cursor: default;
+}
+
+.node {
+    shape-rendering: crispEdges;
+	stroke: black;
+	stroke-width: 1;
+	fill: #D8D8D8;
+	/*filter: url(#blackShadow);*/
+	cursor: pointer;
+}
+
+.current.node {
+	stroke: #FFC000;
+	fill: #FFC000;
+}
+
+.entry {
+    shape-rendering: crispEdges;
+	stroke: black;
+	stroke-width: 1;
+	fill: white;
+	cursor: pointer;
+}
+
+.current.entry {
+	stroke: #FFC000;
+}
+
+text {
+	font-family: simsun;
+	pointer-events: none;
+	text-rendering: optimizeLegibility;
+}
+
+.text {
+	font-size: 14px;
+	text-anchor: left;
+	/*stroke: black;*/
+	fill: black;
+	/*-moz-user-select:   none;*/
+}
+
+.toolbar {
+	stroke-width: 1;
+	stroke: gray;
+	fill: white;
+	pointer-events: all;
+}
+
+.toolbarBg {
+	fill:white;
+}
+
+.toolbarBg.select {
+	fill: #FFC600;
+}
+
+.line {
+	stroke-width: 2;
+	fill: none;
+	stroke-linecap: square;
+	cursor: pointer;
+}
+
+.markerArrow {
+	fill: green;
+}
+
+.aerialViewBg {
+    fill: #DCDCDC;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.aerialViewFg {
+    fill: white;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.redBox {
+    fill: none;
+    stroke: red;
+}
+.defBorder{
+	stroke: #cccccc;
+	shape-rendering: crispEdges;
+}
+.typeFill{
+	fill : #fff;
+}
+.aColor {
+	fill:#0000ff;
+	stroke-width: 1;
+	font-size: 14px;
+	text-decoration: underline;
+	cursor: pointer;
+	pointer-events: all;
+
+}
+	]]>
+	</style>
+	</defs>
+	<defs id="lineNeed">
+	</defs>
+	<defs>
+		<pattern id="bgRect" width="20" height="20" patternUnits="userSpaceOnUse">
+			<rect fill="white" x="0" y="0" width="20" height="20" style="stroke:0;stroke-width:0;" />
+			<polyline points="0 20,20 20,20 0" style="fill:none;stroke:#CDE2F3;stroke-width:2;stroke-dasharray:10 0;"/>
+		</pattern>
+		<filter id="blackShadow" x="0" y="0" width="200%" height="200%">
+			<feOffset result="offOut" in="SourceGraphic" dx="1" dy="1" />
+			<feGaussianBlur result="blurOut" in="offOut" stdDeviation="1" />
+			<feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
+		</filter>
+		<filter id="Drop_Shadow" filterUnits="objectBoundingBox" x="-10%" y="-10%" width="150%" height="150%">
+			<feGaussianBlur in="SourceAlpha" stdDeviation="3" result="blurredAlpha"/>
+			<feOffset in="blurredAlpha" dx="3" dy="3" result="offsetBlurredAlpha"/>
+			<feFlood result="flooded" style="flood-color:rgb(99,7,7);flood-opacity:0.65"/>
+			<feComposite in="flooded" operator="in" in2="offsetBlurredAlpha" result="coloredShadow"/>
+			<feComposite in="SourceGraphic" in2="coloredShadow" operator="over"/>
+		</filter>
+	</defs>
+	<rect id="bg" x="0" y="0" width="2000" height="1000" style="fill:white;stroke:gray;shape-rendering: crispEdges;"/>
+	<svg id="mainPanel" x="0" y="0" width="1600" height="800" viewBox="0 0 1600 800">
+		<g id="lineWorkspace">
+		</g>
+		<g id="workspace">
+		</g>
+		<g id="textWorkspace">
+		</g>
+	</svg>
+	<g id="corrTypeWorkspace">
+	</g>
+	<text id="showMsg" x="100" y="600" style="fill:black;stroke:black;visibility:hidden;">1231231231231231231</text>
+	<menu id="menuNone">
+	</menu>
+	<script type="text/javascript" xlink:href="../js/commons/json2.js"></script>
+	<script type="text/javascript" xlink:href="../js/commons/underscore-min.js"></script>
+	<script type="text/javascript" xlink:href="../js/svg.js"></script>
+	<script type="text/javascript" xlink:href="../js/toolTip.js"></script>
+	<script type="text/javascript" xlink:href="../js/topoTree.js"></script>
+	<script type="text/javascript" xlink:href="../js/corrType.js"></script>
+	<script type="text/javascript" xlink:href="../js/aerialView.js"></script>
+
+	<script type="text/javascript">
+	<![CDATA[
+var t = null;
+
+
+function init(typeFilter) {
+	// 初始化关联类型(类型数组（数量不定），颜色数组（10个）)
+	corrType = new CorrType([
+		'引用',
+		'满足',
+		'验证',
+		'跟踪',
+		'继承',
+		'改善',
+		'包含'
+	], [
+	'#00B050',
+	'#40C4F4',
+	'#FFFF00',
+	'#FF0000',
+	'#FFC000',
+	'#7030A0',
+	'#002060',
+	'#bcbd22',
+	'#7f7f7f',
+	'#1f77b4'
+]);
+
+	toolTip = new ToolTip();
+
+	document.documentElement.addEventListener('mousedown', function (evt) {
+		evt.preventDefault();
+
+		if (evt.button === 0) {
+			if (evt.target.parentNode.id === 'type_g') {
+				window.dragTarget = new CorrType.DragCorrType(evt);
+			} else if (evt.target.id === 'aerialViewRedBox') {
+				//缩略图中的视口拖动
+				window.dragTarget = new AerialView.DragMiniViewBox(evt);
+			} else if (evt.target.id === 'bg') {
+				// 面板拖动
+				window.dragTarget = new AerialView.DragMainPanel(evt);
+			}
+		} else if (evt.button === 2) {
+			if (window.getSVGViewerVersion) {
+				fireMenu('menuNone');
+			}
+		}
+
+	}, false);
+
+	document.documentElement.addEventListener('mousemove', function (evt) {
+		if (window.dragTarget) {
+			window.dragTarget.drag(evt);
+		}
+	}, false);
+
+	document.documentElement.addEventListener('mouseup', function (evt) {
+		if (window.dragTarget) {
+			window.dragTarget.drop(evt);
+		}
+	}, false);
+
+
+	document.documentElement.addEventListener('mouseover', function (evt) {
+		toolTip.show(evt);
+	}, false);
+
+	document.documentElement.addEventListener('mouseout', function (evt) {
+		toolTip.hide(evt);
+	}, false);
+
+
+	if (!window.getSVGViewerVersion) {
+		document.documentElement.addEventListener('selectstart', $$.stop, false);
+		document.documentElement.addEventListener('contextmenu', $$.stop, false);
+	}
+
+	t = new TopoTree('t', ['lineWorkspace', 'workspace', 'textWorkspace']);
+	t.add('O',-1,'用户需求规格说明书/1.0', [{id:'O_1',name:'(U_1)用户需求条目1',isSectionItem:'1',url:'www.baidu.com'}, {id:'O_2',name:'(U_2)用户需求条目2',isSectionItem:'0',url:'www.baidu.com'}], {url:'www.baidu.com', h: 240}); //Node ID's could be Number or String or mix... look!
+	t.add('E','O','子系统1需求规格说明书/1.0', [{id:'E_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'E_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', h: 80});
+	t.add(3,'O','子系统2需求规格说明书/1.0', [{id:'3_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'3_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.add(4,'O','子系统3需求规格说明书/1.0', [{id:'4_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'4_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', h: 180});
+	t.add(5,'E','子系统1.1需求规格说明书/1.0', [{id:'5_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'5_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', target:'http://www.codeproject.com'});
+	t.add(6,'E','子系统1.2需求规格说明书/1.0', [{id:'6_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'6_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', h:60});
+	t.add(7,4,'子系统3.1需求规格说明书/1.0', [{id:'7_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'7_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', h:70});
+	t.add(8,4,'子系统3.2需求规格说明书/1.0', [{id:'8_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'8_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}, {id:'8_3',name:'(U_3)用户需求条目3',url:'3'}, {id:'8_4',name:'(U_4)用户需求条目4',url:'4'}], {h: 120});
+	t.add(9,5,'子系统1.1.1需求规格说明书/1.0', [{id:'9_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'9_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.add(10,5,'子系统1.1.2需求规格说明书/1.0', [{id:'10_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'10_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.add(11,8,'子系统3.2.1需求规格说明书/1.0', [{id:'11_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'11_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', c:"green",bc:"black"});
+	t.add(12,8,'子系统3.2.2需求规格说明书/1.0', [{id:'12_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'12_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.add(13,8,'子系统3.2.3需求规格说明书/1.0', [{id:'13_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'13_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.add(14,8,'子系统3.2.4需求规格说明书/1.0', [{id:'14_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'14_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}], {url:'www.baidu.com', h: 60});
+	t.add(15,8,'子系统3.2.5需求规格说明书/1.0', [{id:'15_1',name:'(U_1)用户需求条目1',url:'www.baidu.com'}, {id:'15_2',name:'(U_2)用户需求条目2',url:'www.sina.com.cn'}]);
+	t.mapping = [
+		{source:'E', sourcePort:'E_1', target:'O', targetPort:'O_1', type:'引用'},
+		{source:'E', sourcePort:'E_2', target:'O', targetPort:'O_2', type:'引用'},
+		{source:'3', sourcePort:'3_1', target:'O', targetPort:'O_1', type:'改善'},
+		{source:'3', sourcePort:'3_2', target:'O', targetPort:'O_2', type:'改善'},
+		{source:'4', sourcePort:'4_1', target:'O', targetPort:'O_2', type:'满足'},
+		{source:'4', sourcePort:'4_2', target:'O', targetPort:'O_2', type:'满足'},
+		{source:'5', sourcePort:'5_2', target:'E', targetPort:'E_1', type:'验证'},
+		{source:'5', sourcePort:'5_1', target:'E', targetPort:'E_1', type:'继承'},
+		{source:'6', sourcePort:'6_1', target:'E', targetPort:'E_2', type:'跟踪'},
+		{source:'6', sourcePort:'6_2', target:'E', targetPort:'E_2', type:'跟踪'},
+		{source:'7', sourcePort:'7_1', target:'4', targetPort:'4_1', type:'跟踪'},
+		{source:'7', sourcePort:'7_2', target:'4', targetPort:'4_2', type:'跟踪'},
+		{source:'8', sourcePort:'8_1', target:'4', targetPort:'4_1', type:'跟踪'},
+		{source:'8', sourcePort:'8_2', target:'4', targetPort:'4_2', type:'跟踪'},
+		{source:'8', sourcePort:'8_3', target:'4', targetPort:'4_2', type:'跟踪'},
+		{source:'8', sourcePort:'8_4', target:'4', targetPort:'4_2', type:'跟踪'},
+		{source:'9', sourcePort:'9_1', target:'5', targetPort:'5_1', type:'跟踪'},
+		{source:'9', sourcePort:'9_2', target:'5', targetPort:'5_2', type:'跟踪'},
+		{source:'10', sourcePort:'10_1', target:'5', targetPort:'5_1', type:'跟踪'},
+		{source:'10', sourcePort:'10_2', target:'5', targetPort:'5_2', type:'跟踪'},
+		{source:'11', sourcePort:'11_1', target:'8', targetPort:'8_1', type:'跟踪'},
+		{source:'11', sourcePort:'11_2', target:'8', targetPort:'8_2', type:'跟踪'},
+		{source:'12', sourcePort:'12_1', target:'8', targetPort:'8_1', type:'跟踪'},
+		{source:'12', sourcePort:'12_2', target:'8', targetPort:'8_2', type:'跟踪'},
+		{source:'13', sourcePort:'13_1', target:'8', targetPort:'8_3', type:'跟踪'},
+		{source:'13', sourcePort:'13_2', target:'8', targetPort:'8_4', type:'跟踪'},
+		{source:'14', sourcePort:'14_1', target:'8', targetPort:'8_3', type:'验证'},
+		{source:'14', sourcePort:'14_2', target:'8', targetPort:'8_4', type:'跟踪'},
+		{source:'15', sourcePort:'15_1', target:'8', targetPort:'8_3', type:'改善'},
+		{source:'15', sourcePort:'15_2', target:'8', targetPort:'8_4', type:'包含'}
+	];
+
+	// 绘制树
+	t.redraw();
+	// 计算占用空间
+	var box = $$.$('workspace').getBBox();
+
+	// 鸟瞰图
+	var isChrome;
+	try {
+		isChrome = window.navigator.userAgent.indexOf("Chrome") !== -1;
+	} catch(ex) {
+		isChrome = false;
+	}
+	var workspaceArray = isChrome ? [$$.$('lineWorkspace'), $$.$('workspace')] : [$$.$('lineWorkspace'), $$.$('workspace'), $$.$('textWorkspace')];
+	aerialView = new AerialView('aerialView', $$.$('mainPanel'), workspaceArray, Math.max(box.x, box.y) + Math.max(box.width, box.height) + 200, 0, 0);
+
+	// 图例放在鸟瞰图前面，避免拖动时被遮挡
+	corrType.svg.self.parentNode.appendChild(corrType.svg.self);
+	t.collapseAll();
+	t.expandLevel(2);
+
+}
+
+function showMsg(txt) {
+	new $$.Text('showMsg', document.documentElement).text(txt, 250);
+}
+
+function fireMenu(menuId) {
+	if (window.getSVGViewerVersion) {
+		var newMenuRoot = parseXML(printNode($$.$(menuId)), contextMenu);
+		contextMenu.replaceChild(newMenuRoot.firstChild, contextMenu.firstChild);
+	}
+}
+
+function filter(typeStr) {
+	corrType.setFilter(typeStr);
+	t.redraw();
+}
+
+function saveAsImage() {
+	if (window.getSVGViewerVersion) {
+		return printNode(document.documentElement);
+	} else if (XMLSerializer) {
+		return (new XMLSerializer()).serializeToString(document.documentElement);
+	} else if (document.xml){
+		return document.xml;
+	} else {
+		alert('该浏览器不支持XML序列化！');
+		return '';
+	}
+
+}
+]]>
+	</script>
+</svg>

@@ -1,0 +1,247 @@
+
+body {  
+  background-color: #fff;
+  margin: 0;  
+  font-size: 11px;
+  font-family: 微软雅黑;
+  padding-bottom: 0px;
+  margin-bottom: 0px;
+  overflow: hidden;
+}
+
+.badge {
+  font-size: inherit;
+  margin-bottom: 2px;
+  margin-left: 2px;
+}
+
+/* Auto-complete boxes height limited */
+.ui-autocomplete {
+    max-height: 500px;
+    overflow-y: auto;    
+    overflow-x: hidden;
+  }
+/* IE 6 doesn't support max-height we use height instead, but this forces the menu to always be this tall */
+* html .ui-autocomplete {
+  height: 500px;
+}
+
+#conn-dir-sel {
+  text-align: center;
+  padding: 4px;
+}
+
+.dl-horizontal dt {
+  width: 60px;
+}
+.dl-horizontal dd {
+  margin-left: 80px;
+}
+
+#graph {
+  display: block; 
+  position: absolute;
+  /*top: 100px;*/
+  width: 100%; 
+  margin: 0 auto;
+}
+
+.topwrapper {
+  position: fixed;
+  top: -730px;
+  width: 600px;
+  height: 740px;
+  left: 50%;
+  -webkit-transform: translate(-50%, 0);  
+  -moz-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);  
+
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.topwrapper.out {
+  top: 0px;
+}
+
+.introheader { 
+  position: relative;
+  font-size: 12px;
+  /*text-align: justify;*/
+  height: 100%;
+  background-color: rgba(245, 245, 245, 0.95);
+  padding: 10px 20px 10px 20px;
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.introheader, 
+.introheader h3, h4, h5 {
+  font-family: "Merriweather", "PT Serif", Georgia, serif;
+}
+
+.uiwidget {
+  position: absolute;
+  top: 20px;
+  overflow: visible;
+  width: 310px;
+  pointer-events: none !important;
+  -webkit-transition: all 0.3s ease;
+  -moz-transition: all 0.3s ease;
+  transition: all 0.3s ease;
+}
+
+.uihandle {  
+  background-color: rgba(245, 245, 245, 0.75);
+  position: relative;
+  padding: 10px;
+  pointer-events: auto;
+  font-size: 14px;
+}
+
+.uihandle a,
+h3 a {
+  color: inherit;
+  text-decoration: none;
+}
+
+.uihandle a:hover,
+h3 a:hover {
+  color: #f00;
+}
+
+.uihandle-top {
+  padding-top: 0px;
+  width: 50px;
+  height: 40px;
+  left: 50%;
+  text-align: center;
+  vertical-align: top;
+  background-color: rgba(245, 245, 245, 0.95);
+  border-bottom-left-radius: 10px;
+  border-bottom-right-radius: 10px;
+  -webkit-transform: translate(-50%, 0);
+  -moz-transform: translate(-50%, 0);
+  transform: translate(-50%, 0);
+}
+
+.uihandle-left {
+  float:left;
+  height: 40px;
+  border-top-right-radius: 10px;
+  border-bottom-right-radius: 10px;
+}
+
+.uihandle-right {
+  float:right;
+  height: 40px;
+  border-top-left-radius: 10px;
+  border-bottom-left-radius: 10px;
+}
+
+.uiwidget-left {
+  left: -180px;  
+}
+
+.uiwidget-left.out {
+  left: 0px;
+}
+
+.uiwidget-right {
+  right: 2px;
+  padding-top: 4px;
+}
+
+.uiwidget-right.out {
+  right: 0px;
+}
+
+.uiwidget .handlelabel {
+  display: inline;
+}
+
+.uiwidget h3 {
+  margin-top: 0px;
+  font-size: 20px;
+}
+
+input[type=range]{
+  width: 80%;
+}
+
+label input[type=checkbox] {
+  margin-top: 2px;  /*Depends on font-size*/
+}
+
+output {
+  color: #428bca;
+}
+
+.formpanel {
+  width: 190px;
+  background-color: rgba(245, 245, 245, 0.75);
+  padding: 10px;
+  margin-bottom: 10px;
+  pointer-events: auto;}
+
+.uiwidget-left .formpanel {
+  float: left;
+  border-bottom-right-radius: 10px;
+}
+
+.uiwidget-right .formpanel {
+  float: right;
+  border-bottom-left-radius: 10px;
+}
+
+.btn-group-justified .btn {
+  width: auto;
+}
+
+svg {
+  cursor: move;
+}
+
+.link {
+  stroke: #bbb;
+  fill: none;
+  cursor: default;
+}
+
+.junction {
+  stroke-dasharray: 3, 3;
+  stroke: #000;
+}
+
+.link.hidden {
+  display: none;
+}
+
+circle {
+  stroke-width: 1px;
+  stroke: #fff;
+  cursor: pointer;
+}
+
+circle.fixed {
+  stroke: #000;
+  stroke-width: 2px;
+}
+
+circle.selected {
+  stroke: #000;
+  stroke-width: 2px;
+  stroke-dasharray: 6 4;
+}
+
+.node-label {
+  font-size: 8px;
+  font-style: normal;
+  font-family: Helvetica, Arial;
+  pointer-events: none;
+}
+
+.popover{
+  background-color: rgba(250,250,250,0.85);
+}

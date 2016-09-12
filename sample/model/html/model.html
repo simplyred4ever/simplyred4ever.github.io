@@ -1,0 +1,221 @@
+<!doctype html>
+<html>
+	<head>
+		<meta charset="UTF-8"/>
+		<meta http-equiv="X-UA-Compatible" content="IE=Edge"/>
+		<link type="text/css" href="../css/bootstrap-combined.min.css"/>
+		<style type="text/css">
+			* {
+				margin: 0;
+				padding: 0;
+				border: 0;
+			}
+			html, body, form {
+				height: 100%;
+				overflow-y: hidden;
+			}
+			body { font-family:Lucida Sans, Lucida Sans Unicode, Arial, Sans-Serif; font-size:12px;}
+			#tabs { margin:0; padding:0; list-style:none; overflow:hidden; }
+			#tabs li { float:left; display:block; padding:5px; background-color:#bbb; margin-right:5px;}
+			#tabs li a { color:#fff; text-decoration:none; }
+			#tabs li.current { background-color:#e1e1e1;}
+			#tabs li.current a { color:#000; text-decoration:none; }
+			#tabs li a.remove { color:#f00; margin-left:10px;}
+			#content { background-color:#e1e1e1;}
+
+			#main { width:900px;overflow:hidden;background-color:#F6F6F6;-moz-border-radius:10px;-webkit-border-radius:10px;}
+			#wrapper { float:left;}
+			#doclist { float:left;margin-left:20px;width:150px;}
+			#doclist ul { margin:0; list-style:none;}
+			#doclist li { margin:10px 0; padding:0;}
+			#documents { margin:0; padding:0;}
+
+			#wrapper { width:700px; margin-top:0px;}
+		</style>
+		<script type="text/javascript" src="../js/commons/jquery-1.10.2.min.js"></script>
+		<script type="text/javascript" src="../js/commons/json2.js"></script>
+		<script type="text/javascript">
+function load(key) {
+	svg().init(modelMap[key]);
+}
+
+function exportXml() {
+	return svg().Model.toXml();
+}
+function exportJson() {
+	return svg().Model.toJson();
+}
+function svg() {
+	if (document.getElementById('embedObj')) {
+		return document.getElementById('embedObj').window;
+	} else {
+		return  document.getElementById('frameObj').contentWindow;
+	}
+}
+
+var modelMap = {
+	'Model1':	{
+		node : [
+			{id:'sys1', name:'系统_1', ext:{nodeType:'System', x: 100, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'act1', name:'人员_1', ext:{nodeType:'Actor', x: 300, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'org1', name:'组织_1', ext:{nodeType:'Organization', x: 100, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'ser1', name:'服务_1', ext:{nodeType:'Service', x: 300, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}}
+		],
+		edge : [
+			{id:'sys1act1', source:'sys1', target:'act1', sourcePort:'e', targetPort:'w'},
+			{id:'org1ser1', source:'org1', target:'ser1', sourcePort:'e', targetPort:'w'},
+			{id:'sys1ser1', source:'sys1', target:'ser1', sourcePort:'s', targetPort:'n', ext:{points:'150,160 150,250 350,250 350,300'}}
+		]
+	},
+	'Model2':	{
+		node : [
+			{id:'sys1', name:'系统_1', ext:{nodeType:'System', x: 100, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'act1', name:'人员_1', ext:{nodeType:'Actor', x: 300, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}}
+		],
+		edge : [
+			{id:'sys1act1', source:'sys1', target:'act1', sourcePort:'e', targetPort:'w'}
+		]
+	},
+	'Model3':	{
+		node : [
+			{id:'sys1', name:'系统_1', ext:{nodeType:'System', x: 100, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'ser1', name:'服务_1', ext:{nodeType:'Service', x: 300, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}}
+		],
+		edge : [
+			{id:'sys1ser1', source:'sys1', target:'ser1', sourcePort:'s', targetPort:'n', ext:{points:'150,160 150,250 350,250 350,300'}}
+		]
+	},
+	'Model4':	{
+		node : [
+			{id:'org1', name:'组织_1', ext:{nodeType:'Organization', x: 100, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'ser1', name:'服务_1', ext:{nodeType:'Service', x: 300, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}}
+		],
+		edge : [
+			{id:'org1ser1', source:'org1', target:'ser1', sourcePort:'e', targetPort:'w'}
+		]
+	},
+	'Model5':	{
+		node : [
+			{id:'sys1', name:'系统_1', ext:{nodeType:'System', x: 100, y: 100, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'org1', name:'组织_1', ext:{nodeType:'Organization', x: 100, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}},
+			{id:'ser1', name:'服务_1', ext:{nodeType:'Service', x: 300, y: 300, height: 60, width: 100, backgroundColor: 'white', textColor: 'black'}}
+		],
+		edge : [
+			{id:'org1ser1', source:'org1', target:'ser1', sourcePort:'e', targetPort:'w'},
+			{id:'sys1ser1', source:'sys1', target:'ser1', sourcePort:'s', targetPort:'n', ext:{points:'150,160 150,250 350,250 350,300'}}
+		]
+	}
+};
+
+$(document).ready(function() {
+
+	$("#content").css('visibility', 'hidden');
+	$("#documents a").click(function() {
+		addTab($(this));
+	});
+
+	$(document).on('click', '#tabs a.tab', function() {
+		// Get the tab name
+		var contentname = $(this).attr("id") + "_content";
+
+		// hide all other tabs
+		//$("#content p").hide();
+		$("#tabs li").removeClass("current");
+
+		// show current tab
+		$("#" + contentname).show();
+		$(this).parent().addClass("current");
+		load($(this).attr("id"));
+	});
+
+	$(document).on('click', '#tabs a.remove', function() {
+		// Get the tab name
+		var tabid = $(this).parent().find(".tab").attr("id");
+
+		// remove tab and related content
+		var contentname = tabid + "_content";
+		$("#" + contentname).remove();
+		$(this).parent().remove();
+
+		// if there is no current tab and if there are still tabs left, show the first one
+		if ($("#tabs li.current").length == 0 && $("#tabs li").length > 0) {
+
+			// find the first tab    现改为最后一个
+			var firsttab = $("#tabs li:last-child");
+			firsttab.addClass("current");
+
+
+			// get its link name and show related content
+			var firsttabid = $(firsttab).find("a.tab").attr("id");
+			$("#" + firsttabid + "_content").show();
+			load(firsttabid);
+		} else if ($("#tabs li.current").length == 0) {
+			load();
+			$("#content").css('visibility', 'hidden');
+		}
+	});
+	//setTimeout("addTab($('#documents a'));", 500);
+});
+function addTab(link) {
+	// If tab already exist in the list, return
+	if ($("#" + $(link).attr("rel")).length != 0) {
+		$("#" + $(link).attr("rel")).click();
+		return;
+	}
+
+
+	// hide other tabs
+	$("#tabs li").removeClass("current");
+
+	// add new tab and related content
+	$("#tabs").append("<li class='current'><a class='tab' id='" +
+		$(link).attr("rel") + "' href='#'>" + $(link).html() +
+		"</a><a href='#' class='remove'>x</a></li>");
+
+	/*$("#content").append("<p id='" + $(link).attr("rel") + "_content'>" +
+		$(link).attr("title") + "</p>");*/
+
+	// set the newly added tab as current
+	$("#" + $(link).attr("rel") + "_content").show();
+	$("#content").css('visibility', 'visible');
+	load($(link).attr("rel"));
+}
+var tempElement = null;
+function setTempElement(id, name) {
+	tempElement.id = id;
+	tempElement.name = name;
+}
+		</script>
+	</head>
+	<body onload="addTab($('#documents a'))" oncontextmenu="return false;">
+		<div>
+			<button onclick="alert(exportXml())">导出XML</button>
+			<button onclick="alert(exportJson())">导出JSON</button>
+		</div>
+		<div id="main" style="width:100%;height:100%;">
+			<div id="wrapper" style="width:75%;height:100%">
+				<ul id="tabs">
+					<!-- Tabs go here -->
+				</ul>
+				<div id="content" style="width:100%;height:100%">
+					<!-- Tab content goes here -->
+					<!--[if lt IE 9]>
+					<embed id="embedObj" name="embedObj" style="min-width:100%;min-height:100%;width:100%;height:100%;" src="../svg/model.svg" type="image/svg+xml" wmode="transparent"></embed>
+					<![endif]-->
+					<!--[if !IE | (IE 9)]><!-->
+					<iframe id="frameObj" name="frameObj" style="min-width:100%;min-height:100%;width:100%;height:100%;" src="../svg/model.svg"></iframe>
+					<!--<![endif]-->
+				</div>
+			</div>
+			<div id="doclist" style="width:23%;height:100%">
+				<ul id="documents">
+					<li><a href="#" rel="Model1">模型图1</a></li>
+					<li><a href="#" rel="Model2">模型图2</a></li>
+					<li><a href="#" rel="Model3">模型图3</a></li>
+					<li><a href="#" rel="Model4">模型图4</a></li>
+					<li><a href="#" rel="Model5">模型图5</a></li>
+				</ul>
+			</div>
+		</div>
+	</body>
+</html>

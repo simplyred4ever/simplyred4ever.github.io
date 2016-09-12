@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script src="../../javascripts/avalon-2.1.5.js"></script>
+        <script>
+            var vm1 = avalon.define({
+                $id: "test",
+                a: 111,
+                b: 222
+            })
+        
+        
+        </script>
+        <style>
+            .ms-controller{
+                display:none;
+            }
+        </style>
+    </head>
+    <body>
+        <div ms-controller="test">
+            <p><input ms-duplex="@a" />{{@a}}<strong ms-text="@a"></strong></p>
+            <p><input ms-duplex="@b" /><span>{{@b}}</span><span ms-html="@b"></span></p>
+        </div>
+    </body>
+</html>

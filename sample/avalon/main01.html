@@ -1,0 +1,21 @@
+<!DOCTYPE html> 
+<html> 
+    <head> 
+        <title></title> 
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"> 
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" /> 
+        <script src="../../javascripts/avalon-2.1.5.js"></script>
+		<script>
+var vm = avalon.define({  
+	$id: "test",  
+	name: "World"
+})
+		</script>  
+	</head>  
+	<body> 
+		<div ms-controller="test"> 
+			<input ms-duplex="@name">  
+			<p>Hello,{{@name}}!</p>  
+		</div>
+	</body>  
+</html> 

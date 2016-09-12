@@ -1,0 +1,115 @@
+<h3
+	style="box-sizing: border-box; margin-top: 1em; margin-bottom: 16px; line-height: 1.43; font-size: 1.5em; position: relative;">
+	<a name="user-content-%E5%8A%9B%E5%AD%A6force" class="anchor"
+		href="https://github.com/mbostock/d3/wiki/Api%E5%8F%82%E8%80%83#%E5%8A%9B%E5%AD%A6force"
+		aria-hidden="true"
+		style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; position: absolute; top: 0px; bottom: 0px; left: 0px; display: block; padding-right: 6px; padding-left: 30px; margin-left: -30px; background: transparent;"></a><a
+		class="internal present"
+		href="https://github.com/mbostock/d3/wiki/Force-Layout"
+		style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">力学(Force)</a>
+</h3>
+<ul class="task-list list-paddingleft-2"
+	style="box-sizing: border-box; padding: 0px 0px 0px 2em; margin-bottom: 16px;">
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-force"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">d3.layout.force</a>&nbsp;-节点（node）基于物理模拟的位置连接。
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-on"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.on</a>&nbsp;-
+			监听布局位置的变化。(仅支持"start","step","end"三种事件)
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-nodes"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.nodes</a>&nbsp;-
+			获得或设置布局中的节点（node）阵列组。
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-links"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.links</a>&nbsp;-
+			获得或设置布局中节点间的连接（Link）阵列组。.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-size"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.size</a>&nbsp;-
+			获取或设置布局的&nbsp;<em style="box-sizing: border-box;">宽</em>&nbsp;和&nbsp;<em
+				style="box-sizing: border-box;">高</em>&nbsp;的大小.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-linkDistance"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.linkDistance</a>&nbsp;-
+			获取或设置节点间的连接线距离.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-linkStrength"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.linkStrength</a>&nbsp;-
+			获取或设置节点间的连接强度.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-friction"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.friction</a>&nbsp;-
+			获取或设置摩擦系数.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-charge"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.charge</a>&nbsp;-
+			获取或设置节点的电荷数.(电荷数决定结点是互相排斥还是吸引)
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-gravity"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.gravity</a>&nbsp;-
+			获取或设置节点的引力强度.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-theta"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.theta</a>&nbsp;-
+			获取或设置电荷间互相作用的强度.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-start"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.start</a>&nbsp;-
+			开启或恢复结点间的位置影响.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-resume"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.resume</a>&nbsp;-
+			设置冷却系数为0.1,并重新调用start()函数.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-stop"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.stop</a>&nbsp;-
+			立刻终止结点间的位置影响.(等同于将<em style="box-sizing: border-box;">冷却系数</em>设置为0)
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-alpha"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.alpha</a>&nbsp;-
+			获取或设置布局的冷却系数.(冷却系数为0时,节点间不再互相影响)
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-tick"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.tick</a>&nbsp;-
+			让布局运行到下一步.
+		</p></li>
+	<li><p>
+			<a class="internal present"
+				href="https://github.com/mbostock/d3/wiki/Force-Layout#wiki-drag"
+				style="box-sizing: border-box; color: rgb(65, 131, 196); text-decoration: none; background: transparent;">force.drag</a>&nbsp;-
+			获取当前布局的拖拽对象实例以便进一步绑定处理函数.
+		</p></li>
+</ul>

@@ -1,0 +1,103 @@
+<!DOCTYPE html>
+<meta charset="utf-8">
+<style>
+
+.node {
+  stroke: #fff;
+  stroke-width: 1.5px;
+}
+
+.link {
+  stroke: #999;
+  stroke-opacity: .6;
+}
+
+</style>
+<body>
+<script src="D3files/d3.v3.js"></script>
+<script src="D3files/json2.js"></script>
+<script src="D3files/xml2json.js"></script>
+
+<script>
+
+var width = 1000,
+    height = 1000;
+
+var color = d3.scale.category20();
+
+var force = d3.layout.force()
+    .charge(-30)
+    .linkDistance(30)
+/*	.linkStrength(0.3)
+    .friction(0.9)
+	    .gravity(0.1)
+    .theta(0.8)
+    .alpha(0.1)*/
+    .size([width, height]);
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width)
+    .attr("height", height);
+
+d3.xml("D3files/zsh-min.xml", function(error, graph) {
+
+	var jsonstr = JSON.parse(xml2json(graph,'\t'));
+	var oldNodes = jsonstr.graphml.graph.node;
+	var newNodes = [];
+	for(var i = 0; i < oldNodes.length; i++){
+		newNodes.push({id:+oldNodes[i]['@id'].replace(/^n/,''), name:oldNodes[i].data['#text'],group:0});
+	}
+	var oldEdges = jsonstr.graphml.graph.edge;
+	var newEdges = [];
+	for(i = 0; i < oldEdges.length; i++){
+		newEdges.push({id:oldEdges[i]['@id'], source:+oldEdges[i]['@source'].replace(/^n/,''), target:+oldEdges[i]['@target'].replace(/^n/,''), value:1});
+	}
+
+	force
+      .nodes(newNodes)
+      .links(newEdges)
+      .start();
+
+  var link = svg.selectAll(".link")
+      .data(force.links())
+    .enter().append("line")
+      .attr("class", "link")
+      .style("stroke-width", function(d) { return Math.sqrt(d.value); });
+
+  var node = svg.selectAll(".node")
+      .data(force.nodes())
+    .enter().append("circle")
+      .attr("class", "node")
+      .attr("r", function(d) { return 4; })
+      .style("fill", function(d) { return color(d.group); })
+      .call(force.drag);
+
+  node.append("title")
+      .text(function(d) { return d.name; });
+
+  var text = svg.append("g").selectAll("text")
+    .data(force.nodes())
+  .enter().append("text")
+    .attr("x", 8)
+    .attr("y", ".31em")
+    .attr("font-size", function(d) { return Math.sqrt(d.value)})
+    .style("fill", "gray")
+    .style("fill-opacity", 0.4);
+   // .text(function(d) { return d.name; });
+
+  force.on("tick", function() {
+    link.attr("x1", function(d) { return d.source.x; })
+        .attr("y1", function(d) { return d.source.y; })
+        .attr("x2", function(d) { return d.target.x; })
+        .attr("y2", function(d) { return d.target.y; });
+
+    node.attr("cx", function(d) { return d.x; })
+        .attr("cy", function(d) { return d.y; });
+		
+    text.attr("x", function(d) { return d.x; })
+    .attr("y", function(d) { return d.y; });
+  });
+
+});
+
+</script>

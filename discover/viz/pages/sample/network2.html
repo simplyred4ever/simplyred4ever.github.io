@@ -1,0 +1,325 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/jquery-ui.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/d3.css">
+<style>
+#onlyInstanceDisplay {
+	top: 0;
+	width: 160px;
+}
+
+.node {
+	stroke: white;
+	stroke-width: 2px;
+}
+
+.uiwidget {
+	top: 0;
+}
+
+.node.selected {
+	stroke-width: 6;
+	stroke-dasharray: 1000;
+	animation: opa 0.2s linear alternate infinite;
+	-webkit-animation: opa 0.2s linear alternate infinite;
+}
+
+.prop-long-value.selected {
+	color: #dac !important;
+}
+
+@keyframes opa {
+	from {
+		stroke-opacity:0.5;
+	}
+	
+	to {
+		stroke-opacity: 1;
+	}
+}
+
+@-webkit-keyframes opa {
+	from {
+		stroke-opacity:0.5;
+	}
+
+	to {
+		stroke-opacity: 1;
+	}
+}
+
+.link {
+	stroke: #999;
+	stroke-width: 1px;
+}
+
+.link.selected {
+	stroke: red;
+	stroke-width: 2px;
+}
+
+.node-label {
+	fill: gray;
+	font-family: 微软雅黑;
+	pointer-events: none;
+}
+
+.node-label-child {
+	opacity: 1;
+}
+
+.node-label.selected {
+	fill: red;
+	font-weight: bold;
+}
+
+.prop-ul {
+	overflow: auto;
+	max-height: 198px;
+}
+
+.prop-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 180px;
+	overflow: hidden;
+}
+
+.prop-long-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 200px;
+	overflow: hidden;
+	cursor: pointer;
+	margin: 2px;
+}
+
+.prop-long-value:hover {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 200px;
+	overflow: hidden;
+	cursor: pointer;
+	opacity: 0.8;
+	margin: 2px;
+}
+
+.fl {
+	-webkit-box-shadow: 2px 2px 2px #888;
+	-moz-box-shadow: 2px 2px 2px #888;
+	box-shadow: 2px 2px 2px #888;
+	float: left;
+	display: block;
+}
+
+.padding0 {
+	padding: 0;
+}
+
+.paddingleft5 {
+	padding-left: 10px;
+}
+
+li > input , li > output{
+	display: inline !important;
+	margin-right: 10px;
+	vertical-align: middle;
+}
+
+.list-group-item{
+	padding: 5px 15px ;
+}
+</style>
+
+<script data-main="/discover/viz/js/app/networkMain2" src="/discover/viz/js/require.js"></script>
+</head>
+<body>
+	<div class="row"
+		style="text-align: center; padding-top: 2px; padding-bottom: 2px; background-color: rgba(245, 245, 245, 0.7490);">
+		<div id="left" class="col-sm-2 padding0 paddingleft5">
+			<span class="input-group input-group-sm"> <span class="input-group-btn">
+					<button id="dropdownBVal" type="button" class="btn dropdown-toggle" data-toggle="dropdown" aria-haspopup="true"
+						aria-expanded="false">
+						全部<span class="caret"></span>
+					</button>
+					<ul class="dropdown-menu" role="menu" id="menu">
+						<li><a onclick="changeSearch(0);">全部</a></li>
+						<li><a onclick="changeSearch(1);">概念<span class="glyphicon glyphicon-flag" style="color: #777"></span></a></li>
+						<li><a onclick="changeSearch(2);">实例<span class="glyphicon glyphicon-flag"
+								style="color: rgb(31, 119, 180)"></span></a></li>
+					</ul>
+			</span> <!-- /btn-group --> <input type="text" class="form-control" id="rootNode" aria-label="..."
+				onkeydown="if(event.keyCode==13)searchNode();"> <span class="input-group-btn">
+					<button type="button" class="btn" onclick="searchNode()">
+						<span class="glyphicon glyphicon-search"></span>
+					</button>
+
+			</span>
+			</span>
+			<div role="tabpanel" class="tab-pane" style="padding: 5px 5px 5px 10px;" id="searchNodeTap"></div>
+		</div>
+		<div id="center" class="col-sm-10">
+			<div id="rightAll" class="row" style="text-align: left; padding-top: 2px; padding-bottom: 2px">
+
+				<div id="container" style="border: black solid 1px; background-color: white;">
+					<ul id="onlyInstanceDisplay" class="dropdown-menu hidden">
+						<li><a onclick="adjacentGraph();" style="cursor: pointer"> <input type="radio"
+								name="onlyInstanceDisplayRadio" />相关
+						</a></li>
+						<li><a onclick="changeInstance();" style="cursor: pointer"> <input type="radio"
+								name="onlyInstanceDisplayRadio" />上下位
+						</a></li>
+					</ul>
+					<div id="heatmapContainer" class="hidden"
+						style="position: absolute; left: 25px; top: 25px; height: 600px; width: 600px; border: 0px solid red;"></div>
+					<div id="scatterContainer" class="hidden"
+						style="position: absolute; left: 0; top: 0; height: 600px; width: 600px; border: 0px solid blue"></div>
+				</div>
+				<div class="uiwidget uiwidget-right" id="right-widget" style="width: 320px;">
+					<nav class="formpanel" style="width: 320px; height: 1000px; padding-top:0;padding-left:0">
+						<ul id="myTab" class="nav nav-tabs" role="tablist">
+							<li role="presentation" class="active"><a href="#propTab" aria-controls="propTab" role="tab"
+								data-toggle="tab">属性</a></li>
+							<li role="presentation"><a href="#pathTab" aria-controls="pathTab" role="tab" data-toggle="tab">分析</a></li>
+							<li role="presentation"><a href="#setting" aria-controls="setting" role="tab" data-toggle="tab">设置</a></li>
+						</ul>
+						<div id="myTabContent" class="tab-content" style="padding-top: 10px;">
+							<div role="tabpanel" class="tab-pane fade in active" id="propTab"></div>
+							<div role="tabpanel" class="tab-pane fade" id="pathTab">
+								<span>多维尺度分析<span class="glyphicon glyphicon-question-sign" rel="popover" title="多维尺度分析" data-toggle="popover"
+				data-content="勾选需要参与分析的属性后应用。" /></span>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<div id="mdsBox"></div>
+									</li>
+								</ul>
+								<span>聚类<span class="glyphicon glyphicon-question-sign"></span></span>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<div class="btn-group-vertical btn-group-xs" role="group" aria-label="Vertical button group">
+											<button type="button" class="btn btn-default" onclick="cluster('kmean')">k-mean聚类图</button>
+											<button type="button" class="btn btn-default" onclick="cluster('weakComponent')">弱连接</button>
+											<button type="button" class="btn btn-default" onclick="cluster('bicomponent')">双连通分量</button>
+											<button type="button" class="btn btn-default" onclick="cluster('edgeBetweenness')">聚类边介数</button>
+											<button type="button" class="btn btn-default" onclick="cluster('community')">社区发现</button>
+										</div>
+									</li>
+								</ul>
+								<span>寻径<span class="glyphicon glyphicon-question-sign"></span></span>
+								<ul class="list-group">
+									<li class="list-group-item">
+										<div>
+											<input type="text" id="fromNode" value=""></input> <input type="hidden" id="fromId" value=""></input> <input
+												type="text" id="toNode" value=""></input> <input type="hidden" id="toId" value=""></input>
+											<button onclick="shortPath('dijkstra')">最短路径</button>
+											<button onclick="alert('暂未实现！')//shortPath('minimumSpanning')">最小生成树</button>
+											<button onclick="alert('暂未实现！')//shortPath('bfs')">bfs遍历</button>
+										</div>
+									</li>
+
+								</ul>
+							</div>
+							<div role="tabpanel" class="tab-pane fade" id="setting">
+<<<<<<< .mine
+=======
+								<div class="form-group" id="ndeg">
+									<span for="ndegslider">度数 [1-200]: </span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="ndegslider" name="ndeg" value="1" min="1" max="200" oninput="document.getElementById('ndeglabel').value = this.value"><output for="ndegslider" id="ndeglabel">1</output></li>
+									</ul>
+								</div>
+								<div class="form-group">
+									<span>节点文字：</span>
+									<ul class="list-group">
+										<li class="list-group-item"><input type="radio" name="displayNodeText" value="1" checked="checked" />显示 <input type="radio"
+											name="displayNodeText" value="0" />不显示</li>
+									</ul>
+								</div>
+								<div class="form-group">
+									<span>显示虚拟叶子节点：大于这个值，则叶子节点都显示为虚拟节点。</span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="ndegslider" name="ndeg" value="1" min="1" max="200" oninput=""><output for="ndegslider" id="ndeglabel">1</output></li>
+									</ul>
+								</div>
+								<div class="form-group">
+									<span>显示虚拟层节点：大于这个值的层节点都不显示。</span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="ndegslider" name="ndeg" value="1" min="1" max="200" oninput=""><output for="ndegslider" id="ndeglabel">1</output></li>
+									</ul>
+								</div>
+								<div class="form-group">
+									<span>显示相关关系节点[1-200]：只显示前N个节点。</span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="adjacentCountSlider" name="adjacentCountSlider" value="1" min="1" max="200" oninput="document.getElementById('adjacentCountLabel').value = this.value"><output for="adjacentCountSlider" id="adjacentCountLabel">1</output></li>
+									</ul>
+								</div>
+								<!--<div class="form-group">
+									<span>显示相关关系节点：只显示前N%的节点。</span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="ndegslider" name="ndeg" value="1" min="1" max="200" oninput=""><output for="ndegslider" id="ndeglabel">1</output></li>
+									</ul>
+								</div>-->
+								<div class="form-group">
+									<span>显示相关关系节点[1-20]：只显示边权重大于M的节点。</span>
+									<ul class="list-group">
+										<li class="list-group-item"> <input type="range"
+											id="adjacentWeightCountSlider" name="adjacentWeightCountSlider" value="1" min="1" max="20" oninput="document.getElementById('adjacentWeightCountLabel').value = this.value"><output for="adjacentWeightCountSlider" id="adjacentWeightCountLabel">1</output></li>
+									</ul>
+								</div>
+								<div style="text-align:right">
+									<button type="button" class="btn btn-xs" onclick="apply()">应用</button>
+								</div>
+>>>>>>> .r58048
+							</div>
+						</div>
+					</nav>
+				</div>
+			</div>
+			<div id="context-menu">
+				<!--<ul class="dropdown-menu" role="menu">
+			<li><a tabindex="-1" href="#" onclick="adjacentGraph()">相似相邻</a></li>
+			<li><a tabindex="-1" href="#" onclick="mdsGraph()">多维尺度分析</a></li>
+			<li><a tabindex="-1" href="#" onclick="changeInstance()">包含所属</a></li>
+		</ul>-->
+			</div>
+			<div id="myModal" class="modal fade">
+				<div class="modal-dialog">
+					<div class="modal-content">
+						<div class="modal-header">
+							<button type="button" class="close" data-dismiss="modal" aria-label="Close">
+								<span aria-hidden="true">&times;</span>
+							</button>
+							<h4 class="modal-title">Modal title</h4>
+						</div>
+						<div class="modal-body">
+							<p>One fine body&hellip;</p>
+						</div>
+						<div class="modal-footer">
+							<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+							<button type="button" class="btn btn-primary">Save changes</button>
+						</div>
+					</div>
+					<!-- /.modal-content -->
+				</div>
+				<!-- /.modal-dialog -->
+			</div>
+		</div>
+	</div>
+
+
+	<!-- /.modal -->
+</body>
+</html>

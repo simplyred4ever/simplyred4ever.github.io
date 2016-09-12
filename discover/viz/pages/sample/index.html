@@ -1,0 +1,283 @@
+<!doctype html>
+<html>
+<head>
+<meta http-equiv="content-type" content="text/html;charset=utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+
+<link rel='stylesheet' href='/discover/viz/css/bootstrap.css' />
+<title>知识发现</title>
+<style>
+html, body {
+	height: 100%;
+	width: 100%
+}
+:-webkit-full-screen body {
+	height: 100%;
+	width: 100%
+}
+
+:-moz-full-screen body {
+	height: 100%;
+	width: 100%
+}
+
+:-ms-full-screen body {
+	height: 100%;
+	width: 100%
+}
+
+:-o-full-screen body {
+	height: 100%;
+	width: 100%
+}
+
+:full-screen body {
+	height: 100%;
+	width: 100%
+}
+
+.dropdown:hover .menu-top {
+	display: block;
+}
+
+.dropdown-submenu {
+	position: relative;
+}
+
+.dropdown-submenu>.dropdown-menu {
+	top: 0;
+	left: 100%;
+	margin-top: -6px;
+	margin-left: -1px;
+	-webkit-border-radius: 0 6px 6px 6px;
+	-moz-border-radius: 0 6px 6px 6px;
+	border-radius: 0 6px 6px 6px;
+}
+
+.dropdown-submenu:hover>.dropdown-menu {
+	display: block;
+}
+
+.dropdown-submenu>a:after {
+	display: block;
+	content: " ";
+	float: right;
+	width: 0;
+	height: 0;
+	border-color: transparent;
+	border-style: solid;
+	border-width: 5px 0 5px 5px;
+	border-left-color: #cccccc;
+	margin-top: 5px;
+	margin-right: -10px;
+}
+
+.dropdown-submenu:hover>a:after {
+	border-left-color: #ffffff;
+}
+
+.dropdown-submenu .pull-left {
+	float: none;
+}
+
+.dropdown-submenu.pull-left>.dropdown-menu {
+	left: -100%;
+	margin-left: 10px;
+	-webkit-border-radius: 6px 0 6px 6px;
+	-moz-border-radius: 6px 0 6px 6px;
+	border-radius: 6px 0 6px 6px;
+}
+</style>
+</head>
+<body style="overflow: hidden;">
+	<nav class="navbar navbar-inverse" role="navigation" style="margin-bottom: 0px">
+		<div class="navbar-header">
+			<a class="navbar-brand" href="#">知识发现</a>
+		</div>
+		<div>
+			<ul class="nav navbar-nav">
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 网络 <b class="caret"></b>
+				</a>
+					<ul class="dropdown-menu">
+						<li><a href="#" onclick="changeFrame('Force1')">本体网络</a></li>
+						<li><a href="#" onclick="changeFrame('Force12')">本体网络2</a></li>
+						<li><a href="#" onclick="changeFrame('ForceCA')">引文网络</a></li>
+						<li><a href="#" onclick="changeFrame('ForceWiki')">Wiki网络</a></li>
+						<li><a href="#">知识库-术语</a></li>
+						<li><a href="#">人立方</a></li>
+						<li><a href="#">智立方</a></li>
+						<li><a href="#">专利网络</a></li>
+					</ul></li>
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 其他 <b class="caret"></b>
+				</a>
+					<ul class="dropdown-menu">
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">层次图</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('Treemap')">矩阵树</a></li>
+								<li><a href="#" onclick="changeFrame('Pack')">聚类图</a></li>
+								<li><a href="#" onclick="changeFrame('Tree')">环状树</a></li>
+								<li><a href="#" onclick="changeFrame('Cluster')">集群图</a></li>
+								<li><a href="#" onclick="changeFrame('Bundling')">捆图</a></li>
+								<li><a href="#" onclick="changeFrame('Chord')">弦图</a></li>
+							</ul></li>
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">散点图</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('Scatter1')">多维尺度分析热点图</a></li>
+								<li><a href="#" onclick="changeFrame('ScatterAxisRescale2')">多维尺度分析热点图2</a></li>
+								<li><a href="#" onclick="changeFrame('Scatter2')">多维矩阵散点图</a></li>
+								<li><a href="#" onclick="changeFrame('ScatterAxisRescale')">重绘坐标散点图</a></li>
+							</ul></li>
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">3D图</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('Vis3D')">曲面</a></li>
+								<li><a href="#" onclick="changeFrame('Vis3D2')">曲线</a></li>
+							</ul></li>
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">力场图</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('ForceTree')">力场树图svg</a></li>
+								<li><a href="#" onclick="changeFrame('ForceVonoroi')">力场细胞图svg</a></li>
+								<li><a href="#" onclick="changeFrame('ForceCola')">力场Cola svg</a></li>
+								<li><a href="#" onclick="changeFrame('ForceMatrix')">Matrix数据</a></li>
+								<li><a href="#" onclick="changeFrame('Force3')">力场图svg(GraphML)</a></li>
+								<li><a href="#" onclick="changeFrame('Force2')">力场图canvas</a></li>
+								<li><a href="#" onclick="changeFrame('Force4')">Vis canvas</a></li>
+								<li><a href="#" onclick="changeFrame('ReactD3')">React-D3标签方式</a></li>
+								<li><a href="/discover/viz/pages/sample/Elegans.html">参考例子Elegans</a></li>
+							</ul></li>
+						<li class="divider"></li>
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">地图</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('ZoomableMap')">D3缩放地图</a></li>
+								<li><a href="#" onclick="changeFrame('WorldMap')">D3&topojson世界地图</a></li>
+								<li><a href="#" onclick="changeFrame('Map1')">D3&topojson等值线地图(滤镜效果)</a></li>
+								<li><a href="#" onclick="changeFrame('ChinaMap')">D3&topojson中国地图</a></li>
+								<li><a href="#" onclick="changeFrame('UsMap')">D3&topojson美国地图</a></li>
+								<li><a href="#" onclick="changeFrame('Polymaps')">Polymaps地图</a></li>
+							</ul></li>
+						<li class="dropdown-submenu"><a tabindex="-1" href="#">其他技术</a>
+							<ul class="dropdown-menu">
+								<li><a href="#" onclick="changeFrame('ReactRouter')">React Router</a></li>
+							</ul></li>
+					</ul></li>
+				<li class="dropdown"><a href="#" class="dropdown-toggle" data-toggle="dropdown"> 控制面板 <b class="caret"></b>
+				</a>
+					<ul class="dropdown-menu">
+						<li><a tabindex="-1" href="#" onclick="toggleFullScreen()">切换全屏</a></li>
+						<li><a href="#" onclick="setUp()">设置</a>
+					</ul></li>
+			</ul>
+		</div>
+	</nav>
+	<iframe id="sample" src="" style="width: 100%; height: 100%; border: 0; overflow: hidden;"></iframe>
+	<iframe id="wiki" src="" style="width: 100%; border: 0; display: none;"></iframe>
+	<script src="/discover/viz/js/jquery.js"></script>
+	<!--[if lt IE 9]>
+	<script>
+	(function(){
+	  var ef = function(){};
+	  window.console = window.console || {log:ef,warn:ef,error:ef,dir:ef};
+	}());
+	</script>
+	<script type="text/javascript" src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+	<script type="text/javascript" src="//cdn.bootcss.com/html5shiv/3.7.2/html5shiv-printshiv.min.js"></script>
+	<script type="text/javascript" src="//cdn.bootcss.com/es5-shim/4.5.9/es5-shim.js"></script>
+	<script type="text/javascript" src="//cdn.bootcss.com/es5-shim/4.5.9/es5-sham.js"></script>
+	<script type="text/javascript" src="//cdn.bootcss.com/respond.js/1.4.2/respond.min.js"></script>
+	<![endif]-->
+	<script src="/discover/viz/js/bootstrap.min.js"></script>
+
+
+	<script>
+		var pageCtx = "/discover/viz/pages/sample/";
+		var menu = {
+			UploadFile : "UploadFile.html",
+			Treemap : "Treemap.html",
+			Pack : "ZoomableCirclePacking.html",
+			Tree : "RadialReingold-TilfordTree.html",
+			Cluster : "ClusterDendrogram.html",
+			Scatter1 : "mds.html",
+			Scatter2 : "ScatterplotMatrixBrushing.html",
+			Scatter3 : "ScatterHeatmap.html",
+			ScatterAxisRescale2 : "mds2.html",
+			ScatterAxisRescale : "http://bl.ocks.org/stepheneb/1182434",
+			ZoomableMap : "ZoomableMapTiles.html",
+			WorldMap : "WorldMap.html",
+			Map1 : "Choropleth.html",
+			ChinaMap : "ChinaMap.html",
+			UsMap : "UsMap.html",
+			Polymaps : "Polymaps-BlueMarble.html",
+			Force1 : "network.html",
+			Force12 : "network2.html",
+			ForceCA : "cite.html",
+			ForceWiki : "wiki.html",
+			Force2 : "Force-DirectedGraphwithGraphMLcanvas.html",
+			Force3 : "Force-DirectedGraphwithGraphML.html",
+			Force4 : "Vis.html",
+			ForceTree : "Force-DirectedGraphTree.html",
+			ForceVonoroi : "Force-DirectedGraphVonoroi.html",
+			ForceCola : "Force-DirectedGraphCola.html",
+			ForceMatrix : "MatrixCollection.html",
+			Bundling : "HierarchicalEdgeBundling.html",
+			Bundling2 : "Bundle.html",
+			Vis3D : "Vis3D.html",
+			Vis3D2 : "Vis3D2.html",
+			Chord : "Chord.html",
+			SetUp : "setup.html",
+			ReactD3 : "ReactD3.html",
+			ReactRouter : "ReactRouter.html",
+		}
+		function changeFrame(str,sTitle) {
+			var s = menu[str];
+			if (s) {
+				$("#sample")[0].src = s.match(/^http/) ? s : pageCtx + s;
+				$("#sample").css('height', "100%");
+				var sTitleNew = window.event?$(window.event.target).text() : sTitle;
+				$(".navbar-brand").text(sTitleNew);
+				document.title = sTitleNew;
+			}
+		}
+		var isFullScreen = false;
+		//全屏切换
+		function toggleFullScreen() {
+			if (isFullScreen) {
+				exitFullscreen()
+			} else {
+				requestFullScreen()
+			}
+			isFullScreen = !isFullScreen;
+		}
+
+		//进入全屏
+		function requestFullScreen() {
+			var de = document.documentElement;
+			if (de.requestFullscreen) {
+				de.requestFullscreen();
+			} else if (de.mozRequestFullScreen) {
+				de.mozRequestFullScreen();
+			} else if (de.webkitRequestFullScreen) {
+				de.webkitRequestFullScreen();
+			}
+		}
+		//退出全屏
+		function exitFullscreen() {
+			var de = document;
+			if (de.exitFullscreen) {
+				de.exitFullscreen();
+			} else if (de.mozCancelFullScreen) {
+				de.mozCancelFullScreen();
+			} else if (de.webkitCancelFullScreen) {
+				de.webkitCancelFullScreen();
+			}
+		}
+		function setUp (){
+			changeFrame("SetUp");
+		}
+		$(document).ready(function(){
+			$('#sample').width($(window).width()).height($(window).height() - 50);
+		});
+	</script>
+</body>
+</html>

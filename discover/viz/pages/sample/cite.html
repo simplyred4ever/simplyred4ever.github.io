@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/jquery-ui.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/d3.css">
+<style>
+.node {
+	stroke: white;
+}
+
+.node-active {
+	stroke: black;
+	stroke-dasharray: 4 2;
+}
+
+.link {
+	stroke: #0A0;
+	/*stroke-width: 2;*/
+	stroke-opacity: 1;
+}
+
+.link-active {
+	stroke: red;
+	/*stroke-width: 2;*/
+	stroke-opacity: 1;
+}
+
+.node-label {
+	fill: gray;
+	font-family: 微软雅黑;
+	pointer-events: none;
+}
+
+.node-label-child {
+	opacity: 1;
+}
+
+.node-label-active {
+	opacity: 1;
+}
+
+.prop-ul {
+	overflow: auto;
+	max-height: 176px;
+}
+
+.prop-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 220px;
+	overflow: hidden;
+}
+
+.prop-long-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 270px;
+	overflow: hidden;
+	cursor: pointer;
+	margin:2px;
+}
+
+.prop-long-value:hover {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 270px;
+	overflow: hidden;
+	cursor: pointer;
+	opacity: 0.8;
+	margin:2px;
+}
+
+.node-number {
+	font-family: 微软雅黑;
+	pointer-events: none;
+	text-anchor: middle;
+}
+
+.fl {
+	-webkit-box-shadow: 2px 2px 2px #888;
+	-moz-box-shadow: 2px 2px 2px #888;
+	box-shadow: 2px 2px 2px #888;
+	float: left;
+	display: block;
+}
+</style>
+<script data-main="/discover/viz/js/app/citeMain" src="/discover/viz/js/require.js"></script>
+</head>
+<body>
+	<div style="text-align: center; margin-top: 2px; margin-bottom: 2px">
+		<input type="text" id="rootNode" size="60" />
+		<button onclick="searchNode()" class="btn-xs">搜索</button>
+		<button onclick="fullGraph()" class="btn-xs">
+			引文关系图谱 <span class="glyphicon glyphicon-question-sign" rel="popover" title="文献引文关系图谱" data-toggle="popover"
+				data-content="1.节点的颜色与文献发表的年份相对应。<br/>2.节点间有连线，箭头方向表示施引关系，反之是被引用关系。<br/>3.如果文献不存在任何施引或被引用关系，则表示为孤立点。<br/>4.激活节点用蓝色外圈表示，其参考文献用绿色外圈表示，引证文献用橙色外圈表示。<br/>5.节点入度代表节点被引用次数，节点出度代表引用参考文献次数。" />
+		</button>
+		<button onclick="ccGraph(0)" class="btn-xs">
+			共被引关系图谱 <span class="glyphicon glyphicon-question-sign" rel="popover" title="文献共被引关系图谱" data-toggle="popover"
+				data-content="1.节点的颜色与文献发表的年份相对应。<br/>2.线的颜色与文献首次被共引的年份相对应。<br/>3.节点间有连线，表示该节点对应的文献在其他文献中被共同引用。<br/>4.如果文献不存在任何被共引关系，则表示为孤立点。<br/>5.节点越大，表示该文献被引次数越多。连线越粗，表示被共引的次数越多。" />
+		</button>
+		<button onclick="ccGraph(1)" class="btn-xs">
+			共引关系图谱 <span class="glyphicon glyphicon-question-sign" rel="popover" title="文献共引关系图谱" data-toggle="popover"
+				data-content="1.节点的颜色与文献发表的年份相对应。<br/>2.线的颜色与文献首次被共引的年份相对应。<br/>3.节点间有连线，表示该节点对应的文献存在共引关系。<br/>4.如果文献不存在任何共引关系，则表示为孤立点。<br/>5.节点越大，表示该文献施引次数越多。连线越粗，表示文献（>=2）共引的其他文献的次数越多。" />
+		</button>
+
+	</div>
+	<div id="container" style="border: black solid 1px"></div>
+	<div class="uiwidget uiwidget-right" id="right-widget">
+		<nav class="formpanel" style="width:320px;height: 1000px;margin-top:6px;">
+			<ul id="myTab" class="nav nav-tabs" role="tablist">
+				<li role="presentation" class="active"><a href="#propTab" aria-controls="propTab" role="tab" data-toggle="tab">属性</a></li>
+				<li role="presentation"><a href="#pathTab" aria-controls="pathTab" role="tab" data-toggle="tab">寻径</a></li>
+				<li role="presentation"><a href="#clusterTab" aria-controls="clusterTab" role="tab" data-toggle="tab">聚类</a></li>
+				<li role="presentation"><a href="#mdsTab" aria-controls="mdsTab" role="tab" data-toggle="tab">MDS</a></li>
+				<li role="presentation"><a href="#setting" aria-controls="setting" role="tab" data-toggle="tab">设置</a></li>
+			</ul>
+			<div id="myTabContent" class="tab-content" style="padding-top:10px;">
+				<div role="tabpanel" class="tab-pane fade in active" id="propTab">
+					<PropBox />
+				</div>
+				<div role="tabpanel" class="tab-pane fade" id="pathTab">
+					<!--<input type="text" id="fromNode" value=""></input>
+					<input type="hidden" id="fromId" value=""></input>
+					<input type="text" id="toNode" value=""></input>
+					<input type="hidden" id="toId" value=""></input>
+					<button onclick="shortPath('dijkstra')">dijkstra最短路径</button>
+					<button onclick="alert('暂未实现！')//shortPath('minimumSpanning')">最小生成树</button>
+					<button onclick="alert('暂未实现！')//shortPath('bfs')">bfs遍历</button>-->
+				</div>
+				<div role="tabpanel" class="tab-pane fade" id="clusterTab">
+					<!--<div class="btn-group-vertical btn-group-xs" role="group" aria-label="Vertical button group">
+				      <button type="button" class="btn btn-default" onclick="cluster('kmean')">k-mean聚类图</button>
+				      <button type="button" class="btn btn-default" onclick="cluster('weakComponent')">弱连接</button>
+				      <button type="button" class="btn btn-default" onclick="cluster('bicomponent')">双连通分量</button>
+				      <button type="button" class="btn btn-default" onclick="cluster('edgeBetweenness')">聚类边介数</button>
+				      <button type="button" class="btn btn-default" onclick="cluster('community')">社区发现</button>
+				    </div>-->
+				</div>
+				<div role="tabpanel" class="tab-pane fade" id="mdsTab"></div>
+				<div role="tabpanel" class="tab-pane fade" id="setting">
+					<div class="form-group" id="ndeg">
+						<span for="ndegslider">度数 [1-200]: </span>
+						<output for="ndegslider" id="ndeglabel">1</output>
+						<input type="range" id="ndegslider" name="ndeg" value="1" min="1" max="200" oninput="filterNDeg(this.value)">
+					</div>
+					<div class="form-group" id="nyear">
+						<span for="nyearslider">时间 [1970-2015]: </span>
+						<output for="nyearslider" id="nyearlabel">1970</output>
+						<input type="range" id="nyearslider" name="nyear" value="1970" min="1970" max="2015"
+							oninput="filterNYear(this.value)">
+					</div>
+				</div>
+			</div>
+		</nav>
+	</div>
+	<div id="context-menu"></div>
+</body>
+</html>

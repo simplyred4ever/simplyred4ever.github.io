@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="../../javascripts/avalon-2.1.5.js"></script>
+        <script >
+            var vm = avalon.define({
+                $id: "test",
+                title:111,
+                src: "222",
+                lang: 333
+            })
+
+        </script>
+    </head>
+    <body ms-controller="test" >
+          <div  aaa='ddd' bbb=333 
+                ms-attr='{title: @title,
+                    ddd:@src, 
+                    lang:@lang}' >{{
+                   @src ? 333: 'empty'
+              }}</div>
+          <input ms-duplex="@src"/>
+    </body>
+</html>

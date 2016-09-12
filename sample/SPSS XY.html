@@ -1,0 +1,163 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>testD3-9-drawScatterLot.html</title>
+<script src="D3files/d3.v3.js"></script>
+<script src="D3files/json2.js"></script>
+<style>
+
+svg {
+  font: 10px sans-serif;
+  padding: 10px;
+}
+
+.axis,
+.frame {
+  shape-rendering: crispEdges;
+}
+
+.axis line {
+  //stroke: #ddd;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.axis path {
+  display: none;
+}
+
+.frame {
+  fill: none;
+  stroke: #000;
+}
+
+circle {
+  fill-opacity: .0;
+  stroke-width:1;
+  stroke:#000;
+}
+
+circle.hidden {
+  fill: #ccc !important;
+}
+
+.extent {
+  fill: #000;
+  fill-opacity: .125;
+  stroke: #fff;
+}
+
+</style>
+</head>
+<body>
+<script type="text/javascript">
+//Width and height
+var w = 600;
+var h = 600;
+//var dataset = [ [5, 20], [48.0, -90], [-250, 50], [100, 33], [-33.0, -95], [41.0, 12], [47.5, 44], [25, 67], [85, 21], [-220, 88] ];
+
+d3.csv("D3files/SPSS3.csv", function(error, dataset) {
+// 最大坐标
+var axisSize = Math.max(d3.max(dataset, function(d) { return d.X; }) , Math.abs(d3.min(dataset, function(d) { return d.X; })), 
+d3.max(dataset, function(d) { return d.Y; }) , Math.abs(d3.min(dataset, function(d) { return d.Y; })))*1.1;
+var z = axisSize * 2  / w;
+var x = d3.scale.linear()
+	.range([-w/2, w/2]);
+
+var y = d3.scale.linear()
+	.range([-h/2, h/2]);
+	
+var xAxis = d3.svg.axis()
+	.scale(x)
+	.orient("bottom")
+	.ticks(5)
+	.tickSize(10, 10);
+var yAxis = d3.svg.axis()
+	.scale(y)
+	.orient("left")
+	.ticks(5)
+	.tickSize(10, 10);
+//Create SVG element
+var svg = d3.select("body")
+	.append("svg")
+	.attr("viewBox", function(){return "-30 -30 " + (w + 200) + " " + (h + 200)})
+	.attr("width", w)
+	.attr("height", h);
+
+svg.selectAll("circle")
+	.data(dataset)
+	.enter()
+	.append("circle")
+	.attr("cx", function(d) { return w/2+1*d.X/z; })
+	.attr("cy", function(d) { return h/2-d.Y/z; })
+	.attr("r", function(d) { return 2; });
+
+svg.selectAll("text")
+	.data(dataset)
+	.enter()
+	.append("text")
+	.text(function(d) { return d.Name /*d.Name+'('+d.X+','+d.Y+')'*/; })
+	.attr("x", function(d) { return w/2+1*d.X/z; })
+	.attr("y", function(d) { return h/2-d.Y/z; })
+	.attr("font-family", "sans-serif")
+	.attr("font-size", "6px")
+	.attr("fill", "red")
+	.attr("fill-opacity", "0.7")
+	.attr("transform", function(d, i) { return "translate(8 8)"; });
+
+	//.attr("transform", function(d, i) { return "translate(" + (Math.random()-0.5)*16 + " " + (Math.random()-0.5)*16+ ")"; });
+	
+svg.selectAll(".x.axis")
+      .data(["X"])
+      .enter().append("g")
+      .attr("class", "x axis")
+      .attr("transform", function(d, i) { return "translate("+w/2+","+(h-5)+")"; })
+      .each(function(d) { x.domain([-axisSize,axisSize]); d3.select(this).call(xAxis); });
+
+ svg.selectAll(".y.axis")
+      .data(["Y"])
+      .enter().append("g")
+      .attr("class", "y axis")
+      .attr("transform", function(d, i) { return "translate("+5+","+h/2+")"; })
+      .each(function(d) { y.domain([axisSize,-axisSize]); d3.select(this).call(yAxis); });
+
+    /*x.domain(["X"]);
+    y.domain(["Y"]);*/
+var cell = svg.selectAll(".cell")
+      .data(cross(["X"], ["Y"]))
+    .enter()
+	.append("g")
+      .attr("class", "cell")
+ /*     .attr("transform", function(d) { return "translate(" + (-d.i ) * w + "," + d.j * w + ")"; });*/
+      cell.append("rect")
+        .attr("class", "frame")
+        .attr("x", 0)
+        .attr("y", 0)
+        .attr("width", w)
+        .attr("height", h);
+	cell.append("line")
+        .attr("class", "frame")
+        .attr("x1", w/2)
+        .attr("y1", 0)
+        .attr("x2", w/2)
+        .attr("y2", h);
+	cell.append("line")
+        .attr("class", "frame")
+        .attr("x1", 0)
+        .attr("y1", h/2)
+        .attr("x2", w)
+        .attr("y2", h/2);
+		
+});
+function cross(a, b) {
+    var c = [], n = a.length, m = b.length, i, j;
+    for (i = -1; ++i < n;) for (j = -1; ++j < m;) c.push({x: a[i], i: i, y: b[j], j: j});
+    return c;
+}
+
+
+
+</script>
+</body>
+</html>

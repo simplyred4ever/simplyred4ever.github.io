@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+
+<style>
+svg {
+	font: 10px sans-serif;
+	padding: 10px;
+}
+
+.axis,.frame {
+	shape-rendering: crispEdges;
+}
+
+.axis line { //
+	stroke: #ddd;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis path {
+	display: none;
+}
+
+.frame {
+	fill: none;
+	stroke: #000;
+}
+
+circle {
+	fill-opacity: .0;
+	stroke-width: 1;
+	stroke: #000;
+}
+
+circle.hidden {
+	fill: #ccc !important;
+}
+
+.extent {
+	fill: #000;
+	fill-opacity: .125;
+	stroke: #fff;
+}
+</style>
+</head>
+<body>
+	<div id="heatmapContainer" style="position:absolute;left:25px;top:25px;height:600px;width:600px;border:0px solid red"></div>
+	<div id="scatterContainer" style="position:absolute;left:0;top:0;height:600px;width:600px;border:0px solid blue"></div>
+	<script src="/discover/viz/js/d3.v3.js"></script>
+	<script src="/discover/viz/js/json2.js"></script>
+	<script src="/discover/viz/js/heatmap.min.js"></script>
+	<script type="text/javascript">
+		//Width and height
+		var w = 500;
+		var h = 500;
+		//var dataset = [ [5, 20], [48.0, -90], [-250, 50], [100, 33], [-33.0, -95], [41.0, 12], [47.5, 44], [25, 67], [85, 21], [-220, 88] ];
+
+		d3.csv("/discover/data/SPSS3.csv", function(error, dataset) {
+			// 最大坐标
+			var axisSize = Math.max(d3.max(dataset, function(d) {
+				return d.X;
+			}), Math.abs(d3.min(dataset, function(d) {
+				return d.X;
+			})), d3.max(dataset, function(d) {
+				return d.Y;
+			}), Math.abs(d3.min(dataset, function(d) {
+				return d.Y;
+			}))) * 1.1;
+			var z = axisSize * 2 / w;
+			
+			var points = [];
+			for ( var n in dataset) {
+				points.push({
+					x : w / 2 + 1 * dataset[n].X / z,
+					y : h / 2 - dataset[n].Y / z,
+					value : 0.5,
+					radius : 20
+				});
+			}
+
+			// minimal heatmap instance configuration
+			var heatmapInstance = h337.create({
+				// only container is required, the rest will be defaults
+				container : document.getElementById('heatmapContainer'),
+				//backgroundColor : 'white',
+				// custom gradient colors
+				gradient : {
+					// enter n keys between 0 and 1 here
+					// for gradient color customization
+					'.3' : 'blue',
+					'.5' : 'lime',
+					'.6' : 'yellow',
+					'.75' : 'orange',
+					'.95' : 'red'
+				},
+				// the maximum opacity (the value with the highest intensity will have it)
+				maxOpacity : .9,
+				// minimum opacity. any value > 0 will produce 
+				// no transparent gradient transition
+				minOpacity : .3
+			});
+			heatmapInstance.setData({
+				max : 1,
+				data : points
+			});
+
+			var x = d3.scale.linear().range([-w / 2, w / 2]);
+
+			var y = d3.scale.linear().range([-h / 2, h / 2]);
+
+			var xAxis = d3.svg.axis().scale(x).orient("bottom").ticks(5).tickSize(10, 10);
+			var yAxis = d3.svg.axis().scale(y).orient("left").ticks(5).tickSize(10, 10);
+			//Create SVG element
+			var svg = d3.select("#scatterContainer").append("svg").attr("viewBox", "-24 -24 " + (w + 50)+ " " + (h + 50)).attr("width", w+50).attr("height", h+50).append("g");
+
+			svg.selectAll("circle").data(dataset).enter().append("circle").attr("cx", function(d) {
+				return w / 2 + 1 * d.X / z;
+			}).attr("cy", function(d) {
+				return h / 2 - d.Y / z;
+			}).attr("r", function(d) {
+				return 2;
+			});
+
+			svg.selectAll("text").data(dataset).enter().append("text").text(function(d) {
+				return d.Name;
+			}).attr("x", function(d) {
+				return w / 2 + 1 * d.X / z;
+			}).attr("y", function(d) {
+				return h / 2 - d.Y / z;
+			}).attr("font-family", "sans-serif").attr("font-size", "6px").attr("fill", "black").attr("fill-opacity", "0.7").attr("transform", function(d, i) {
+				return "translate(8 8)";
+			});
+
+			svg.selectAll(".x.axis").data(["X"]).enter().append("g").attr("class", "x axis").attr("transform", function(d, i) {
+				return "translate(" + w / 2 + "," + (h - 5) + ")";
+			}).each(function(d) {
+				x.domain([-axisSize, axisSize]);
+				d3.select(this).call(xAxis);
+			});
+
+			svg.selectAll(".y.axis").data(["Y"]).enter().append("g").attr("class", "y axis").attr("transform", function(d, i) {
+				return "translate(" + 5 + "," + h / 2 + ")";
+			}).each(function(d) {
+				y.domain([axisSize, -axisSize]);
+				d3.select(this).call(yAxis);
+			});
+
+			var cell = svg.selectAll(".cell").data(cross(["X"], ["Y"])).enter().append("g").attr("class", "cell")
+			cell.append("rect").attr("class", "frame").attr("x", 0).attr("y", 0).attr("width", w).attr("height", h);
+			cell.append("line").attr("class", "frame").attr("x1", w / 2).attr("y1", 0).attr("x2", w / 2).attr("y2", h);
+			cell.append("line").attr("class", "frame").attr("x1", 0).attr("y1", h / 2).attr("x2", w).attr("y2", h / 2);
+
+		});
+		function cross(a, b) {
+			var c = [], n = a.length, m = b.length, i, j;
+			for (i = -1; ++i < n;)
+				for (j = -1; ++j < m;)
+					c.push({
+						x : a[i],
+						i : i,
+						y : b[j],
+						j : j
+					});
+			return c;
+		}
+	</script>
+</body>
+</html>

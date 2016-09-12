@@ -1,0 +1,271 @@
+﻿<?xml version="1.0" encoding="utf-8" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 1.1//EN" "http://www.w3.org/Graphics/SVG/1.1/DTD/svg11-flat-20030114.dtd">
+<!-- Created by SVGDeveloper 1.0 -->
+<svg width="100%" height="100%" version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink"
+zoomAndPan="disable">
+	<defs>
+		<style type="text/css">
+		<![CDATA[
+/*内嵌样式方便导出svg*/
+* {
+    shape-rendering: optimizeQuality;
+    color-rendering: optimizeQuality;
+	text-rendering: optimizeLegibility;
+	cursor: default;
+}
+
+.node {
+    shape-rendering: crispEdges;
+	stroke: black;
+	stroke-width: 1;
+	fill: #D8D8D8;
+	/*filter: url(#blackShadow);*/
+	cursor: pointer;
+}
+
+.current.node {
+	stroke: #FFC000;
+	fill: #FFC000;
+}
+
+.entry {
+    shape-rendering: crispEdges;
+	stroke: black;
+	stroke-width: 1;
+	fill: white;
+	cursor: pointer;
+}
+
+.current.entry {
+	stroke: #FFC000;
+}
+
+.text {
+	font-family: simsun;
+	pointer-events: none;
+	font-size: 14px;
+	text-anchor: left;
+	fill: black;
+	/*-moz-user-select:   none;*/
+}
+
+.toolbar {
+	stroke-width: 1;
+	stroke: gray;
+	fill: white;
+	pointer-events: all;
+}
+
+.toolbarBg {
+	fill:white;
+}
+
+.toolbarBg.select {
+	fill: #FFC600;
+}
+
+.line {
+	stroke-width: 2;
+	fill: none;
+	stroke-linecap: square;
+	cursor: pointer;
+}
+
+.markerArrow {
+	fill: green;
+}
+
+.aerialViewBg {
+    fill: #DCDCDC;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.aerialViewFg {
+    fill: white;
+    stroke: #908F8F;
+    stroke-width: 1;
+    shape-rendering: crispEdges;
+}
+.redBox {
+    fill: none;
+    stroke: red;
+}
+
+.defTitle{
+	fill: #cccccc;
+}
+
+.defBorder{
+	stroke: black;
+	shape-rendering: crispEdges;
+}
+.unFill {
+	fill:white;
+}
+
+.targetTitle{
+	fill: #ffcc00;
+}
+.targetBorder{
+	stroke: #ffcc00;
+	shape-rendering: crispEdges;
+}
+.aColor {
+	fill:#0000ff;
+	stroke-width: 1;
+	font-size: 14px;
+	text-decoration: underline;
+	cursor: pointer;
+	pointer-events: all;
+}
+
+.typeCla{
+	fill : none;
+	stroke:#000;
+	stroke-width: 1;
+}
+
+.typeFill{
+	fill : #fff;
+	stroke : #ccc;
+	shape-rendering: crispEdges;
+}
+	]]>
+	</style>
+	</defs>
+	<defs id="lineNeed">
+<!--		<marker id="arrow_green" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="3" markerHeight="5" orient="auto">
+			<path d="M 0 0 L 10 5 L 0 10 z" fill="#447632" stroke="#447632"/>
+		</marker>
+
+		<marker id="arrow_red" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="3" markerHeight="5" orient="auto">
+			<path d="M 0 0 L 10 5 L 0 10 z" fill="red" stroke="red"/>
+		</marker>
+
+		<marker id="arrow_blue" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="3" markerHeight="5" orient="auto">
+			<path d="M 0 0 L 10 5 L 0 10 z" fill="blue" stroke="blue"/>
+		</marker>
+
+		<marker id="arrow_yellow" viewBox="0 0 10 10" refX="10" refY="5" markerUnits="strokeWidth" markerWidth="3" markerHeight="5" orient="auto">
+			<path d="M 0 0 L 10 5 L 0 10 z" fill="yellow" stroke="yellow"/>
+		</marker>
+-->
+		<defs id="nodeNeed">
+			<image id="documentIcon" width="16" height="16" xlink:href="../images/doc.gif"/>
+			<image id="docReqIcon" width="16" height="16" xlink:href="../images/docReqItem.gif"/>
+			<image id="chaperIcon" width="16" height="16" xlink:href="../images/chaper.gif"/>
+		</defs>
+	</defs>
+
+	<rect id="bg" x="0" y="0" width="2000" height="1000" style="fill:white;stroke:gray;shape-rendering: crispEdges;"/>
+	<svg id="main" x="0" y="0">
+		<g id="lineWorkspace"/>
+		<g id="workspace"/>
+	</svg>
+
+	<menu id="myMenuRemove">
+		<header>Custom Menu</header>
+		<item onactivate="">删除</item>
+	</menu>
+
+	<menu id="menuNone">
+	</menu>
+	<g id="toolTip" display="none">
+		<rect id="tipRect" x="0" y="0" width="100" height="18" fill-opacity="30" fill="#ffffcc" stroke="rgb(9,0,130)" stroke-width="0.5" style="shape-rendering:optimizeSpeed" pointer-events="none"/>
+		<text id="tipText" x="0" y="0" dy="2.5" pointer-events="none" stroke="#515151" style="text-anchor:start;font-size:16px">TipText</text>
+	</g>
+	<g id="corrTypeWorkspace">
+
+	</g>
+	<script type="text/javascript" xlink:href="../js/util.js"></script>
+	<script type="text/javascript" xlink:href="../js/svg.js"></script>
+	<script type="text/javascript" xlink:href="../js/toolTip.js"></script>
+	<script type="text/javascript" xlink:href="../js/dataTree.js"></script>
+	<script type="text/javascript" xlink:href="../js/corrType.js"></script>
+	<script type="text/javascript" xlink:href="../js/aerialView.js"></script>
+
+	<script type="text/javascript"><![CDATA[
+
+function init(useAerialView) {
+
+	toolTip = new ToolTip();
+
+	document.documentElement.addEventListener('mousedown', function (evt) {
+		evt.preventDefault();
+		var target = evt.target;
+		var id = target.id;
+		if (evt.button === 0) {
+			if (target.parentNode.id === 'type_g') {
+				window.dragTarget = new CorrType.DragCorrType(evt);
+			} else if (id === 'aerialViewRedBox') {
+				//缩略图中的视口拖动
+				window.dragTarget = new AerialView.DragMiniViewBox(evt);
+			} else if (id === 'bg') {
+				// 面板拖动
+				window.dragTarget = new AerialView.DragMainPanel(evt);
+			}
+		} else if (evt.button === 2) {
+			if (window.getSVGViewerVersion) {
+				fireMenu('menuNone');
+			}
+		}
+
+	}, false);
+
+	document.documentElement.addEventListener('mousemove', function (evt) {
+		if (window.dragTarget) {
+			window.dragTarget.drag(evt);
+		}
+	}, false);
+
+	document.documentElement.addEventListener('mouseup', function (evt) {
+		if (window.dragTarget) {
+			window.dragTarget.drop(evt);
+		}
+	}, false);
+
+
+	document.documentElement.addEventListener('mouseover', function (evt) {
+		toolTip.show(evt);
+	}, false);
+
+	document.documentElement.addEventListener('mouseout', function (evt) {
+		toolTip.hide(evt);
+	}, false);
+
+
+	if (!window.getSVGViewerVersion) {
+		document.documentElement.addEventListener('selectstart', $$.stop, false);
+		document.documentElement.addEventListener('contextmenu', $$.stop, false);
+	}
+	var dataJson = parent.dataJson;
+	var typeJson = parent.typeJson;
+	var colorJson = parent.colorJson;
+	corrType = new CorrType(typeJson, colorJson);
+	dataTree = new DataTree();
+	dataTree.init(dataJson[0]);
+	var width=window.innerWidth,height=window.innerHeight;
+	var main = $$.$('main');
+	if(main.getBBox().width > width){
+		width = main.getBBox().width;
+	}
+	if(main.getBBox().height > height){
+		height = main.getBBox().height;
+	}
+	// 鸟瞰图
+	aerialView = new AerialView('aerialView', main, [$$.$('lineWorkspace'), $$.$('workspace')], Math.max(width, height), 0, 0);
+	if (!useAerialView) {
+		aerialView.close();
+	}
+	corrType.group.self.parentNode.appendChild(corrType.group.self);
+}
+function fireMenu(menuId) {
+	if (window.getSVGViewerVersion) {
+		var newMenuRoot = parseXML(printNode($$.$(menuId)), contextMenu);
+		contextMenu.replaceChild(newMenuRoot.firstChild, contextMenu.firstChild);
+	}
+}
+		]]>
+	</script>
+</svg>

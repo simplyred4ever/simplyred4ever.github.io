@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/jquery-ui.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/d3.css">
+<style>
+.node {
+	stroke: white;
+	stroke-width: 2px;
+}
+
+.node-active {
+	stroke: orange;
+}
+
+.link {
+	stroke: #999;
+	stroke-width: 1px;
+	stroke-opacity: .6;
+	marker-end: url(#end-arrow);
+}
+
+.link-active {
+	stroke: red;
+	stroke-width: 2px;
+	stroke-opacity: 1;
+	marker-end: url(#end-arrow-red);
+}
+
+.node-label {
+	fill: gray;
+	font-family: 微软雅黑;
+	display: none;
+	pointer-events: none;
+}
+
+.node-label-child {
+	display: block;
+}
+
+.node-label-active {
+	display: block;
+}
+
+.prop-value {
+	text-overflow: ellipsis;
+	white-space: nowrap; overflow : hidden;
+	max-width: 80px;
+	overflow: hidden;
+}
+</style>
+</head>
+<body>
+	<input type="text" id="fromNode" value=""></input>
+	<input type="hidden" id="fromId" value=""></input>
+	<input type="text" id="toNode" value=""></input>
+	<input type="hidden" id="toId" value=""></input>
+	<button onclick="shortPath('dijkstra')">dijkstra最短路径</button>
+	<button onclick="alert('暂未实现！')//shortPath('minimumSpanning')">minimumSpanning</button>
+	<button onclick="alert('暂未实现！')//shortPath('bfs')">bfs遍历</button>
+	<input type="text" id="rootNode">
+	<button onclick="childGraph()">导航</button>
+	<button onclick="fullGraph()">返回主图</button>
+	<button onclick="cluster('kmean')">k-mean聚类图</button>
+	<button onclick="cluster('weakComponent')">弱连接</button>
+	<button onclick="cluster('bicomponent')">双连通分量</button>
+	<button onclick="cluster('edgeBetweenness')">聚类边介数</button>
+
+	<div id="container" style="border: black solid 1px"></div>
+	<div class="uiwidget uiwidget-right" id="right-widget">
+		<!--<div class="uihandle uihandle-right" id="righthandle">
+			<a href="#"> <span class='glyphicon glyphicon-chevron-left'></span> <span class="handlelabel"> Info</span>
+			</a>
+		</div>-->
+		<div class="formpanel">
+			<h3>
+				<span id="node-heading">节点属性</span> <small><a href="#nodepanel" data-toggle="collapse" aria-expanded="true"
+					aria-controls="nodepanel"> <span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="nodepanel" class="panel-collapse collapse in">
+				<span id="nodeinfo">点击节点...</span>
+			</div>
+		</div>
+		<div class="formpanel">
+			<h3>
+				<span id="op-heading">全局设定</span> <small><a href="#oppanel" data-toggle="collapse" aria-expanded="true"
+					aria-controls="oppanel"> <span class='glyphicon glyphicon-resize-small pull-right'></span>
+				</a></small>
+			</h3>
+			<div id="oppanel" class="panel-collapse collapse in">
+				<span id="opinfo">
+					<ul class="list-group">
+						<li class="list-group-item"><p class="badge stats-item prop-value">6</p>节点半径</li>
+						<li class="list-group-item"><p class="badge stats-item prop-value">10</p>节点字号</li>
+						<li class="list-group-item"><p class="badge stats-item prop-value">1</p>连线宽度</li>
+						<li class="list-group-item"><p class="badge stats-item prop-value">显示</p>连线箭头</li>
+					</ul>
+				</span>
+			</div>
+		</div>
+	</div>
+	<div id="context-menu">
+		<ul class="dropdown-menu" role="menu">
+			<li><a tabindex="-1" href="#" onclick="childGraph()">导航</a></li>
+		</ul>
+	</div>
+	<script type='text/javascript' src="/discover/viz/js/jquery.js"></script>
+	<script type='text/javascript' src="/discover/viz/js/jquery-ui.min.js"></script>
+	<script type="text/javascript" src=/discover/viz/js/bootstrap.min.js></script>
+	<script type="text/javascript" src=/discover/viz/js/bootstrap-contextmenu.js></script>
+	<script type="text/javascript" src=/discover/viz/js/d3.v3.js></script>
+	<script type="text/javascript" src=/discover/viz/js/crossfilter.min.js></script>
+	<script type="text/javascript" src=/discover/viz/js/cola.v3.min.js></script>
+
+	<script>
+		//-----------------------右键菜单栏
+		
+		var myMenu = $('#container').contextmenu({
+			target: '#context-menu',
+			before: function (e, element, target) {
+			    e.preventDefault();
+			    if (e.target.nodeName != 'circle') {
+			        e.preventDefault();
+			        this.closemenu();
+			        return false;
+			    }
+			    clkNode(e);
+			    return true;
+			}
+		});
+	
+		//------------------------绘图
+		var currentMode;
+		var mode = {
+			all : {
+				width : 1000,
+				height : 1000,
+				labelVisibility : false,
+				nodeRadius : 6,
+				coreId : null,
+				charge : -25,
+				linkDistance : 25
+			},
+			child : {
+				width : 800,
+				height : 800,
+				labelVisibility : false,
+				nodeRadius : 10,
+				coreId : null,
+				charge : -60,
+				linkDistance : 80
+			}
+		}
+		var color = d3.scale.category20();
+		var svg, force, node, link, text, linked;
+
+		fullGraph();
+
+		// 主图
+		function fullGraph() {
+			currentMode = mode.all;
+			d3.select('#container>svg').remove();
+			d3.json('/discover/rest/networkTemp/getData.discover', drawGraph);
+		}
+
+		// 绘图
+		function drawGraph(error, graph) {
+			if (!graph) {
+				alert('没有数据！');
+			}
+
+			svg = d3.select('#container')
+			.append('svg')
+			.attr('width', currentMode.width).attr('height', currentMode.height)
+			.attr('viewBox', '0 0 ' + currentMode.width + ' ' + currentMode.height)
+	        .attr('preserveAspectRatio', 'xMidYMid meet')
+	        /*.attr('onclick', 'clkNode(evt)')*/
+	        .on('click', function() {
+		        toggleSelected(highlightId, false);
+		        connectedNodes(null);
+		        highlightId = -1;
+		        removeNodeInfo();
+		        d3.event.stopPropagation();
+		        try{
+		        	myMenu.closemenu();
+		        }catch(ex){	
+		        }
+		    }).call(d3.behavior.zoom().scaleExtent([0.25, 4]).on('zoom', function zoom() {
+					svg.attr('transform', 'translate(' + d3.event.translate + ')scale(' + d3.event.scale + ')');
+			})).append('g')
+			.attr('style', 'cursor:move');
+			
+			d3.select('#container>svg')
+			.append('defs')
+			.append('marker')
+            .attr('id', 'end-arrow')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 6)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+			.append('path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', '#999')
+            .attr('opacity', .6);
+			
+			d3.select('#container>svg>defs')
+			.append('marker')
+            .attr('id', 'end-arrow-red')
+            .attr('viewBox', '0 -5 10 10')
+            .attr('refX', 6)
+            .attr('markerWidth', 3)
+            .attr('markerHeight', 3)
+            .attr('orient', 'auto')
+			.append('path')
+            .attr('d', 'M0,-5L10,0L0,5')
+            .attr('fill', 'red')
+            .attr('opacity', .6);
+			
+			linked = {};
+			graph.edges.forEach(function(d){
+				d.from = graph.nodes[d.source].id;
+				d.to = graph.nodes[d.target].id;
+				linked[d.from + ',' + d.to] = true;
+			});
+			
+			force = cola.d3adaptor()
+	        .avoidOverlaps(true)
+	        .size([currentMode.width, currentMode.height])
+	        .nodes(graph.nodes)
+			.links(graph.edges)
+			.start(10, 15, 20);
+
+			link = svg.selectAll('.link')
+			.data(graph.edges)
+			.enter()
+			.append('path')
+			.classed('link', true)
+			.attr('id', function(d) {
+				return 'link' + d.id;
+			}).style('stroke-width', function(d) {
+				return Math.sqrt(d.value);
+			});
+
+			node = svg.selectAll('.node')
+			.data(graph.nodes)
+			.enter()
+			.append('circle')
+			.classed('node', true)
+			.attr('id', function(d) {
+				linked[d.id + ',' + d.id] = true;
+				return 'node' + d.id;
+			}).attr('r', function(d) {
+				return currentMode.nodeRadius;
+			}).style('fill', function(d) {
+				return color(currentMode.coreId === d.id ? 1 : d.group);
+			}).call(force.drag).on('mouseover', function(d){
+				connectedNodes(d);
+			}).on('mouseout', function(d){
+				connectedNodes(null);
+			}).on('click', function(d) { 
+	            if (d3.event.defaultPrevented) return;
+	            clicker(d, this);
+	            clkNode(d3.event);
+	            d3.event.stopPropagation();
+	        });
+
+			/*node.append('title').text(function(d) {
+				return d.name;
+			});*/
+
+			text = svg.append('g')
+			.selectAll('text')
+			.data(force.nodes())
+			.enter()
+			.append('text')
+			.attr('id', function(d) {
+				return 'text' + d.id;
+			}).attr('dx', 8).attr('dy', '.31em').attr('font-size', function(d) {
+				return 5;
+			}).classed(currentMode === mode.all ? {
+				'node-label' : true
+			} : {
+				'node-label' : true,
+				'node-label-child' : true
+			}).text(function(d) {
+				return d.name;
+			});
+
+			force.on('tick', function() {
+				link.attr("d", function(d) {
+					// 计算节点之间连线，考虑两端的半径
+					var deltaX = d.target.x - d.source.x,
+					deltaY = d.target.y - d.source.y,
+					dist = Math.sqrt(deltaX * deltaX + deltaY * deltaY),
+					normX = deltaX / dist,
+					normY = deltaY / dist,
+					sourcePadding = currentMode.nodeRadius,
+					targetPadding = currentMode.nodeRadius + 2,
+					sourceX = d.source.x + (sourcePadding * normX),
+					sourceY = d.source.y + (sourcePadding * normY),
+					targetX = d.target.x - (targetPadding * normX),
+					targetY = d.target.y - (targetPadding * normY);
+					return 'M' + sourceX + ',' + sourceY + 'L' + targetX + ',' + targetY;
+
+	            });
+
+				node.attr('cx', function(d) {
+					return d.x;
+				}).attr('cy', function(d) {
+					return d.y;
+				});
+
+				text.attr('x', function(d) {
+					return d.x;
+				}).attr('y', function(d) {
+					return d.y;
+				});
+			});
+
+		}
+		
+		function connectedNodes(d) {
+		    if (d != null) {
+		        //Reduce the opacity of all but the neighbouring nodes
+		        node.style('opacity', function (o) {
+		            return neighboring(d, o) | neighboring(o, d) ? 1 : 0.1;
+		        });
+		        text.style('display', function (o) {
+		            return neighboring(d, o) | neighboring(o, d) ? 'block' : 'none';
+		        });
+		        link.style('opacity', function (o) {
+		            return d.id==o.from | d.id==o.to ? 1 : 0.05;
+		        });
+		    } else {
+		        node.style('opacity', 1);
+		        link.style('opacity', 1);
+		        text.style('display', 'none');
+		    }
+		}
+		
+		function neighboring(a, b) {
+		    return linked[a.id + ',' + b.id];
+		}
+
+		// 点击节点
+		function clkNode(evt) {
+			if (evt.target.nodeName == 'circle') {
+
+				if (evt.ctrlKey) {
+					$('#toNode').val($('#' + evt.target.id.replace('node', 'text')).text());
+					$('#toId').val(evt.target.id.replace('node', ''));
+				} else {
+					$('#fromNode, #rootNode').val($('#' + evt.target.id.replace('node', 'text')).text());
+					$('#fromId').val(evt.target.id.replace('node', ''));
+					d3.selectAll('.node-active').classed('node-active', false);
+					/*d3.selectAll('.node-label-active').classed('node-label-active', false);*/
+				}
+				d3.select(evt.target).classed('node-active', true);
+				/*d3.select('#' + evt.target.id.replace('node', 'text')).classed('node-label-active', true);*/
+				mode.child.coreId = evt.target.id.replace('node', '');
+			}
+		}
+
+		/*function buildAdjacency() {
+		    linked = {}
+		    node.forEach(function (d) { linked[d.id + ',' + d.id] = true; });
+		    link.forEach(function (d) { linked[d.from + ',' + d.to] = true; });
+		}*/
+		
+		// 最短路径
+		function shortPath(type) {
+			// 通过名称找id
+			var fromTo = force.nodes().filter(function(val) {
+				return val.id === $('#fromId').val() || val.id === $('#toId').val();
+			});
+			if (fromTo.length === 2) {
+				d3.json('/discover/rest/sample/shortPath/' + type + '/' + fromTo[0].id + '/' + fromTo[1].id + '.discover', function(error, lines) {
+					d3.selectAll('.link-active').classed('link-active', false);
+
+					lines.forEach(function(l) {
+						d3.select('#link' + l).classed('link-active', true);
+					});
+				});
+			} else {
+				alert('请选择两个合适的节点！当前选中' + fromTo.length + '个。')
+			}
+
+		}
+
+		// 导航
+		function childGraph() {
+			var n = force.nodes().filter(function(val) {
+				return val.name === $('#rootNode').val();
+			});
+
+			if (n.length === 0)
+				return;
+			d3.select('#container>svg').remove();
+			currentMode = mode.child;
+			d3.json('/discover/rest/sample/relation/queryChildRelationsToJson/' + n[0].id + '.discover', drawGraph);
+		}
+
+		// 聚类图
+		function cluster(type) {
+			currentMode = mode.all;
+			d3.select('#container>svg').remove();
+			var methods = {
+				'kmean' : 'kmean/10/20',
+				'weakComponent' : 'weakComponent',
+				'bicomponent' : 'bicomponent',
+				'edgeBetweenness' : 'edgeBetweenness/10'
+			};
+
+			d3.json('/discover/rest/sample/cluster/' + methods[type] + '.discover', drawGraph);
+		}
+		
+		//-----------------------右侧属性栏
+		
+		function toggleRightPanel(visible) {
+			var s = $('#righthandle').find('span.glyphicon');
+			var visnow = s.hasClass('glyphicon-chevron-right');
+			if (visible === undefined || (visible != visnow)) {
+				$('#right-widget').toggleClass('out');
+				if (visnow) {
+					s.removeClass('glyphicon-chevron-right').addClass('glyphicon-chevron-left');
+					$('#righthandle').find('a span.handlelabel').css('display', 'inline');
+				} else {
+					s.removeClass('glyphicon-chevron-left').addClass('glyphicon-chevron-right');
+					$('#righthandle').find('a span.handlelabel').css('display', 'none');
+				}
+			}
+		}
+		
+		$('#righthandle').click(function() {
+			toggleRightPanel();
+		});
+		
+		// Change minimize/maximize buttons
+		$('.collapse').on('hidden.bs.collapse', function() {
+			$(this).parent().find('span.glyphicon').removeClass('glyphicon-resize-small').addClass('glyphicon-resize-full');
+		});
+		$('.collapse').on('show.bs.collapse', function() {
+			$(this).parent().find('span.glyphicon').removeClass('glyphicon-resize-full').addClass('glyphicon-resize-small');
+		});
+		
+		dblclick_timer = false;
+		function clicker(d, elem) {
+		    if (dblclick_timer) {
+		        clearTimeout(dblclick_timer);
+		        dblclick_timer = false;
+		        //nodeDblClicked(d, elem);
+		    }
+		    else dblclick_timer = setTimeout( function() {
+		        dblclick_timer = false;
+		        nodeClicked(d);
+		    }, 200);
+		};
+		var highlightId = -1;
+		function nodeClicked(d) {
+		    // Mark selected node      
+		    if (highlightId != d.id) {
+		        showNodeInfo(d); 
+		        toggleSelected(highlightId, false);
+		        highlightId = d.id;
+		        toggleSelected(highlightId, true);
+		    } else {
+		        removeNodeInfo();
+		        toggleSelected(highlightId, false);
+		        highlightId = -1;
+		    }
+		}
+		
+		function removeNodeInfo() {
+		    document.getElementById('nodeinfo').innerHTML = '点击节点...';
+		    document.getElementById('node-heading').innerHTML = '节点属性';
+		}
+
+		function showNodeInfo(d) {
+		    //console.log(htmlTabForNode(d));
+		    document.getElementById('nodeinfo').innerHTML = htmlTabForNode(d);
+		    document.getElementById('node-heading').innerHTML = d.name;
+		}
+		
+		function toggleSelected(i, b) {
+		    node.filter(function(n) {
+		    	return n.id == i; 
+		    }).select('circle')
+		    .classed('selected', b);
+		}
+		
+		function htmlTabForNode(d){
+		    var str = '<ul class="list-group">';
+		    for(var i in d.attrs) {
+		    	str += '<li class="list-group-item"><p class="badge stats-item prop-value">' + d.attrs[i].attrValue + '</p>' + d.attrs[i].attrName + '</li>';
+		    }
+		    str += '</ul>';
+		    return str;
+		}
+		
+	</script>
+</body>
+</html>

@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<style>
+.node {
+	stroke: white;
+	stroke-width: 2px;
+}
+
+.nodeactive {
+	stroke: orange;
+	stroke-width: 2px;
+}
+
+.link {
+	stroke: #999;
+	stroke-opacity: .6;
+}
+</style>
+</head>
+<body>
+	<script src="/discover/viz/js/d3.v3.js"></script>
+	<script src="/discover/viz/js/json2.js"></script>
+	<script src="/discover/viz/js/xml2json.js"></script>
+
+
+	<script>
+		var width = window.innerWidth, height = window.innerHeight;
+
+		var color = d3.scale.category20();
+
+		var force = d3.layout.force().charge(-25).linkDistance(25)
+		/*	.linkStrength(0.3)
+		 .friction(0.9)
+		 .gravity(0.1)
+		 .theta(0.8)
+		 .alpha(0.1)*/
+		.size([ width, height ]);
+
+		d3.json('/discover/data/miserables.json'/*"/discover/rest/network/relation/queryChildRelationsToJson/1424/1.discover"*/,
+				function(error, graph) {
+
+					// canvas画布
+					var canvas = d3.select("body").append("canvas").attr(
+							"width", width).attr("height", height).call(
+							d3.behavior.zoom().scaleExtent([ 0.25, 4 ]).on(
+									"zoom", zoom));
+
+					var context = canvas.node().getContext("2d");
+
+					// 设置力学图
+					/*if (graph.nodes.length > 300) {*/
+						force = d3.layout.force().charge(-120).linkDistance(120)
+							.linkStrength(1).gravity(0.05).size([width, height])
+							.nodes(graph.nodes).links(graph.edges).start();
+					/*} else {
+						force = cola.d3adaptor().avoidOverlaps(false).size([width, height])
+							.linkDistance(120).nodes(graph.nodes).links(graph.edges).start(10, 15, 20);
+					}*/
+
+					force.on("tick", tick);
+
+					function zoom() {
+						context.save();
+						context.clearRect(0, 0, width, height);
+
+						context.translate(d3.event.translate[0],
+								d3.event.translate[1]);
+						context.scale(d3.event.scale, d3.event.scale);
+						tick();
+						context.restore();
+
+					}
+
+					function tick() {
+						context.clearRect(0, 0, width, height);
+
+						// draw links
+						context.strokeStyle = '#ccc';
+						context.beginPath();
+						graph.edges.forEach(function(d) {
+
+							context.moveTo(d.source.x, d.source.y);
+							context.lineTo(d.target.x, d.target.y);
+
+						});
+						context.stroke();
+
+						// draw nodes
+						graph.nodes.forEach(function(d) {
+							context.beginPath();
+							context.fillStyle = color(d.group);
+							context.strokeStyle = d3.rgb(color(d.group)).darker();
+							context.moveTo(d.x, d.y);
+							context.arc(d.x, d.y, 4 , 0, 2 * Math.PI);
+							context.stroke();
+							context.fill();
+						});
+
+						// draw text
+						graph.nodes.forEach(function(d) {
+							context.beginPath();
+							context.fillStyle = 'gray';
+							context.font=(16 + "px simsun");
+							context.fillText(d.name, d.x + 8, d.y);
+							context.fill();
+						});
+
+
+					}
+
+				});
+
+	</script>
+</body>
+</html>

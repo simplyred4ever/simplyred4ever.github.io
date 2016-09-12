@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+    <title>knockout学习系列</title>
+    <script src="./knockout-3.4.0.js"></script>
+	<script>
+window.onload = function(){
+	// Here's my data model
+	var ViewModel = function(first, last) {
+		this.firstName = ko.observable(first);
+		this.lastName = ko.observable(last);
+
+		this.fullName = ko.pureComputed(function() {
+			// Knockout tracks dependencies automatically. It knows that fullName depends on firstName and lastName, because these get called when evaluating fullName.
+			return this.firstName() + " " + this.lastName();
+		}, this);
+	};
+
+	//ko.applyBindings(new ViewModel("Planet", "Earth")); // This makes Knockout get to work
+
+
+  var ClickCounterViewModel = function() {
+      this.numberOfClicks = ko.observable(0);
+
+      this.registerClick = function() {
+          this.numberOfClicks(this.numberOfClicks() + 1);
+      };
+
+      this.resetClicks = function() {
+          this.numberOfClicks(0);
+      };
+
+      this.hasClickedTooManyTimes = ko.pureComputed(function() {
+          return this.numberOfClicks() >= 3;
+      }, this);
+  };
+
+  ko.applyBindings(new ClickCounterViewModel(), document.getElementById('b'));
+  ko.applyBindings(new ViewModel("Planet", "Earth"), document.getElementById('a'));
+}
+	</script>
+</head>
+<body>
+  <div id="a">
+    <h2>Knockout例子1</h2>
+    <p>First name: <input data-bind="value: firstName" /></p>
+  	<p>Last name: <input data-bind="value: lastName" /></p>
+  	<h2>Hello, <span data-bind="text: fullName"> </span>!</h2>
+  </div>
+  <div id="b">
+    <h2>Knockout例子2</h2>
+    <div>You've clicked <span data-bind='text: numberOfClicks'>&nbsp;</span> times</div>
+    <button data-bind='click: registerClick, disable: hasClickedTooManyTimes'>Click me</button>
+    <div data-bind='visible: hasClickedTooManyTimes'>
+        That's too many clicks! Please stop before you wear out your fingers.
+        <button data-bind='click: resetClicks'>Reset clicks</button>
+    </div>
+  </div>
+</body>
+</html>

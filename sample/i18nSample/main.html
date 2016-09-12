@@ -1,0 +1,41 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 4.01//EN"
+   "http://www.w3.org/TR/html4/strict.dtd">
+<HTML>
+   <HEAD>
+      <title>jQuery.i18n.properties: Tests</title>
+      <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
+      <meta http-equiv="content-script-type" content="text/javascript" />
+      
+      	<!-- JS -->
+      	<script type="text/javascript" src="./jquery-1.10.2.min.js"></script>
+      	<script type="text/javascript" src="./jquery.i18n.properties.js"></script>
+      
+      <script type="text/javascript">
+
+      	// load I18N bundles
+		$(document).ready(function() {
+			$.i18n.properties({
+			    name:'Messages', 
+			    path:'./', 
+			    mode:'both', 
+			    callback: function() {
+			        $("[data-locale]").each(function(){  
+						$(this).html($.i18n.prop($(this).data("locale")));  
+					});  
+			    }
+			});
+			$('button').click(function() {
+				alert($.i18n.prop('login.hello', $('input').eq(0).val()||'none', $('input').eq(1).val()||'none'))
+			});
+		});
+
+      </script>
+   </HEAD>
+   
+   <BODY>
+      <h2>jQuery.i18n.properties :: Tests</h2>
+      	<label data-locale="login.username"></label><input type="text">  
+		<label data-locale="login.password"></label><input type="password">        
+		<button data-locale="login.confirm"></button>
+   </BODY>
+</HTML>

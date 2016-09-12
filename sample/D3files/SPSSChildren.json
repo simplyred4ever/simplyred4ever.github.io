@@ -1,0 +1,276 @@
+{
+	"name" : "11",
+	"children" : [{
+			"name" : "9",
+			"children" : [{
+					"name" : "8",
+					"children" : [{
+							"name" : "7",
+							"children" : [{
+									"name" : "6",
+									"children" : [{
+											"name" : "5",
+											"children" : [{
+													"name" : "4",
+													"children" : [{
+															"name" : "3",
+															"children" : [{
+																	"name" : "2",
+																	"children" : [{
+																			"name" : "1",
+																			"children" : [{
+																					"name" : "融资",
+																					"size" : 1000
+																				}, {
+																					"name" : "郭俊峰",
+																					"size" : 1000
+																				}, {
+																					"name" : "租赁",
+																					"size" : 1000
+																				}, {
+																					"name" : "夏尔",
+																					"size" : 1000
+																				}, {
+																					"name" : "玛莎",
+																					"size" : 1000
+																				}, {
+																					"name" : "别墅",
+																					"size" : 1000
+																				}
+																			]
+																		}, {
+																			"name" : "家庭",
+																			"size" : 1000
+																		}
+																	]
+																}, {
+																	"name" : "13",
+																	"children" : [{
+																			"name" : "12",
+																			"children" : [{
+																					"name" : "地段",
+																					"size" : 1000
+																				}, {
+																					"name" : "建筑",
+																					"size" : 1000
+																				}
+																			]
+																		}, {
+																			"name" : "房地产",
+																			"size" : 1000
+																		}
+																	]
+																}
+															]
+														}, {
+															"name" : "16",
+															"children" : [{
+																	"name" : "15",
+																	"children" : [{
+																			"name" : "品牌",
+																			"size" : 1000
+																		}, {
+																			"name" : "公司",
+																			"size" : 1000
+																		}, {
+																			"name" : "5",
+																			"children" : [{
+																					"name" : "企业",
+																					"size" : 1000
+																				}, {
+																					"name" : "创业",
+																					"size" : 1000
+																				}
+																			]
+																		}, {
+																			"name" : "住宅",
+																			"size" : 1000
+																		}
+																	]
+																}, {
+																	"name" : "集团",
+																	"size" : 1000
+																}, {
+																	"name" : "管理",
+																	"size" : 1000
+																}
+															]
+														}
+													]
+												}, {
+													"name" : "新加坡",
+													"size" : 1000
+												}
+											]
+										}, {
+											"name" : "住宅",
+											"size" : 1000
+										}
+									]
+								}, {
+									"name" : "19",
+									"children" : [{
+											"name" : "18",
+											"children" : [{
+													"name" : "17",
+													"children" : [{
+															"name" : "中国",
+															"size" : 1000
+														}, {
+															"name" : "发展",
+															"size" : 1000
+														}
+													]
+												}, {
+													"name" : "工作",
+													"size" : 1000
+												}
+											]
+										}, {
+											"name" : "美元",
+											"size" : 1000
+										}
+									]
+								}
+							]
+						}, {
+							"name" : "26",
+							"children" : [{
+									"name" : "25",
+									"children" : [{
+											"name" : "24",
+											"children" : [{
+													"name" : "22",
+													"children" : [{
+															"name" : "21",
+															"children" : [{
+																	"name" : "20",
+																	"children" : [{
+																			"name" : "土卫六",
+																			"size" : 1000
+																		}, {
+																			"name" : "土星",
+																			"size" : 1000
+																		}, {
+																			"name" : "彗星",
+																			"size" : 1000
+																		}, {
+																			"name" : "卡西尼",
+																			"size" : 1000
+																		}
+																	]
+																}, {
+																	"name" : "地球",
+																	"size" : 1000
+																}, {
+																	"name" : "探测",
+																	"size" : 1000
+																}
+															]
+														}, {
+															"name" : "撞击",
+															"size" : 1000
+														}
+													]
+												}, {
+													"name" : "23",
+													"children" : [{
+															"name" : "探测器",
+															"size" : 1000
+														}, {
+															"name" : "生命",
+															"size" : 1000
+														}
+													]
+												}
+											]
+										}, {
+											"name" : "宇航局",
+											"size" : 1000
+										}, {
+											"name" : "登陆",
+											"size" : 1000
+										}
+									]
+								}, {
+									"name" : "人类",
+									"size" : 1000
+
+								}
+							]
+						}
+					]
+				}, {
+					"name" : "27",
+					"children" : [{
+							"name" : "科学家",
+							"size" : 1000
+
+						}, {
+							"name" : "美国",
+							"size" : 1000
+
+						}
+					]
+				}
+			]
+		}, {
+			"name" : "10",
+			"children" : [{
+					"name" : "29",
+					"children" : [{
+							"name" : "28",
+							"children" : [{
+									"name" : "系统",
+									"size" : 1000
+								}, {
+									"name" : "设计",
+									"size" : 1000
+								}
+							]
+						}, {
+							"name" : "市场",
+							"size" : 1000
+						}
+					]
+				}, {
+					"name" : "33",
+					"children" : [{
+							"name" : "32",
+							"children" : [{
+									"name" : "31",
+									"children" : [{
+											"name" : "30",
+											"children" : [{
+													"name" : "汽车",
+													"size" : 1000
+
+												}, {
+													"name" : "跑车",
+													"size" : 1000
+
+												}
+											]
+										}, {
+											"name" : "驾驶",
+											"size" : 1000
+
+										}
+									]
+								}, {
+									"name" : "车子",
+									"size" : 1000
+
+								}
+							]
+						}, {
+							"name" : "引擎",
+							"size" : 1000
+
+						}
+					]
+				}
+			]
+		}
+	]
+}

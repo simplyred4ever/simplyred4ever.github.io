@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <title>需求链路_${smp.name}</title>
+	<link rel='stylesheet' href='../css/easyui.css' />
+	<style type="text/css">
+* {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+html, body, form {
+	height: 100%;
+	overflow-y: hidden;
+}
+#content { background-color:#e1e1e1;}
+
+#main { width:900px;overflow:hidden;background-color:#F6F6F6;-moz-border-radius:10px;-webkit-border-radius:10px;}
+#wrapper { float:left;width:700px; margin-top:0px;}
+.icon-zoom_in{background:url(../img/zoom_in.png) no-repeat 0px 0px;}
+.icon-zoom_out{background:url(../img/zoom_out.png) no-repeat 0px 0px;}
+.icon-zoom_fit{background:url(../img/zoom.png) no-repeat 0px 0px;}
+.icon-save_as_image{background:url(../img/saveAsImage.png) no-repeat 0px 0px;}
+
+	</style>
+	<script src="../js/commons/json2.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/commons/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
+	<script src="../js/commons/easyui.min.js" type="text/javascript" charset="utf-8"></script>
+</head>
+<body class="easyui-layout" id="js_layout"> 
+    <div data-options="region:'center'" id="down">
+		<div class="easyui-layout" data-options="fit:true"> 
+			<div data-options="region:'center',split:true" id="down_center" style="overflow:hidden;border:none;">
+				<div id="mainToolbar" class="datagrid-toolbar border-n">
+					<a href="#" class="easyui-linkbutton" iconCls="icon-zoom_in" plain="true" id="zoomIn">放大</a>
+					<a href="#" class="easyui-linkbutton" iconCls="icon-zoom_out"  plain="true" id="zoomOut">缩小</a>
+					<a href="#" class="easyui-linkbutton" iconCls="icon-zoom_fit" plain="true" id="zoomFit">还原</a>
+					<a href="#" class="easyui-linkbutton" iconCls="icon-save_as_image" plain="true" id="saveAsImage">另存为图片</a>
+					<span>关联类型：</span>
+					<select id="ccTypeFilter" style="width:150px;"></select>
+					<div id="spTypeFilter" style="padding:10px;">
+							<input type="checkbox" name="corrType" value="引用" checked="checked"><span>引用</span><br/>
+							<input type="checkbox" name="corrType" value="满足" checked="checked"><span>满足</span><br/>
+							<input type="checkbox" name="corrType" value="验证" checked="checked"><span>验证</span><br/>
+							<input type="checkbox" name="corrType" value="跟踪" checked="checked"><span>跟踪</span><br/>
+							<input type="checkbox" name="corrType" value="继承" checked="checked"><span>继承</span><br/>
+							<input type="checkbox" name="corrType" value="改善" checked="checked"><span>改善</span><br/>
+							<input type="checkbox" name="corrType" value="包含" checked="checked"><span>包含</span>
+					</div>
+					<a id="cfmTypeFilter" href="javascript:void(0)" class="easyui-linkbutton" data-options="iconCls:''">确定</a> 
+				</div>
+				<div id="main" style="width:100%;height:100%;background-color:white;">
+					<div id="wrapper" style="width:100%;height:100%">
+						<div id="content" style="width:100%;height:100%;visibility:visible;">
+							<!-- Tab content goes here -->
+							<!--[if lt IE 9]>
+							<embed id="embedObj" name="embedObj" style="min-width:100%;min-height:100%;width:100%;height:100%;" src="../svg/topoTree.svg" type="image/svg+xml" wmode="transparent"></embed>
+							<![endif]-->
+							<!--[if !IE | (IE 9)]><!-->
+							<iframe id="frameObj" name="frameObj" style="min-width:100%;min-height:100%;width:100%;height:100%;" src="../svg/topoTree.svg"></iframe>
+							<!--<![endif]-->
+						</div>
+					</div>
+				</div>
+	        </div> 
+	    </div>
+	</div>
+</body>
+<script type="text/javascript" charset="utf-8">
+
+// svg上下文
+function svg() {
+	if ($('#embedObj')[0]) {
+		return $('#embedObj')[0].window;
+	} else {
+		return  $('#frameObj')[0].contentWindow;
+	}
+}
+
+$(document).ready(function(){
+	
+	$('#ccTypeFilter').combo({
+		multiple:true,
+		editable:false,
+		width:300
+	});
+	$('#spTypeFilter').appendTo($('#ccTypeFilter').combo('panel'));
+	$('#spTypeFilter input').click(function(){
+		var val = $('#ccTypeFilter').combo('getValue');
+		if ($(this).prop('checked')) {
+			if (!val || !val.match($(this).val())) {
+				var txt = $('#ccTypeFilter').combo('getText');
+				if (val) {
+					val += ',' + $(this).val();
+					txt += '，' + $(this).next('span').text();
+				} else {
+					val = $(this).val();
+					txt = $(this).next('span').text();
+				} 
+				$('#ccTypeFilter').combo('setValue', val).combo('setText', txt);
+			}
+		} else {
+			if (val.indexOf($(this).val()) != -1) {
+				var txt = $('#ccTypeFilter').combo('getText');
+				val = val.replace(new RegExp('(^|,)' + $(this).val()), '').replace(/^,/, '');
+				txt = txt.replace(new RegExp('(^|，)' + $(this).next('span').text()), '').replace(/^，/, '');
+				$('#ccTypeFilter').combo('setValue', val).combo('setText', txt);
+			}
+		}
+	});
+	$('#ccTypeFilter').combo('setValue', '引用,满足,验证,跟踪,继承,改善,包含').combo('setText', '引用，满足，验证，跟踪，继承，改善，包含');
+	$('#cfmTypeFilter').click(function() {
+		svg().filter($('#ccTypeFilter').combo('getValue'));
+	});
+	$('#zoomIn').click(function(){
+		svg().aerialView.zoomIn();
+	});
+	$('#zoomOut').click(function(){
+		svg().aerialView.zoomOut();
+	});
+	$('#zoomFit').click(function(){
+		svg().aerialView.zoomTo(1);
+	});
+	$('#saveAsImage').click(function(){
+		alert(svg().saveAsImage());
+	});
+	setTimeout('svg().init("' + $('#ccTypeFilter').combo('getValue') + '");', 1000);
+	window.showItem = function(url) {
+		alert('参数:'+url);
+	}
+});
+</script> 
+</html>

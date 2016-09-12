@@ -1,0 +1,1182 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<graphml xmlns="http://graphml.graphdrawing.org/xmlns" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://graphml.graphdrawing.org/xmlns http://graphml.graphdrawing.org/xmlns/1.0/graphml.xsd">
+  <key id="key0" for="node" attr.name="name" attr.type="string" />
+  <graph id="G" edgedefault="directed" parse.nodeids="canonical" parse.edgeids="canonical" parse.order="nodesfirst">
+    <node id="n0">
+      <data key="key0">《石油文摘》光盘检索系统</data>
+    </node>
+    <node id="n1">
+      <data key="key0">Division of Information Service,the University of Tulsa.Petroleum Abstracts Exploration and Production Thesaurus.9th ed</data>
+    </node>
+    <node id="n2">
+      <data key="key0">Division of Information Service,the University of Tulsa.Kwoc list of Petroleum Abstracts. 6th ed</data>
+    </node>
+    <node id="n3">
+      <data key="key0">Knight—Ridder Information.DIALOG OnDisc—Petroleum Abstracts.1988—1997</data>
+    </node>
+    <node id="n4">
+      <data key="key0">光盘数据库检索指南</data>
+    </node>
+    <node id="n5">
+      <data key="key0">石油文献检索与利用</data>
+    </node>
+    <node id="n6">
+      <data key="key0">围绕中亚石油资源展开的国际竞争</data>
+    </node>
+    <node id="n7">
+      <data key="key0">世界形势研究</data>
+    </node>
+    <node id="n8">
+      <data key="key0">采油污水中石油类、氯离子对CODcr测定的影响研究</data>
+    </node>
+    <node id="n9">
+      <data key="key0">水和废水监测分析方法</data>
+    </node>
+    <node id="n10">
+      <data key="key0">水和废水监测分析方法指南（上册）</data>
+    </node>
+    <node id="n11">
+      <data key="key0">水和废水监测分析方法指南（中册）</data>
+    </node>
+    <node id="n12">
+      <data key="key0">日常统战工作实行规范化管理</data>
+    </node>
+    <node id="n13">
+      <data key="key0">邓小平论统一战线</data>
+    </node>
+    <node id="n14">
+      <data key="key0">中国统一战线</data>
+    </node>
+    <node id="n15">
+      <data key="key0">统战理论研究</data>
+    </node>
+    <node id="n16">
+      <data key="key0">美国的石油地缘战略与中国西藏新疆地区安全——从美国南亚和中亚外交新动向谈起</data>
+    </node>
+    <node id="n17">
+      <data key="key0">阿拉木图选择了北京</data>
+    </node>
+    <node id="n18">
+      <data key="key0">高锰酸盐指数法对石油类物质氧化率的研究</data>
+    </node>
+    <node id="n19">
+      <data key="key0">水和废水监测分析方法</data>
+    </node>
+    <node id="n20">
+      <data key="key0">底质中石油和酚类浸溶试验</data>
+    </node>
+    <node id="n21">
+      <data key="key0">Text Methods for the Evaluation of Solid Waste</data>
+    </node>
+    <node id="n22">
+      <data key="key0">水和废水监测分析方法</data>
+    </node>
+    <node id="n23">
+      <data key="key0">臭氧氧化地下水石油污染物的动态模拟试验</data>
+    </node>
+    <node id="n24">
+      <data key="key0">Results of an Active 4—Year Groundwater Treatment Project</data>
+    </node>
+    <node id="n25">
+      <data key="key0">Mobile Drinking Water Treatment—Plant for Research</data>
+    </node>
+    <node id="n26">
+      <data key="key0">Incineration at Bayou Bonfouca Remediation Project</data>
+    </node>
+    <node id="n27">
+      <data key="key0">环境有机污染与致癌物质</data>
+    </node>
+    <node id="n28">
+      <data key="key0">水的特种处理</data>
+    </node>
+    <node id="n29">
+      <data key="key0">石油类污染物在砂砾石层中的迁移与分布</data>
+    </node>
+    <node id="n30">
+      <data key="key0">水和废水监测分析方法</data>
+    </node>
+    <node id="n31">
+      <data key="key0">地下水系统的污染与控制</data>
+    </node>
+    <node id="n32">
+      <data key="key0">Laboratory Studies of the Flow of Some Organic Solvents and Their Aqueous Solutoions Through Bentenite and Kadlin Clougs</data>
+    </node>
+    <node id="n33">
+      <data key="key0">Analytical Solutions for Water Flow and Solute Transport in the Unsaturated Zone</data>
+    </node>
+    <node id="n34">
+      <data key="key0">石油危机与日本的对策</data>
+    </node>
+    <node id="n35">
+      <data key="key0">石油输出国组织</data>
+    </node>
+    <node id="n36">
+      <data key="key0">日本外务省研究</data>
+    </node>
+    <node id="n37">
+      <data key="key0">中东政治形势和日本选择</data>
+    </node>
+    <node id="n38">
+      <data key="key0">中东形势和石油的将来</data>
+    </node>
+    <node id="n39">
+      <data key="key0">战后日本外交史（卷5）</data>
+    </node>
+    <node id="n40">
+      <data key="key0">远东石油天然气开采领域中的国际合作</data>
+    </node>
+    <node id="n41">
+      <data key="key0">经济改革的理论与实践（俄）</data>
+    </node>
+    <node id="n42">
+      <data key="key0">远东经济改革与危机（俄）</data>
+    </node>
+    <node id="n43">
+      <data key="key0">远东地区经济发展战略（俄）</data>
+    </node>
+    <node id="n44">
+      <data key="key0">俄罗斯远东与东北亚的自然资源开发（俄）</data>
+    </node>
+    <node id="n45">
+      <data key="key0">俄罗斯远东经济述评（俄）</data>
+    </node>
+    <node id="n46">
+      <data key="key0">科特迪瓦经济：在改革推动下快速回升</data>
+    </node>
+    <node id="n47">
+      <data key="key0">EIU Country Report:Cote d&apos;Ivoire</data>
+    </node>
+    <node id="n48">
+      <data key="key0">石油化工企业外环境空气臭氧水平与儿童健康关系的研究</data>
+    </node>
+    <node id="n49">
+      <data key="key0">Analysis of indoor concentrations of carbon monoxide and ozone in an urban hospital</data>
+    </node>
+    <node id="n50">
+      <data key="key0">Ozone concentration and pulmonary response relationships for 6.6—hour exposures with five hours of moderate exercise to 0.08,0.01 and 0.12ppm</data>
+    </node>
+    <node id="n51">
+      <data key="key0">大气环境化学</data>
+    </node>
+    <node id="n52">
+      <data key="key0">Photochemical Oxidants</data>
+    </node>
+    <node id="n53">
+      <data key="key0">Effects of ambient ozone on respiratory function and symptoms in mexico city schoolchildren</data>
+    </node>
+    <node id="n54">
+      <data key="key0">Epidemiologic studies on short term effects of low levels of major ambient air pollution components</data>
+    </node>
+    <node id="n55">
+      <data key="key0">石油液化气燃烧对室内空气污染的研究</data>
+    </node>
+    <node id="n56">
+      <data key="key0">环境卫生学</data>
+    </node>
+    <node id="n57">
+      <data key="key0">环境卫生学</data>
+    </node>
+    <node id="n58">
+      <data key="key0">居住区大气中一氧化碳卫生标准检验方法GB8911—1988</data>
+    </node>
+    <node id="n59">
+      <data key="key0">现代环境卫生学</data>
+    </node>
+    <node id="n60">
+      <data key="key0">室内空气污染的健康效应</data>
+    </node>
+    <node id="n61">
+      <data key="key0">Nitrogen dioxide inside and outside 137 homes and implictions for ambient air quality standards and health effects research</data>
+    </node>
+    <node id="n62">
+      <data key="key0">室内空气污染的研究</data>
+    </node>
+    <node id="n63">
+      <data key="key0">石油收入的地租性及其对中东产油国的影响</data>
+    </node>
+    <node id="n64">
+      <data key="key0">发展经济学</data>
+    </node>
+    <node id="n65">
+      <data key="key0">阿拉伯国家收入之衡量</data>
+    </node>
+    <node id="n66">
+      <data key="key0">地租型国家经济发展的模式和问题：伊朗的个案</data>
+    </node>
+    <node id="n67">
+      <data key="key0">阿拉伯地区石油地租型国家的宏观经济行为</data>
+    </node>
+    <node id="n68">
+      <data key="key0">战后石油天然气出口在世界原料市场的地位</data>
+    </node>
+    <node id="n69">
+      <data key="key0">浅析石油对现代中东经济的影响</data>
+    </node>
+    <node id="n70">
+      <data key="key0">论沙特阿拉伯劳动力市场的特点</data>
+    </node>
+    <node id="n71">
+      <data key="key0">论科威特的社会福利制度</data>
+    </node>
+    <node id="n72">
+      <data key="key0">关于加快石油企业改革的几点思考</data>
+    </node>
+    <node id="n73">
+      <data key="key0">中共中央关于建立社会主义市场经济体制若干问题的决定</data>
+    </node>
+    <node id="n74">
+      <data key="key0">简评里海的法律地位</data>
+    </node>
+    <node id="n75">
+      <data key="key0">独联体各国概览</data>
+    </node>
+    <node id="n76">
+      <data key="key0">世界经济中的油价波动</data>
+    </node>
+    <node id="n77">
+      <data key="key0">复苏尚待时日——1999年国际石油市场</data>
+    </node>
+    <node id="n78">
+      <data key="key0">广义龚玻兹模型及其在油气田产量与可采储量预测中的应用</data>
+    </node>
+    <node id="n79">
+      <data key="key0">对翁氏预测模型的推导及应用</data>
+    </node>
+    <node id="n80">
+      <data key="key0">翁氏产量预测模型求解的新方法及应用</data>
+    </node>
+    <node id="n81">
+      <data key="key0">在塔里木石油勘探开发中实施可持续发展战略</data>
+    </node>
+    <node id="n82">
+      <data key="key0">可持续发展</data>
+    </node>
+    <node id="n83">
+      <data key="key0">塔里木‘油公司’体制的形成与发展</data>
+    </node>
+    <node id="n84">
+      <data key="key0">我国主要石油科技期刊的引文分析与老化研究</data>
+    </node>
+    <node id="n85">
+      <data key="key0">试验设计与数据处理</data>
+    </node>
+    <node id="n86">
+      <data key="key0">文献计量学</data>
+    </node>
+    <node id="n87">
+      <data key="key0">我国科技文献的时序分布与老化研究</data>
+    </node>
+    <node id="n88">
+      <data key="key0">中文核心期刊要目总览（第2版）</data>
+    </node>
+    <node id="n89">
+      <data key="key0">石油科技光盘信息资源评介</data>
+    </node>
+    <node id="n90">
+      <data key="key0">SPIRS系统光盘检索策略及其调整技术</data>
+    </node>
+    <node id="n91">
+      <data key="key0">Online Databases:Collection Development</data>
+    </node>
+    <node id="n92">
+      <data key="key0">光盘数据库质量的评估</data>
+    </node>
+    <node id="n93">
+      <data key="key0">石油科技文献检索</data>
+    </node>
+    <node id="n94">
+      <data key="key0">石油因素在日本中东政策中的作用</data>
+    </node>
+    <node id="n95">
+      <data key="key0">动荡中东多视角分析</data>
+    </node>
+    <node id="n96">
+      <data key="key0">日本外务省研究</data>
+    </node>
+    <node id="n97">
+      <data key="key0">石油输出国组织</data>
+    </node>
+    <node id="n98">
+      <data key="key0">石油危机后的世界和日本</data>
+    </node>
+    <node id="n99">
+      <data key="key0">外交蓝皮书</data>
+    </node>
+    <node id="n100">
+      <data key="key0">战略援助与日本外交</data>
+    </node>
+    <node id="n101">
+      <data key="key0">中东的政治形势和日本的选择</data>
+    </node>
+    <node id="n102">
+      <data key="key0">世纪之交国际油气市场的基本趋势与平衡</data>
+    </node>
+    <node id="n103">
+      <data key="key0">1997年安龙能源展望</data>
+    </node>
+    <node id="n104">
+      <data key="key0">世界能源统计回顾</data>
+    </node>
+    <node id="n105">
+      <data key="key0">天然气及其在目前和未来全球能源供需中的比例</data>
+    </node>
+    <node id="n106">
+      <data key="key0">未来利用中东天然气资源的几种选择</data>
+    </node>
+    <node id="n107">
+      <data key="key0">某油田人群白细胞DNA加合物水平及其影响因素研究</data>
+    </node>
+    <node id="n108">
+      <data key="key0">建立只标记加碱基的32P后标记法以用于检测致癌物—DNA加合物</data>
+    </node>
+    <node id="n109">
+      <data key="key0">沙漠环境对石油工人神经行为功能的影响</data>
+    </node>
+    <node id="n110">
+      <data key="key0">Neurobehavioral testing of chemical impact on recommended standards</data>
+    </node>
+    <node id="n111">
+      <data key="key0">介绍WHO推荐的神经行为核心测验组合</data>
+    </node>
+    <node id="n112">
+      <data key="key0">神经症状自评量表</data>
+    </node>
+    <node id="n113">
+      <data key="key0">行为毒理学在动物实验和职业流行病学调查中的应用</data>
+    </node>
+    <node id="n114">
+      <data key="key0">论70—80年代墨西哥石油外交战略的兴衰</data>
+    </node>
+    <node id="n115">
+      <data key="key0">A Marriage of Convenience Relations Between Mexico and the United States</data>
+    </node>
+    <node id="n116">
+      <data key="key0">United States and Mexico Patterns of Influence</data>
+    </node>
+    <node id="n117">
+      <data key="key0">Latin American Foreign Policies Global and Regional Dimensions</data>
+    </node>
+    <node id="n118">
+      <data key="key0">Mexico&apos;s External Relations in the 1990s</data>
+    </node>
+    <node id="n119">
+      <data key="key0">Mexico:Dilemmas of Transition</data>
+    </node>
+    <node id="n120">
+      <data key="key0">拉丁美洲史稿（第3卷）</data>
+    </node>
+    <node id="n121">
+      <data key="key0">拉美国际关系史纲</data>
+    </node>
+    <node id="n122">
+      <data key="key0">墨西哥石油工业的发展与经济危机</data>
+    </node>
+    <node id="n123">
+      <data key="key0">石油与当代国际经济政治</data>
+    </node>
+    <node id="n124">
+      <data key="key0">现代拉丁美洲</data>
+    </node>
+    <node id="n125">
+      <data key="key0">论海湾六国移民与人口结构安全</data>
+    </node>
+    <node id="n126">
+      <data key="key0">Landmarks of Progress</data>
+    </node>
+    <node id="n127">
+      <data key="key0">阿曼：1997</data>
+    </node>
+    <node id="n128">
+      <data key="key0">阿拉伯国家的移民问题</data>
+    </node>
+    <node id="n129">
+      <data key="key0">World Tables</data>
+    </node>
+    <node id="n130">
+      <data key="key0">Kuwait, country profile 1996/1997</data>
+    </node>
+    <node id="n131">
+      <data key="key0">Oman 1998/1999</data>
+    </node>
+    <node id="n132">
+      <data key="key0">Saudi Arabia: country profile 1997/1998</data>
+    </node>
+    <node id="n133">
+      <data key="key0">Rentier State</data>
+    </node>
+    <node id="n134">
+      <data key="key0">沙特阿拉伯：一个产油国人力资源的发展</data>
+    </node>
+    <node id="n135">
+      <data key="key0">海湾国家石油收入下降的原因与影响</data>
+    </node>
+    <node id="n136">
+      <data key="key0">90年代世界石油市场的特点</data>
+    </node>
+    <node id="n137">
+      <data key="key0">试析海湾战争以来伊拉克的外交政策</data>
+    </node>
+    <node id="n138">
+      <data key="key0">新形势下的美国能源发展战略</data>
+    </node>
+    <node id="n139">
+      <data key="key0">在考验和调整中发展的国际形势</data>
+    </node>
+    <node id="n140">
+      <data key="key0">中东形势回顾与展望</data>
+    </node>
+    <node id="n141">
+      <data key="key0">探析沙特阿拉伯的经济发展模式</data>
+    </node>
+    <node id="n142">
+      <data key="key0">阿拉伯国家经济发展的决定因素</data>
+    </node>
+    <node id="n143">
+      <data key="key0">Saudi Arabia&apos;s Development Potential</data>
+    </node>
+    <node id="n144">
+      <data key="key0">沙特阿拉伯的经济发展与石油政策</data>
+    </node>
+    <node id="n145">
+      <data key="key0">沙特阿拉伯经济</data>
+    </node>
+    <node id="n146">
+      <data key="key0">沙特阿拉伯经济发展的模式和新的探求</data>
+    </node>
+    <node id="n147">
+      <data key="key0">沙特外援ABC</data>
+    </node>
+    <node id="n148">
+      <data key="key0">现代沙特阿拉伯经济结构的演变</data>
+    </node>
+    <node id="n149">
+      <data key="key0">中东市场</data>
+    </node>
+    <node id="n150">
+      <data key="key0">为生存而超越——来自中原油田改革的调查</data>
+    </node>
+    <node id="n151">
+      <data key="key0">中国共产党第十五次全国代表大会文件汇编</data>
+    </node>
+    <node id="n152">
+      <data key="key0">所向无空阔，真堪托死生——对一部中篇小说集的评论</data>
+    </node>
+    <node id="n153">
+      <data key="key0">房兵曹相马</data>
+    </node>
+    <node id="n154">
+      <data key="key0">压裂井生产优化模型的探讨</data>
+    </node>
+    <node id="n155">
+      <data key="key0">灰色系统理论教程</data>
+    </node>
+    <node id="n156">
+      <data key="key0">可靠性工程——设计、试验、分析、管理</data>
+    </node>
+    <node id="n157">
+      <data key="key0">水平压裂后产量预测及裂缝数优化</data>
+    </node>
+    <node id="n158">
+      <data key="key0">运筹学基础及应用</data>
+    </node>
+    <node id="n159">
+      <data key="key0">建立只标记加碱基的32P后标记法以用于检测致癌物—DNA加合物</data>
+    </node>
+    <node id="n160">
+      <data key="key0">中国共产党第十五次全国代表大会文件汇编</data>
+    </node>
+    <node id="n161">
+      <data key="key0">油气勘探开发投资风险分析的理论方法研究及应用</data>
+    </node>
+    <node id="n162">
+      <data key="key0">Evaluating influence diagrams</data>
+    </node>
+    <node id="n163">
+      <data key="key0">大型工程建设项目风险分析方法及应用</data>
+    </node>
+    <node id="n164">
+      <data key="key0">On representing and solving decision problem</data>
+    </node>
+    <node id="n165">
+      <data key="key0">Stochastic sensitivity analysis</data>
+    </node>
+    <node id="n166">
+      <data key="key0">项目投资风险收益率预测研究</data>
+    </node>
+    <node id="n167">
+      <data key="key0">油气勘探开发风险投资的综合评价</data>
+    </node>
+    <node id="n168">
+      <data key="key0">基于小波变换的地震道油气检测</data>
+    </node>
+    <node id="n169">
+      <data key="key0">地球科学中的分形研究</data>
+    </node>
+    <node id="n170">
+      <data key="key0">分形和小波变换在油气预测中的应用</data>
+    </node>
+    <node id="n171">
+      <data key="key0">Cycle—Octave and related transforms in seismic signal analysis</data>
+    </node>
+    <node id="n172">
+      <data key="key0">Ten Lectures on Wavelets</data>
+    </node>
+    <node id="n173">
+      <data key="key0">A theory for multiresolution signal composition:The wavelet representation</data>
+    </node>
+    <node id="n174">
+      <data key="key0">小波变换在地震道奇异性检测中的应用</data>
+    </node>
+    <node id="n175">
+      <data key="key0">对翁氏预测模型的推导及应用</data>
+    </node>
+    <node id="n176">
+      <data key="key0">翁氏产量预测模型求解的新方法及应用</data>
+    </node>
+    <node id="n177">
+      <data key="key0">油气地缘经济与中国油气安全</data>
+    </node>
+    <node id="n178">
+      <data key="key0">东亚的地缘政治经济形势与中国的地缘战略</data>
+    </node>
+    <node id="n179">
+      <data key="key0">石油政治：中国面临的挑战和机遇</data>
+    </node>
+    <node id="n180">
+      <data key="key0">新世纪的油气地缘政治——中国面临的机遇与挑战</data>
+    </node>
+    <node id="n181">
+      <data key="key0">中国共产党第十五次全国代表大会文件汇编</data>
+    </node>
+    <node id="n182">
+      <data key="key0">灰色系统理论教程</data>
+    </node>
+    <node id="n183">
+      <data key="key0">可靠性工程——设计、试验、分析、管理</data>
+    </node>
+    <node id="n184">
+      <data key="key0">水平压裂后产量预测及裂缝数优化</data>
+    </node>
+    <node id="n185">
+      <data key="key0">运筹学基础及应用</data>
+    </node>
+    <node id="n186">
+      <data key="key0">建立只标记加碱基的32P后标记法以用于检测致癌物—DNA加合物</data>
+    </node>
+    <node id="n187">
+      <data key="key0">非核电替代方案：我国能源结构的战略性调整</data>
+    </node>
+    <node id="n188">
+      <data key="key0">The End of Cheap Oil Scientific American</data>
+    </node>
+    <node id="n189">
+      <data key="key0">全球背景下的能源与环境合作</data>
+    </node>
+    <node id="n190">
+      <data key="key0">China&apos;s Electric Power Options:An analysis of—Economic and Environmental Costs</data>
+    </node>
+    <node id="n191">
+      <data key="key0">Nuclear Power in China:Slow Breeder</data>
+    </node>
+    <node id="n192">
+      <data key="key0">中国历代户口、田地、田赋统计</data>
+    </node>
+    <node id="n193">
+      <data key="key0">中国近代农业生产及贸易统计资料</data>
+    </node>
+    <node id="n194">
+      <data key="key0">剑桥中华人民共和国史（1949—1965）</data>
+    </node>
+    <node id="n195">
+      <data key="key0">中国农家经济</data>
+    </node>
+    <node id="n196">
+      <data key="key0">毛泽东选集（第1卷）</data>
+    </node>
+    <node id="n197">
+      <data key="key0">毛泽东农村调查文集</data>
+    </node>
+    <node id="n198">
+      <data key="key0">第一次国内革命战争时期的农民运动资料</data>
+    </node>
+    <node id="n199">
+      <data key="key0">本世纪二三十年代我国地权分配的再估计</data>
+    </node>
+    <node id="n200">
+      <data key="key0">中国土地问题之商榷</data>
+    </node>
+    <node id="n201">
+      <data key="key0">现代中国土地问题之探究</data>
+    </node>
+    <node id="n202">
+      <data key="key0">中国社会经济改造问题研究</data>
+    </node>
+    <node id="n203">
+      <data key="key0">中国现代底土地问题</data>
+    </node>
+    <node id="n204">
+      <data key="key0">中国近代经济史统计资料选辑</data>
+    </node>
+    <node id="n205">
+      <data key="key0">陈翰笙文集</data>
+    </node>
+    <node id="n206">
+      <data key="key0">建国三十年全国农业统计资料</data>
+    </node>
+    <node id="n207">
+      <data key="key0">中国近现代农民土地问题研究</data>
+    </node>
+    <node id="n208">
+      <data key="key0">土地改革前华东农村土地状况</data>
+    </node>
+    <node id="n209">
+      <data key="key0">土地改革主要文献与资料</data>
+    </node>
+    <node id="n210">
+      <data key="key0">近代江南农村</data>
+    </node>
+    <node id="n211">
+      <data key="key0">中国农村经济资料续编</data>
+    </node>
+    <node id="n212">
+      <data key="key0">中国农村经济资料续编</data>
+    </node>
+    <node id="n213">
+      <data key="key0">绥德、米脂土地问题初步研究</data>
+    </node>
+    <node id="n214">
+      <data key="key0">福建省农村调查</data>
+    </node>
+    <node id="n215">
+      <data key="key0">剑桥中华人民共和国史（第1部）</data>
+    </node>
+    <node id="n216">
+      <data key="key0">中国租佃制度之统计分析</data>
+    </node>
+    <node id="n217">
+      <data key="key0">改进中国农业之途径</data>
+    </node>
+    <node id="n218">
+      <data key="key0">我国佃农经济状况</data>
+    </node>
+    <node id="n219">
+      <data key="key0">中国各省的地租</data>
+    </node>
+    <node id="n220">
+      <data key="key0">经济改革的理论与实践（俄）</data>
+    </node>
+    <node id="n221">
+      <data key="key0">远东经济改革与危机（俄）</data>
+    </node>
+    <node id="n222">
+      <data key="key0">远东地区经济发展战略（俄）</data>
+    </node>
+    <node id="n223">
+      <data key="key0">俄罗斯远东与东北亚的自然资源开发（俄）</data>
+    </node>
+    <node id="n224">
+      <data key="key0">俄罗斯远东经济述评（俄）</data>
+    </node>
+    <node id="n225">
+      <data key="key0">燃气型大气污染及儿童非特异性免疫功能调查</data>
+    </node>
+    <node id="n226">
+      <data key="key0">成都市大气污染与居民健康关系的研究</data>
+    </node>
+    <node id="n227">
+      <data key="key0">自贡市大气污染现状研究</data>
+    </node>
+    <node id="n228">
+      <data key="key0">我国可持续能源工业发展思考</data>
+    </node>
+    <node id="n229">
+      <data key="key0">International conference on natural gas hydrates</data>
+    </node>
+    <node id="n230">
+      <data key="key0">关于加强发展我国东南地区核电的建议</data>
+    </node>
+    <node id="n231">
+      <data key="key0">关于加速开发我国天然气资源的建议</data>
+    </node>
+    <node id="n232">
+      <data key="key0">十年天然气科技攻关成效显著</data>
+    </node>
+    <node id="n233">
+      <data key="key0">我国发展核电铀资源保证程度分析</data>
+    </node>
+    <node id="n234">
+      <data key="key0">新亚欧大陆桥天然气资源国际合作前景刍议</data>
+    </node>
+    <node id="n235">
+      <data key="key0">1996年世界石油工业综述</data>
+    </node>
+    <node id="n236">
+      <data key="key0">第15届世界石油大会论文集</data>
+    </node>
+    <node id="n237">
+      <data key="key0">世界天然气工业发展动向分析</data>
+    </node>
+    <node id="n238">
+      <data key="key0">1997年安龙能源展望</data>
+    </node>
+    <node id="n239">
+      <data key="key0">世界能源统计回顾</data>
+    </node>
+    <node id="n240">
+      <data key="key0">天然气及其在目前和未来全球能源供需中的比例</data>
+    </node>
+    <node id="n241">
+      <data key="key0">未来利用中东天然气资源的几种选择</data>
+    </node>
+    <node id="n242">
+      <data key="key0">蓄势待发——国内天然气市场展望</data>
+    </node>
+    <node id="n243">
+      <data key="key0">关于加快发展我国天然气工业的对策建议</data>
+    </node>
+    <node id="n244">
+      <data key="key0">谈谈我国天然气市场现状及其发展对策</data>
+    </node>
+    <node id="n245">
+      <data key="key0">扬子石化股份制改造、资产重组的案例分析</data>
+    </node>
+    <node id="n246">
+      <data key="key0">股份制与资本市场—资本经营的组织形式和载体建设</data>
+    </node>
+    <node id="n247">
+      <data key="key0">财产权利与制度变迁——产权学派与新制度学派译文集</data>
+    </node>
+    <node id="n248">
+      <data key="key0">迈向新世纪的扬子</data>
+    </node>
+    <node id="n249">
+      <data key="key0">上市公司资产重组的六大原因</data>
+    </node>
+    <node id="n250">
+      <data key="key0">中国国有企业的制度创新</data>
+    </node>
+    <node id="n251">
+      <data key="key0">资产重组新课题：“造壳”与“用壳”</data>
+    </node>
+    <edge id="e0" source="n0" target="n1">
+    </edge>
+    <edge id="e1" source="n0" target="n2">
+    </edge>
+    <edge id="e2" source="n0" target="n3">
+    </edge>
+    <edge id="e3" source="n0" target="n4">
+    </edge>
+    <edge id="e4" source="n0" target="n5">
+    </edge>
+    <edge id="e5" source="n6" target="n7">
+    </edge>
+    <edge id="e6" source="n8" target="n9">
+    </edge>
+    <edge id="e7" source="n8" target="n10">
+    </edge>
+    <edge id="e8" source="n8" target="n11">
+    </edge>
+    <edge id="e9" source="n12" target="n13">
+    </edge>
+    <edge id="e10" source="n12" target="n14">
+    </edge>
+    <edge id="e11" source="n12" target="n15">
+    </edge>
+    <edge id="e12" source="n16" target="n17">
+    </edge>
+    <edge id="e13" source="n18" target="n19">
+    </edge>
+    <edge id="e14" source="n20" target="n21">
+    </edge>
+    <edge id="e15" source="n20" target="n22">
+    </edge>
+    <edge id="e16" source="n23" target="n24">
+    </edge>
+    <edge id="e17" source="n23" target="n25">
+    </edge>
+    <edge id="e18" source="n23" target="n26">
+    </edge>
+    <edge id="e19" source="n23" target="n27">
+    </edge>
+    <edge id="e20" source="n23" target="n28">
+    </edge>
+    <edge id="e21" source="n29" target="n30">
+    </edge>
+    <edge id="e22" source="n29" target="n31">
+    </edge>
+    <edge id="e23" source="n29" target="n32">
+    </edge>
+    <edge id="e24" source="n29" target="n33">
+    </edge>
+    <edge id="e25" source="n34" target="n35">
+    </edge>
+    <edge id="e26" source="n34" target="n36">
+    </edge>
+    <edge id="e27" source="n34" target="n37">
+    </edge>
+    <edge id="e28" source="n34" target="n38">
+    </edge>
+    <edge id="e29" source="n34" target="n39">
+    </edge>
+    <edge id="e30" source="n40" target="n41">
+    </edge>
+    <edge id="e31" source="n40" target="n42">
+    </edge>
+    <edge id="e32" source="n40" target="n43">
+    </edge>
+    <edge id="e33" source="n40" target="n44">
+    </edge>
+    <edge id="e34" source="n40" target="n45">
+    </edge>
+    <edge id="e35" source="n46" target="n47">
+    </edge>
+    <edge id="e36" source="n48" target="n49">
+    </edge>
+    <edge id="e37" source="n48" target="n50">
+    </edge>
+    <edge id="e38" source="n48" target="n51">
+    </edge>
+    <edge id="e39" source="n48" target="n52">
+    </edge>
+    <edge id="e40" source="n48" target="n53">
+    </edge>
+    <edge id="e41" source="n48" target="n54">
+    </edge>
+    <edge id="e42" source="n55" target="n56">
+    </edge>
+    <edge id="e43" source="n55" target="n57">
+    </edge>
+    <edge id="e44" source="n55" target="n58">
+    </edge>
+    <edge id="e45" source="n55" target="n59">
+    </edge>
+    <edge id="e46" source="n55" target="n60">
+    </edge>
+    <edge id="e47" source="n55" target="n61">
+    </edge>
+    <edge id="e48" source="n55" target="n62">
+    </edge>
+    <edge id="e49" source="n63" target="n64">
+    </edge>
+    <edge id="e50" source="n63" target="n65">
+    </edge>
+    <edge id="e51" source="n63" target="n66">
+    </edge>
+    <edge id="e52" source="n63" target="n67">
+    </edge>
+    <edge id="e53" source="n63" target="n68">
+    </edge>
+    <edge id="e54" source="n63" target="n69">
+    </edge>
+    <edge id="e55" source="n63" target="n70">
+    </edge>
+    <edge id="e56" source="n63" target="n71">
+    </edge>
+    <edge id="e57" source="n72" target="n73">
+    </edge>
+    <edge id="e58" source="n74" target="n75">
+    </edge>
+    <edge id="e59" source="n76" target="n77">
+    </edge>
+    <edge id="e60" source="n78" target="n79">
+    </edge>
+    <edge id="e61" source="n78" target="n80">
+    </edge>
+    <edge id="e62" source="n81" target="n82">
+    </edge>
+    <edge id="e63" source="n81" target="n83">
+    </edge>
+    <edge id="e64" source="n84" target="n85">
+    </edge>
+    <edge id="e65" source="n84" target="n86">
+    </edge>
+    <edge id="e66" source="n84" target="n87">
+    </edge>
+    <edge id="e67" source="n84" target="n88">
+    </edge>
+    <edge id="e68" source="n89" target="n90">
+    </edge>
+    <edge id="e69" source="n89" target="n91">
+    </edge>
+    <edge id="e70" source="n89" target="n92">
+    </edge>
+    <edge id="e71" source="n89" target="n93">
+    </edge>
+    <edge id="e72" source="n94" target="n95">
+    </edge>
+    <edge id="e73" source="n94" target="n96">
+    </edge>
+    <edge id="e74" source="n94" target="n97">
+    </edge>
+    <edge id="e75" source="n94" target="n98">
+    </edge>
+    <edge id="e76" source="n94" target="n99">
+    </edge>
+    <edge id="e77" source="n94" target="n100">
+    </edge>
+    <edge id="e78" source="n94" target="n101">
+    </edge>
+    <edge id="e79" source="n102" target="n103">
+    </edge>
+    <edge id="e80" source="n102" target="n104">
+    </edge>
+    <edge id="e81" source="n102" target="n105">
+    </edge>
+    <edge id="e82" source="n102" target="n106">
+    </edge>
+    <edge id="e83" source="n107" target="n108">
+    </edge>
+    <edge id="e84" source="n109" target="n110">
+    </edge>
+    <edge id="e85" source="n109" target="n111">
+    </edge>
+    <edge id="e86" source="n109" target="n112">
+    </edge>
+    <edge id="e87" source="n109" target="n113">
+    </edge>
+    <edge id="e88" source="n114" target="n115">
+    </edge>
+    <edge id="e89" source="n114" target="n116">
+    </edge>
+    <edge id="e90" source="n114" target="n117">
+    </edge>
+    <edge id="e91" source="n114" target="n118">
+    </edge>
+    <edge id="e92" source="n114" target="n119">
+    </edge>
+    <edge id="e93" source="n114" target="n120">
+    </edge>
+    <edge id="e94" source="n114" target="n121">
+    </edge>
+    <edge id="e95" source="n114" target="n122">
+    </edge>
+    <edge id="e96" source="n114" target="n123">
+    </edge>
+    <edge id="e97" source="n114" target="n124">
+    </edge>
+    <edge id="e98" source="n125" target="n126">
+    </edge>
+    <edge id="e99" source="n125" target="n127">
+    </edge>
+    <edge id="e100" source="n125" target="n128">
+    </edge>
+    <edge id="e101" source="n125" target="n129">
+    </edge>
+    <edge id="e102" source="n125" target="n130">
+    </edge>
+    <edge id="e103" source="n125" target="n131">
+    </edge>
+    <edge id="e104" source="n125" target="n132">
+    </edge>
+    <edge id="e105" source="n125" target="n133">
+    </edge>
+    <edge id="e106" source="n125" target="n134">
+    </edge>
+    <edge id="e107" source="n135" target="n136">
+    </edge>
+    <edge id="e108" source="n135" target="n137">
+    </edge>
+    <edge id="e109" source="n135" target="n138">
+    </edge>
+    <edge id="e110" source="n135" target="n139">
+    </edge>
+    <edge id="e111" source="n135" target="n140">
+    </edge>
+    <edge id="e112" source="n141" target="n142">
+    </edge>
+    <edge id="e113" source="n141" target="n143">
+    </edge>
+    <edge id="e114" source="n141" target="n144">
+    </edge>
+    <edge id="e115" source="n141" target="n145">
+    </edge>
+    <edge id="e116" source="n141" target="n146">
+    </edge>
+    <edge id="e117" source="n141" target="n147">
+    </edge>
+    <edge id="e118" source="n141" target="n148">
+    </edge>
+    <edge id="e119" source="n141" target="n149">
+    </edge>
+    <edge id="e120" source="n150" target="n151">
+    </edge>
+    <edge id="e121" source="n152" target="n153">
+    </edge>
+    <edge id="e122" source="n154" target="n155">
+    </edge>
+    <edge id="e123" source="n154" target="n156">
+    </edge>
+    <edge id="e124" source="n154" target="n157">
+    </edge>
+    <edge id="e125" source="n154" target="n158">
+    </edge>
+    <edge id="e126" source="n107" target="n159">
+    </edge>
+    <edge id="e127" source="n150" target="n160">
+    </edge>
+    <edge id="e128" source="n161" target="n162">
+    </edge>
+    <edge id="e129" source="n161" target="n163">
+    </edge>
+    <edge id="e130" source="n161" target="n164">
+    </edge>
+    <edge id="e131" source="n161" target="n165">
+    </edge>
+    <edge id="e132" source="n161" target="n166">
+    </edge>
+    <edge id="e133" source="n161" target="n167">
+    </edge>
+    <edge id="e134" source="n168" target="n169">
+    </edge>
+    <edge id="e135" source="n168" target="n170">
+    </edge>
+    <edge id="e136" source="n168" target="n171">
+    </edge>
+    <edge id="e137" source="n168" target="n172">
+    </edge>
+    <edge id="e138" source="n168" target="n173">
+    </edge>
+    <edge id="e139" source="n168" target="n174">
+    </edge>
+    <edge id="e140" source="n78" target="n175">
+    </edge>
+    <edge id="e141" source="n78" target="n176">
+    </edge>
+    <edge id="e142" source="n177" target="n178">
+    </edge>
+    <edge id="e143" source="n177" target="n179">
+    </edge>
+    <edge id="e144" source="n177" target="n180">
+    </edge>
+    <edge id="e145" source="n150" target="n181">
+    </edge>
+    <edge id="e146" source="n154" target="n182">
+    </edge>
+    <edge id="e147" source="n154" target="n183">
+    </edge>
+    <edge id="e148" source="n154" target="n184">
+    </edge>
+    <edge id="e149" source="n154" target="n185">
+    </edge>
+    <edge id="e150" source="n107" target="n186">
+    </edge>
+    <edge id="e151" source="n187" target="n188">
+    </edge>
+    <edge id="e152" source="n187" target="n189">
+    </edge>
+    <edge id="e153" source="n187" target="n190">
+    </edge>
+    <edge id="e154" source="n187" target="n191">
+    </edge>
+    <edge id="e155" source="n187" target="n192">
+    </edge>
+    <edge id="e156" source="n187" target="n193">
+    </edge>
+    <edge id="e157" source="n187" target="n194">
+    </edge>
+    <edge id="e158" source="n187" target="n195">
+    </edge>
+    <edge id="e159" source="n187" target="n196">
+    </edge>
+    <edge id="e160" source="n187" target="n197">
+    </edge>
+    <edge id="e161" source="n187" target="n198">
+    </edge>
+    <edge id="e162" source="n187" target="n199">
+    </edge>
+    <edge id="e163" source="n187" target="n200">
+    </edge>
+    <edge id="e164" source="n187" target="n201">
+    </edge>
+    <edge id="e165" source="n187" target="n202">
+    </edge>
+    <edge id="e166" source="n187" target="n203">
+    </edge>
+    <edge id="e167" source="n187" target="n204">
+    </edge>
+    <edge id="e168" source="n187" target="n205">
+    </edge>
+    <edge id="e169" source="n187" target="n206">
+    </edge>
+    <edge id="e170" source="n187" target="n207">
+    </edge>
+    <edge id="e171" source="n187" target="n208">
+    </edge>
+    <edge id="e172" source="n187" target="n209">
+    </edge>
+    <edge id="e173" source="n187" target="n210">
+    </edge>
+    <edge id="e174" source="n187" target="n211">
+    </edge>
+    <edge id="e175" source="n187" target="n212">
+    </edge>
+    <edge id="e176" source="n187" target="n213">
+    </edge>
+    <edge id="e177" source="n187" target="n214">
+    </edge>
+    <edge id="e178" source="n187" target="n215">
+    </edge>
+    <edge id="e179" source="n187" target="n216">
+    </edge>
+    <edge id="e180" source="n187" target="n217">
+    </edge>
+    <edge id="e181" source="n187" target="n218">
+    </edge>
+    <edge id="e182" source="n187" target="n219">
+    </edge>
+    <edge id="e183" source="n40" target="n220">
+    </edge>
+    <edge id="e184" source="n40" target="n221">
+    </edge>
+    <edge id="e185" source="n40" target="n222">
+    </edge>
+    <edge id="e186" source="n40" target="n223">
+    </edge>
+    <edge id="e187" source="n40" target="n224">
+    </edge>
+    <edge id="e188" source="n225" target="n226">
+    </edge>
+    <edge id="e189" source="n225" target="n227">
+    </edge>
+    <edge id="e190" source="n228" target="n229">
+    </edge>
+    <edge id="e191" source="n228" target="n230">
+    </edge>
+    <edge id="e192" source="n228" target="n231">
+    </edge>
+    <edge id="e193" source="n228" target="n232">
+    </edge>
+    <edge id="e194" source="n228" target="n233">
+    </edge>
+    <edge id="e195" source="n234" target="n235">
+    </edge>
+    <edge id="e196" source="n234" target="n236">
+    </edge>
+    <edge id="e197" source="n234" target="n237">
+    </edge>
+    <edge id="e198" source="n102" target="n238">
+    </edge>
+    <edge id="e199" source="n102" target="n239">
+    </edge>
+    <edge id="e200" source="n102" target="n240">
+    </edge>
+    <edge id="e201" source="n102" target="n241">
+    </edge>
+    <edge id="e202" source="n242" target="n243">
+    </edge>
+    <edge id="e203" source="n242" target="n244">
+    </edge>
+    <edge id="e204" source="n245" target="n246">
+    </edge>
+    <edge id="e205" source="n245" target="n247">
+    </edge>
+    <edge id="e206" source="n245" target="n248">
+    </edge>
+    <edge id="e207" source="n245" target="n249">
+    </edge>
+    <edge id="e208" source="n245" target="n250">
+    </edge>
+    <edge id="e209" source="n245" target="n251">
+    </edge>
+  </graph>
+</graphml>

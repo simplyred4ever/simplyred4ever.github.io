@@ -1,0 +1,562 @@
+<!DOCTYPE html>
+<!-- saved from url=(0035)http://bl.ocks.org/couchand/6420534 -->
+<html><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8"><meta charset="utf-8">
+<title>Better force layout node selection</title>
+<link rel="icon" href="http://bl.ocks.org/favicon.png">
+<style>
+
+@import url("/style.css?20120730");
+
+header,
+footer {
+  color: #555;
+}
+
+a.gist {
+  color: #000;
+}
+
+</style>
+
+<meta name="chromesniffer" id="chromesniffer_meta" content="{}"><script type="text/javascript" src="chrome-extension://homgcnaoacgigpkkljjjekpignblkeae/detector.js"></script></head><body><header>
+  <a href="http://bl.ocks.org/couchand">couchand</a>’s block
+  <a class="gist" title="View gist #6420534 on GitHub" href="https://gist.github.com/couchand/6420534">#6420534</a>
+  <span class="date">September 3, 2013</span>
+</header>
+
+<h1>Better force layout node selection</h1>
+
+
+<iframe src="./Better force layout node selection_files/saved_resource.html" marginwidth="0" marginheight="0" scrolling="no"></iframe>
+<p></p><aside><a style="position:relative;top:6px;" href="http://bl.ocks.org/couchand/raw/6420534/" target="_blank">Open in a new window.</a></aside>
+
+
+<div class="gist-readme"><p>Object selection is tough, particularly when the things you'd like to select are moving around (like nodes in a force-directed layout, perhaps).  Allowing a user the fudge factor of an area cursor helps, but can get in the way when targets are small enough.  The use of a Voronoi tessellation promises a map of closest node for any given point.</p>
+
+<p>This example illustrates the use of a Voronoi overlay to clip nodes in a force-directed simulation.  By using the Voronoi shapes as the clipping path the nodes themselves can be drawn much simpler.</p>
+
+<p>This builds on these two examples from Mike Bostock on <a href="http://bl.ocks.org/mbostock/4062045">force-directed graphs</a> and <a href="http://bl.ocks.org/mbostock/4060366">voronoi tesselation</a>, as well as Nate Vack's Voronoi selection example <a href="http://bl.ocks.org/njvack/1405439">here</a> and <a href="http://bl.ocks.org/christophermanning/1734663">this</a> first pass at an integration from Christopher Manning.</p></div>
+
+<div class="gist-sources"><div class="gist-source"><h2>index.html<a name="index.html" href="http://bl.ocks.org/couchand/6420534#index.html">#</a></h2><pre><code class="html xml"><span class="tag">&lt;<span class="title">html</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">head</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">style</span>&gt;</span><span class="css">
+
+<span class="class">.node</span> <span class="rules">{
+  <span class="rule"><span class="attribute">opacity</span>:<span class="value"> <span class="number">0.5</span></span>;</span>
+<span class="rule">}</span></span>
+
+<span class="class">.node</span><span class="pseudo">:hover</span> <span class="rules">{
+  <span class="rule"><span class="attribute">opacity</span>:<span class="value"> <span class="number">1</span></span>;</span>
+<span class="rule">}</span></span>
+
+<span class="class">.link</span> <span class="rules">{
+  <span class="rule"><span class="attribute">stroke</span>:<span class="value"> <span class="number">#999</span></span>;</span>
+  <span class="rule"><span class="attribute">stroke-opacity</span>:<span class="value"> <span class="number">0.3</span></span>;</span>
+<span class="rule">}</span></span>
+
+    </span><span class="tag">&lt;/<span class="title">style</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span> <span class="attribute">src</span>=<span class="value">"http://d3js.org/d3.v3.min.js"</span>&gt;</span><span class="javascript"></span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">head</span>&gt;</span>
+  <span class="tag">&lt;<span class="title">body</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">"viz"</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span>
+    <span class="tag">&lt;<span class="title">script</span>&gt;</span><span class="javascript">
+
+<span class="function"><span class="keyword">function</span> <span class="title">name</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.name; }
+<span class="function"><span class="keyword">function</span> <span class="title">group</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.group; }
+
+<span class="keyword">var</span> color = d3.scale.category10();
+<span class="function"><span class="keyword">function</span> <span class="title">colorByGroup</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> color(group(d)); }
+
+<span class="keyword">var</span> width = <span class="number">960</span>,
+    height = <span class="number">500</span>;
+
+<span class="keyword">var</span> svg = d3.select(<span class="string">'#viz'</span>)
+    .append(<span class="string">'svg'</span>)
+    .attr(<span class="string">'width'</span>, width)
+    .attr(<span class="string">'height'</span>, height);
+
+<span class="keyword">var</span> node, link;
+
+<span class="keyword">var</span> voronoi = d3.geom.voronoi()
+    .x(<span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.x; })
+    .y(<span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.y; })
+    .clipExtent([[-<span class="number">10</span>, -<span class="number">10</span>], [width+<span class="number">10</span>, height+<span class="number">10</span>]]);
+
+<span class="function"><span class="keyword">function</span> <span class="title">recenterVoronoi</span><span class="params">(nodes)</span> {</span>
+    <span class="keyword">var</span> shapes = [];
+    voronoi(nodes).forEach(<span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span>
+        <span class="keyword">if</span> ( !d.length ) <span class="keyword">return</span>;
+        <span class="keyword">var</span> n = [];
+        d.forEach(<span class="function"><span class="keyword">function</span><span class="params">(c)</span>{</span>
+            n.push([ c[<span class="number">0</span>] - d.point.x, c[<span class="number">1</span>] - d.point.y ]);
+        });
+        n.point = d.point;
+        shapes.push(n);
+    });
+    <span class="keyword">return</span> shapes;
+}
+
+<span class="keyword">var</span> force = d3.layout.force()
+    .charge(-<span class="number">2000</span>)
+    .friction(<span class="number">0.3</span>)
+    .linkDistance(<span class="number">50</span>)
+    .size([width, height]);
+
+force.on(<span class="string">'tick'</span>, <span class="function"><span class="keyword">function</span><span class="params">()</span> {</span>
+    node.attr(<span class="string">'transform'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> <span class="string">'translate('</span>+d.x+<span class="string">','</span>+d.y+<span class="string">')'</span>; })
+        .attr(<span class="string">'clip-path'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> <span class="string">'url(#clip-'</span>+d.index+<span class="string">')'</span>; });
+
+    link.attr(<span class="string">'x1'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.source.x; })
+        .attr(<span class="string">'y1'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.source.y; })
+        .attr(<span class="string">'x2'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.target.x; })
+        .attr(<span class="string">'y2'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.target.y; });
+
+    <span class="keyword">var</span> clip = svg.selectAll(<span class="string">'.clip'</span>)
+        .data( recenterVoronoi(node.data()), <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> d.point.index; } );
+
+    clip.enter().append(<span class="string">'clipPath'</span>)
+        .attr(<span class="string">'id'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> <span class="string">'clip-'</span>+d.point.index; })
+        .attr(<span class="string">'class'</span>, <span class="string">'clip'</span>);
+    clip.exit().remove()
+
+    clip.selectAll(<span class="string">'path'</span>).remove();
+    clip.append(<span class="string">'path'</span>)
+        .attr(<span class="string">'d'</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> <span class="string">'M'</span>+d.join(<span class="string">','</span>)+<span class="string">'Z'</span>; });
+});
+
+d3.json(<span class="string">'miserables.json'</span>, <span class="function"><span class="keyword">function</span><span class="params">(err, data)</span> {</span>
+
+    data.nodes.forEach(<span class="function"><span class="keyword">function</span><span class="params">(d, i)</span> {</span>
+        d.id = i;
+    });
+
+    link = svg.selectAll(<span class="string">'.link'</span>)
+        .data( data.links )
+      .enter().append(<span class="string">'line'</span>)
+        .attr(<span class="string">'class'</span>, <span class="string">'link'</span>)
+        .style(<span class="string">"stroke-width"</span>, <span class="function"><span class="keyword">function</span><span class="params">(d)</span> {</span> <span class="keyword">return</span> Math.sqrt(d.value); });
+
+    node = svg.selectAll(<span class="string">'.node'</span>)
+        .data( data.nodes )
+      .enter().append(<span class="string">'g'</span>)
+        .attr(<span class="string">'title'</span>, name)
+        .attr(<span class="string">'class'</span>, <span class="string">'node'</span>)
+        .call( force.drag );
+
+    node.append(<span class="string">'circle'</span>)
+        .attr(<span class="string">'r'</span>, <span class="number">30</span>)
+        .attr(<span class="string">'fill'</span>, colorByGroup)
+        .attr(<span class="string">'fill-opacity'</span>, <span class="number">0.5</span>);
+
+    node.append(<span class="string">'circle'</span>)
+        .attr(<span class="string">'r'</span>, <span class="number">4</span>)
+        .attr(<span class="string">'stroke'</span>, <span class="string">'black'</span>);
+
+    force
+        .nodes( data.nodes )
+        .links( data.links )
+        .start();
+});
+
+    </span><span class="tag">&lt;/<span class="title">script</span>&gt;</span>
+  <span class="tag">&lt;/<span class="title">body</span>&gt;</span>
+<span class="tag">&lt;/<span class="title">html</span>&gt;</span></code></pre></div><div class="gist-source"><h2>miserables.json<a name="miserables.json" href="http://bl.ocks.org/couchand/6420534#miserables.json">#</a></h2><pre><code class="javascript">{
+  <span class="string">"nodes"</span>:[
+    {<span class="string">"name"</span>:<span class="string">"Myriel"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Napoleon"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mlle.Baptistine"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.Magloire"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"CountessdeLo"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Geborand"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Champtercier"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Cravatte"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Count"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"OldMan"</span>,<span class="string">"group"</span>:<span class="number">1</span>},
+    {<span class="string">"name"</span>:<span class="string">"Labarre"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Valjean"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Marguerite"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.deR"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Isabeau"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Gervais"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Tholomyes"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Listolier"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Fameuil"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Blacheville"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Favourite"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Dahlia"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Zephine"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Fantine"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.Thenardier"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Thenardier"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Cosette"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Javert"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Fauchelevent"</span>,<span class="string">"group"</span>:<span class="number">0</span>},
+    {<span class="string">"name"</span>:<span class="string">"Bamatabois"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Perpetue"</span>,<span class="string">"group"</span>:<span class="number">3</span>},
+    {<span class="string">"name"</span>:<span class="string">"Simplice"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Scaufflaire"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Woman1"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Judge"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Champmathieu"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Brevet"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Chenildieu"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Cochepaille"</span>,<span class="string">"group"</span>:<span class="number">2</span>},
+    {<span class="string">"name"</span>:<span class="string">"Pontmercy"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Boulatruelle"</span>,<span class="string">"group"</span>:<span class="number">6</span>},
+    {<span class="string">"name"</span>:<span class="string">"Eponine"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Anzelma"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Woman2"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"MotherInnocent"</span>,<span class="string">"group"</span>:<span class="number">0</span>},
+    {<span class="string">"name"</span>:<span class="string">"Gribier"</span>,<span class="string">"group"</span>:<span class="number">0</span>},
+    {<span class="string">"name"</span>:<span class="string">"Jondrette"</span>,<span class="string">"group"</span>:<span class="number">7</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.Burgon"</span>,<span class="string">"group"</span>:<span class="number">7</span>},
+    {<span class="string">"name"</span>:<span class="string">"Gavroche"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Gillenormand"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Magnon"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mlle.Gillenormand"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.Pontmercy"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mlle.Vaubois"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Lt.Gillenormand"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Marius"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"BaronessT"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mabeuf"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Enjolras"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Combeferre"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Prouvaire"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Feuilly"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Courfeyrac"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Bahorel"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Bossuet"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Joly"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"Grantaire"</span>,<span class="string">"group"</span>:<span class="number">8</span>},
+    {<span class="string">"name"</span>:<span class="string">"MotherPlutarch"</span>,<span class="string">"group"</span>:<span class="number">9</span>},
+    {<span class="string">"name"</span>:<span class="string">"Gueulemer"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Babet"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Claquesous"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Montparnasse"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Toussaint"</span>,<span class="string">"group"</span>:<span class="number">5</span>},
+    {<span class="string">"name"</span>:<span class="string">"Child1"</span>,<span class="string">"group"</span>:<span class="number">10</span>},
+    {<span class="string">"name"</span>:<span class="string">"Child2"</span>,<span class="string">"group"</span>:<span class="number">10</span>},
+    {<span class="string">"name"</span>:<span class="string">"Brujon"</span>,<span class="string">"group"</span>:<span class="number">4</span>},
+    {<span class="string">"name"</span>:<span class="string">"Mme.Hucheloup"</span>,<span class="string">"group"</span>:<span class="number">8</span>}
+  ],
+  <span class="string">"links"</span>:[
+    {<span class="string">"source"</span>:<span class="number">1</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">2</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">8</span>},
+    {<span class="string">"source"</span>:<span class="number">3</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">10</span>},
+    {<span class="string">"source"</span>:<span class="number">3</span>,<span class="string">"target"</span>:<span class="number">2</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">4</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">5</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">6</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">7</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">8</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">9</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">11</span>,<span class="string">"target"</span>:<span class="number">10</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">11</span>,<span class="string">"target"</span>:<span class="number">3</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">11</span>,<span class="string">"target"</span>:<span class="number">2</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">11</span>,<span class="string">"target"</span>:<span class="number">0</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">12</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">13</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">14</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">15</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">17</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">18</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">18</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">19</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">19</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">19</span>,<span class="string">"target"</span>:<span class="number">18</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">20</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">20</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">20</span>,<span class="string">"target"</span>:<span class="number">18</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">20</span>,<span class="string">"target"</span>:<span class="number">19</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">21</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">21</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">21</span>,<span class="string">"target"</span>:<span class="number">18</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">21</span>,<span class="string">"target"</span>:<span class="number">19</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">21</span>,<span class="string">"target"</span>:<span class="number">20</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">18</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">19</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">20</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">22</span>,<span class="string">"target"</span>:<span class="number">21</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">17</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">18</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">19</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">20</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">21</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">22</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">12</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">23</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">9</span>},
+    {<span class="string">"source"</span>:<span class="number">24</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">24</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">7</span>},
+    {<span class="string">"source"</span>:<span class="number">25</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">13</span>},
+    {<span class="string">"source"</span>:<span class="number">25</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">25</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">12</span>},
+    {<span class="string">"source"</span>:<span class="number">26</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">26</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">31</span>},
+    {<span class="string">"source"</span>:<span class="number">26</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">26</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">27</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">17</span>},
+    {<span class="string">"source"</span>:<span class="number">27</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">27</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">27</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">27</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">28</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">8</span>},
+    {<span class="string">"source"</span>:<span class="number">28</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">29</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">29</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">29</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">30</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">31</span>,<span class="string">"target"</span>:<span class="number">30</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">31</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">31</span>,<span class="string">"target"</span>:<span class="number">23</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">31</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">32</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">33</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">33</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">34</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">34</span>,<span class="string">"target"</span>:<span class="number">29</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">35</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">35</span>,<span class="string">"target"</span>:<span class="number">34</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">35</span>,<span class="string">"target"</span>:<span class="number">29</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">36</span>,<span class="string">"target"</span>:<span class="number">34</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">36</span>,<span class="string">"target"</span>:<span class="number">35</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">36</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">36</span>,<span class="string">"target"</span>:<span class="number">29</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">37</span>,<span class="string">"target"</span>:<span class="number">34</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">37</span>,<span class="string">"target"</span>:<span class="number">35</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">37</span>,<span class="string">"target"</span>:<span class="number">36</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">37</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">37</span>,<span class="string">"target"</span>:<span class="number">29</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">34</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">35</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">36</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">37</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">38</span>,<span class="string">"target"</span>:<span class="number">29</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">39</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">40</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">41</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">41</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">42</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">42</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">42</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">43</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">43</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">43</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">44</span>,<span class="string">"target"</span>:<span class="number">28</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">44</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">45</span>,<span class="string">"target"</span>:<span class="number">28</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">47</span>,<span class="string">"target"</span>:<span class="number">46</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">48</span>,<span class="string">"target"</span>:<span class="number">47</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">48</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">48</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">48</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">49</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">49</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">50</span>,<span class="string">"target"</span>:<span class="number">49</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">50</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">51</span>,<span class="string">"target"</span>:<span class="number">49</span>,<span class="string">"value"</span>:<span class="number">9</span>},
+    {<span class="string">"source"</span>:<span class="number">51</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">51</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">52</span>,<span class="string">"target"</span>:<span class="number">51</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">52</span>,<span class="string">"target"</span>:<span class="number">39</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">53</span>,<span class="string">"target"</span>:<span class="number">51</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">54</span>,<span class="string">"target"</span>:<span class="number">51</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">54</span>,<span class="string">"target"</span>:<span class="number">49</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">54</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">51</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">49</span>,<span class="string">"value"</span>:<span class="number">12</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">39</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">54</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">21</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">19</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">16</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">55</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">56</span>,<span class="string">"target"</span>:<span class="number">49</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">56</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">57</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">57</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">57</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">58</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">7</span>},
+    {<span class="string">"source"</span>:<span class="number">58</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">7</span>},
+    {<span class="string">"source"</span>:<span class="number">58</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">58</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">58</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">59</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">15</span>},
+    {<span class="string">"source"</span>:<span class="number">59</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">59</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">59</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">60</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">60</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">60</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">61</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">9</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">17</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">13</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">7</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">61</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">62</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">62</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">61</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">63</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">62</span>,<span class="string">"value"</span>:<span class="number">12</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">63</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">10</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">61</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">9</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">64</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">63</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">64</span>,<span class="string">"value"</span>:<span class="number">7</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">62</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">61</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">65</span>,<span class="string">"target"</span>:<span class="number">55</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">64</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">59</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">62</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">65</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">63</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">61</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">66</span>,<span class="string">"target"</span>:<span class="number">60</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">67</span>,<span class="string">"target"</span>:<span class="number">57</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">5</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">68</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">68</span>,<span class="string">"value"</span>:<span class="number">6</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">69</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">69</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">68</span>,<span class="string">"value"</span>:<span class="number">4</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">24</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">70</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">69</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">68</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">70</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">71</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">72</span>,<span class="string">"target"</span>:<span class="number">26</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">72</span>,<span class="string">"target"</span>:<span class="number">27</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">72</span>,<span class="string">"target"</span>:<span class="number">11</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">73</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">74</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">2</span>},
+    {<span class="string">"source"</span>:<span class="number">74</span>,<span class="string">"target"</span>:<span class="number">73</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">69</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">68</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">25</span>,<span class="string">"value"</span>:<span class="number">3</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">41</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">70</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">75</span>,<span class="string">"target"</span>:<span class="number">71</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">64</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">65</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">66</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">63</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">62</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">48</span>,<span class="string">"value"</span>:<span class="number">1</span>},
+    {<span class="string">"source"</span>:<span class="number">76</span>,<span class="string">"target"</span>:<span class="number">58</span>,<span class="string">"value"</span>:<span class="number">1</span>}
+  ]
+}</code></pre></div></div>
+
+<script src="./Better force layout node selection_files/d3.min.js"></script>
+<script src="./Better force layout node selection_files/highlight.min.js"></script>
+<script>
+
+var gist = {"history":[{"version":"f087364a62fa57e56d402fdef15f67c7710d8b20"}],"files":{"README.md":{"language":"Markdown","type":"text/plain","filename":"README.md","size":929,"sha":"730c028e00cc0262f7dedb9243f8b8116d6855f9"},"index.html":{"language":"HTML","type":"text/html","filename":"index.html","size":2852,"sha":"110815aebc8d86e4279806dd1754533e63d9e4a2"},"miserables.json":{"language":"JSON","type":"application/json","filename":"miserables.json","size":13203,"sha":"40be75727ab60227a2b41abe5a509d30de831ffd"},"thumbnail.png":{"language":null,"type":"image/png","filename":"thumbnail.png","size":22860,"sha":"84a16303101dbe8adc0ecc298471d95ebac4356e"}},"created_at":"2013-09-03T07:04:04.000Z","updated_at":"2015-04-17T15:35:48.000Z","description":"Better force layout node selection","owner":{"login":"couchand"},"id":"6420534"};
+
+var files = d3.values(gist.files)
+    .sort(function(a, b) { return (b.filename === "index.html") - (a.filename === "index.html") || a.filename.localeCompare(b.filename); });
+
+var readme = d3.selectAll(".gist-readme")
+    .data(files.filter(function(d) { return /^readme\b/i.test(d.filename) && d.language === "Markdown"; }))
+    .each(function(d) {
+      var readme = d3.select(this);
+      d3.text("/couchand/raw/6420534/f087364a62fa57e56d402fdef15f67c7710d8b20/" + d.filename, function(error, content) {
+        readme.html(new Showdown.converter().makeHtml(content));
+        readme.selectAll("code").each(function() { hljs.highlightBlock(this); });
+      });
+    });
+
+var source = d3.select(".gist-sources").selectAll(".gist-source")
+    .data(files.filter(function(d) { return !/^readme\b/i.test(d.filename) && d.size < 50000 && text(d.type); }))
+  .enter().append("div")
+    .attr("class", "gist-source");
+
+source.append("h2")
+    .text(function(d) { return d.filename; })
+  .append("a")
+    .attr("name", function(d) { return d.filename; })
+    .attr("href", function(d) { return "#" + d.filename; })
+    .text("#");
+
+source.append("pre").append("code")
+    .attr("class", function(d) { return d.language && (d.language === "JSON" ? "javascript" : d.language.toLowerCase()); })
+    .each(function(d) {
+      var code = d3.select(this);
+      d3.text("/couchand/raw/6420534/f087364a62fa57e56d402fdef15f67c7710d8b20/" + (d.filename === "index.html" ? "" : d.filename), function(error, content) {
+        code.text(content);
+        hljs.highlightBlock(code.node());
+      });
+    });
+
+function text(type) {
+  return /(^text\/)|(^application\/(javascript|json)$)|(^image\/svg$)|(\+xml$)/.test(type);
+}
+
+</script>
+
+<footer>
+  <a href="http://bl.ocks.org/couchand">couchand</a>’s block
+  <a class="gist" title="View gist #6420534 on GitHub" href="https://gist.github.com/couchand/6420534">#6420534</a>
+  <span class="date">September 3, 2013</span>
+</footer>
+
+<script>
+
+GoogleAnalyticsObject = "ga", ga = function() { ga.q.push(arguments); }, ga.q = [], ga.l = +new Date;
+ga("create", "UA-48272912-1", "auto");
+ga("send", "pageview");
+
+</script>
+<script async="" src="http://www.google-analytics.com/analytics.js"></script>
+</body></html>

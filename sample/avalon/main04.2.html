@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>TODO supply a title</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width">
+        <script src="../../javascripts/avalon-2.1.5.js"></script>
+        <script >
+            var vm = avalon.define({
+                $id: "test",
+                toggle: true
+            })
+          
+        </script>
+        <style>
+            div div{
+                flex:1;
+                margin: 20px;
+                height: 30px;
+                background: #a9ea00;
+            }
+        </style>
+    </head>
+    <body ms-controller="test" >
+        <div ms-visible="@toggle" style="display: flex;display:-webkit-flex;background: #ffd">
+            <div></div> <div></div> <div></div>
+        </div>
+        <p ms-click="@toggle = !@toggle">click me</p>
+    </body>
+</html>

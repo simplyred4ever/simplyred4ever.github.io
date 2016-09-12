@@ -1,0 +1,129 @@
+<!DOCTYPE html>
+<html xmlns:v="urn:schemas-microsoft-com:vml">
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/jquery-ui.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/bootstrap.min.css">
+<link rel="stylesheet" type='text/css' href="/discover/viz/css/d3.css">
+<style>
+
+.node {
+	stroke: white;
+	stroke-width: 2px;
+}
+
+.node.selected {
+	stroke-width: 6;
+	stroke-dasharray: 1000;
+	animation: opa 0.2s linear alternate infinite;
+	-webkit-animation: opa 0.2s linear alternate infinite;
+}
+
+.prop-long-value.selected {
+	color: #dac !important;
+}
+
+@keyframes opa {
+	from {
+		stroke-opacity:0.5;
+	}
+
+	to {
+		stroke-opacity: 1;
+	}
+}
+
+@-webkit-keyframes opa {
+	from {
+		stroke-opacity:0.5;
+	}
+
+	to {
+		stroke-opacity: 1;
+	}
+}
+
+.link {
+	stroke: #999;
+	stroke-width: 1px;
+}
+
+.link.selected {
+	stroke: red;
+	stroke-width: 2px;
+}
+
+.node-label {
+	fill: gray;
+	font-family: 微软雅黑;
+	pointer-events: none;
+}
+
+.node-label-child {
+	opacity: 1;
+}
+
+.node-label.selected {
+	fill: red;
+	font-weight: bold;
+}
+
+.prop-ul {
+	overflow: auto;
+	max-height: 198px;
+}
+
+.prop-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	overflow: hidden;
+	max-width: 180px;
+	overflow: hidden;
+}
+
+.prop-long-value {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 200px;
+	overflow: hidden;
+	cursor: pointer;
+	margin: 2px;
+}
+
+.prop-long-value:hover {
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	max-width: 200px;
+	overflow: hidden;
+	cursor: pointer;
+	opacity: 0.8;
+	margin: 2px;
+}
+
+.fl {
+	-webkit-box-shadow: 2px 2px 2px #888;
+	-moz-box-shadow: 2px 2px 2px #888;
+	box-shadow: 2px 2px 2px #888;
+	float: left;
+	display: block;
+}
+</style>
+
+<script src="/discover/viz/js/d3.v3.js"></script>
+<script src="/discover/viz/js/react/JSXTransformer.js"></script>
+<script src="/discover/viz/js/react/react-with-addons.min.js"></script>
+<script src="/discover/viz/js/react/radium.js"></script>
+<script src="/discover/viz/js/react/Force.jsx" type="text/jsx"></script>
+<meta charset="utf-8">
+<title>JS Bin</title>
+</head>
+<body>
+	<div id="mount-point"></div>
+
+
+</body>
+</html>

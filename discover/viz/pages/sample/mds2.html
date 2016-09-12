@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta http-equiv="pragram" content="no-cache">
+<meta http-equiv="cache-control" content="no-cache, must-revalidate">
+<meta http-equiv="expires" content="0">
+<meta http-equiv="X-UA-Compatible" content="IE=edge,Chrome=1" />
+<style>
+svg {
+	font: 10px sans-serif;
+	padding: 10px;
+}
+
+.axis,.frame,.frame0 {
+	shape-rendering: crispEdges;
+}
+
+.axis line { //
+	stroke: #ddd;
+	stroke: #000;
+	shape-rendering: crispEdges;
+}
+
+.axis path {
+	display: none;
+}
+
+.frame {
+	fill: none;
+	stroke: #000;
+	stroke-width: 2;
+}
+
+.frame0 {
+	fill: none;
+	stroke: #000;
+	stroke-width: 1;
+}
+
+circle {
+	fill-opacity: .0;
+	stroke-width: 1;
+	stroke: #000;
+}
+
+circle.hidden {
+	fill: #ccc !important;
+}
+
+.extent {
+	fill: #000;
+	fill-opacity: .125;
+	stroke: #fff;
+}
+
+.label-text {
+	font-family: sans-serif;
+	font-size: 6px;
+	fill: black;
+	fill-opacity: 0.7;
+	text-anchor: middle;
+}
+</style>
+</head>
+<body>
+	<div id="heatmapContainer"
+		style="position: absolute; left: 25px; top: 25px; height: 600px; width: 600px; border: 0px solid red;"></div>
+	<div id="scatterContainer"
+		style="position: absolute; left: 0; top: 0; height: 600px; width: 600px; border: 0px solid blue"></div>
+	<script data-main="/discover/viz/js/app/mdsMain2" src="/discover/viz/js/require.js"></script>
+</body>
+</html>
