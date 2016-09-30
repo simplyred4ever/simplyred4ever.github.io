@@ -22,7 +22,7 @@
 		<!-- 解决resize及其它问题的一些插件-->
 		<script language="javascript" src="js/commons/common.js" type="text/javascript" charset="utf-8"></script>
 	</head>
-	<BODY>
+	<BODY onload="getTypeData();">
 		<div class="wrapper workflow" id="js_layout">
 			<div data-options="region:'center',split:true">
 				<div id="toolbar" class="datagrid-toolbar noborder-e noborder-w" style="line-height:28px;padding:0px 2px 0 10px;">
@@ -101,8 +101,6 @@
 					});
 					
 				}
-				
-				getTypeData();
 				
 				/**
 				 *	放大

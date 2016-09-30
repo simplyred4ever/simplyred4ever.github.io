@@ -28,7 +28,7 @@ html, body, form {
 	<script src="../js/commons/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
 	<script src="../js/commons/easyui.min.js" type="text/javascript" charset="utf-8"></script>
 </head>
-<body class="easyui-layout" id="js_layout"> 
+<body onload="svg().init($('#ccTypeFilter').combo('getValue'));" class="easyui-layout" id="js_layout"> 
     <div data-options="region:'center'" id="down">
 		<div class="easyui-layout" data-options="fit:true"> 
 			<div data-options="region:'center',split:true" id="down_center" style="overflow:hidden;border:none;">
@@ -124,7 +124,7 @@ $(document).ready(function(){
 	$('#saveAsImage').click(function(){
 		alert(svg().saveAsImage());
 	});
-	setTimeout('svg().init("' + $('#ccTypeFilter').combo('getValue') + '");', 1000);
+
 	window.showItem = function(url) {
 		alert('参数:'+url);
 	}
