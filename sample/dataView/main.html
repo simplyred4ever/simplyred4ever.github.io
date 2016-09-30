@@ -49,6 +49,15 @@
 		<script type="text/javascript">
 			
 			$(document).ready(function(){
+			
+				// svg上下文
+				var svg = window.svg = function () {
+					if ($('#embedObj')[0]) {
+						return $('#embedObj')[0].window;
+					} else {
+						return  $('#frameObj')[0].contentWindow;
+					}
+				}
 				//getData();
 				$("#js_layout").layout({fit:true,fxSpeed:"normal"});
 
@@ -143,14 +152,6 @@
 				  	}
 				});
 
-				// svg上下文
-				var svg = window.svg = function () {
-					if ($('#embedObj')[0]) {
-						return $('#embedObj')[0].window;
-					} else {
-						return  $('#frameObj')[0].contentWindow;
-					}
-				}
 			});
 				
 		</script>
