@@ -69,16 +69,15 @@ html, body, form {
 </body>
 <script type="text/javascript" charset="utf-8">
 
-$(document).ready(function(){
-	
-	// svg上下文
-	window.svg = function svg() {
-		if ($('#embedObj')[0]) {
-			return $('#embedObj')[0].window;
-		} else {
-			return  $('#frameObj')[0].contentWindow;
-		}
+function svg() {
+	if (document.getElementById('embedObj')) {
+		return document.getElementById('embedObj').window;
+	} else {
+		return  document.getElementById('frameObj').contentWindow;
 	}
+}
+
+$(document).ready(function(){
 	
 	$('#ccTypeFilter').combo({
 		multiple:true,

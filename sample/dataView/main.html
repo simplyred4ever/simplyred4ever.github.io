@@ -48,16 +48,17 @@
 		
 		<script type="text/javascript">
 			
+			// svg上下文
+			function svg() {
+				if (document.getElementById('embedObj')) {
+					return document.getElementById('embedObj').window;
+				} else {
+					return  document.getElementById('frameObj').contentWindow;
+				}
+			}
+				
 			$(document).ready(function(){
 			
-				// svg上下文
-				var svg = window.svg = function () {
-					if ($('#embedObj')[0]) {
-						return $('#embedObj')[0].window;
-					} else {
-						return  $('#frameObj')[0].contentWindow;
-					}
-				}
 				//getData();
 				$("#js_layout").layout({fit:true,fxSpeed:"normal"});
 
