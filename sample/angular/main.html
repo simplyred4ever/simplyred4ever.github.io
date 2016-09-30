@@ -1,0 +1,74 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link type="text/css" href="/stylesheets/sample.css" media="screen" rel="stylesheet"/>
+    <script type="text/javascript" src="//cdn.bootcss.com/angular.js/1.5.8/angular.min.js"></script>
+    <script type="text/javascript">
+        var app = angular.module("myApp", []);
+        app.controller("ResourceController", function($scope) {
+
+            $scope.resources = [{
+                'ResourceAddress': 'http://www.discoversdk.com',
+                'ResourceDescription': 'Great site'
+            }];
+
+            $scope.RemoveResource = function(index) {
+                $scope.resources.splice(index, 1);
+            }
+
+            $scope.AddResource = function(newres) {
+                if ($scope.resources == null) {
+                    $scope.resources = {};
+                    $scope.resources = [];
+                }
+
+                $scope.resources.push({
+                    ResourceAddress: newres.ResourceAddress,
+                    ResourceDescription: newres.ResourceDescription,
+                });
+
+                newres.ResourceAddress = "";
+                newres.ResourceDescription = "";
+            }
+
+        });
+    </script>
+</head>
+
+<body>
+    <h2>
+hello
+</h2>
+    <div ng-app="myApp" ng-controller="ResourceController">
+        <fieldset>
+            <h3>Add Resources</h3>
+            <span>Description:</span>
+            <input type="text" ng-model="newres.ResourceDescription" style="width:200px;" />
+            <span> URL:</span>
+            <input type="text" ng-model="newres.ResourceAddress" style="width:340px;" />
+            <a class="btn" href="#" ng-click="AddResource(newres)">Add</a><br/>
+
+            <h3>List of Resources</h3>
+            <table cellpadding="0" cellspacing="0">
+                <tbody>
+                    <tr>
+                        <th>Description</th>
+                        <th>URL</th>
+                        <th></th>
+                    </tr>
+                    <tr ng-repeat="res in resources">
+                        <td><input style="width:200px;" type="text" ng-model="res.ResourceDescription" /></td>
+                        <td><input style="width:440px;" type="text" ng-model="res.ResourceAddress" /></td>
+                        <td><a class="btn" ng-click="RemoveResource($index)">Remove</a></td>
+                    </tr>
+                </tbody>
+            </table>
+        </fieldset>
+
+    </div>
+</body>
+
+</html>

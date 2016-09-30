@@ -1,0 +1,53 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link type="text/css" href="/stylesheets/sample.css" media="screen" rel="stylesheet" />
+    <script type="text/javascript" src="//cdn.bootcss.com/vue/1.0.26/vue.min.js"></script>
+</head>
+
+<body>
+    <h2>
+hello
+</h2>
+    <div id="app">
+        <input v-model="newTodo" v-on:keyup.enter="addTodo">
+        <ul>
+            <li v-for="todo in todos">
+                <span>{{ todo.text }}</span>
+                <button v-on:click="removeTodo($index)">X</button>
+            </li>
+        </ul>
+    </div>
+
+
+    <script type="text/javascript">
+        new Vue({
+            el: '#app',
+            data: {
+                newTodo: '',
+                todos: [{
+                    text: 'Add some todos'
+                }]
+            },
+            methods: {
+                addTodo: function() {
+                    var text = this.newTodo.trim()
+                    if (text) {
+                        this.todos.push({
+                            text: text
+                        })
+                        this.newTodo = ''
+                    }
+                },
+                removeTodo: function(index) {
+                    this.todos.splice(index, 1)
+                }
+            }
+        })
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,24 @@
+﻿<div>
+    <h1>Better List</h1>
+    <div class="well">
+        <form data-bind="submit: addItem">
+            <label>Add Item</label>
+            <div class="input-group">
+                <input class="form-control" data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+                </span>
+            </div>
+            <br/>
+            <div>
+                <label>Your Items</label>
+                <select class="form-control" multiple="multiple" data-bind="options: allItems, selectedOptions: selectedItems"></select>
+            </div>
+            <br/>
+            <div>
+                <button class="btn btn-default" data-bind="click: sortItems, enable: allItems().length > 1">Sort</button>
+                <button class="btn btn-danger" data-bind="click: removeSelected, enable: selectedItems().length > 0">Remove</button>
+            </div>
+        </form>
+    </div>
+</div>

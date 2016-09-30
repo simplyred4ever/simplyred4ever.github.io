@@ -122,6 +122,8 @@ html, body {
 								<li><a href="#" onclick="changeFrame('Cluster')">集群图</a></li>
 								<li><a href="#" onclick="changeFrame('Bundling')">捆图</a></li>
 								<li><a href="#" onclick="changeFrame('Chord')">弦图</a></li>
+								<li><a href="#" onclick="changeFrame('Hyperbolic1')">双曲树图1&lt;新&gt;</a></li>
+								<li><a href="#" onclick="changeFrame('Hyperbolic2')">双曲树图2&lt;新&gt;</a></li>
 							</ul></li>
 						<li class="dropdown-submenu"><a tabindex="-1" href="#">散点图</a>
 							<ul class="dropdown-menu">
@@ -151,10 +153,10 @@ html, body {
 						<li class="dropdown-submenu"><a tabindex="-1" href="#">地图</a>
 							<ul class="dropdown-menu">
 								<li><a href="#" onclick="changeFrame('ZoomableMap')">D3缩放地图</a></li>
-								<li><a href="#" onclick="changeFrame('WorldMap')">D3&topojson世界地图</a></li>
-								<li><a href="#" onclick="changeFrame('Map1')">D3&topojson等值线地图(滤镜效果)</a></li>
-								<li><a href="#" onclick="changeFrame('ChinaMap')">D3&topojson中国地图</a></li>
-								<li><a href="#" onclick="changeFrame('UsMap')">D3&topojson美国地图</a></li>
+								<li><a href="#" onclick="changeFrame('WorldMap')">D3&amp;topojson世界地图</a></li>
+								<li><a href="#" onclick="changeFrame('Map1')">D3&amp;topojson等值线地图(滤镜效果)</a></li>
+								<li><a href="#" onclick="changeFrame('ChinaMap')">D3&amp;topojson中国地图</a></li>
+								<li><a href="#" onclick="changeFrame('UsMap')">D3&amp;topojson美国地图</a></li>
 								<li><a href="#" onclick="changeFrame('Polymaps')">Polymaps地图</a></li>
 							</ul></li>
 						<li class="dropdown-submenu"><a tabindex="-1" href="#">其他技术</a>
@@ -228,11 +230,13 @@ html, body {
 			SetUp : "setup.html",
 			ReactD3 : "ReactD3.html",
 			ReactRouter : "ReactRouter.html",
+			Hyperbolic1 : "/sample/ybyra-master/examples/example1.html",
+			Hyperbolic2 : "/sample/ybyra-master/index.html"
 		}
 		function changeFrame(str,sTitle) {
 			var s = menu[str];
 			if (s) {
-				$("#sample")[0].src = s.match(/^http/) ? s : pageCtx + s;
+				$("#sample")[0].src = s;
 				$("#sample").css('height', "100%");
 				var sTitleNew = window.event?$(window.event.target).text() : sTitle;
 				$(".navbar-brand").text(sTitleNew);

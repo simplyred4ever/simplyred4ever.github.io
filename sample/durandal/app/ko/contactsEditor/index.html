@@ -1,0 +1,57 @@
+﻿<div>
+    <h1>Grid Editor</h1>
+    <div class="well">
+        <div>
+            <table class="table table-bordered">
+                <tr>
+                    <th>First Name</th>
+                    <th>Last Name</th>
+                    <th>Phone Numbers</th>
+                </tr>
+                <tbody data-bind="foreach: contacts">
+                    <tr>
+                        <td class="col-xs-4">
+                            <div class="input-group">
+                                <span class="input-group-btn">
+                                    <a class="btn btn-danger" href='#' data-bind='click: $root.removeContact'>
+                                        <span class="fa fa-trash-o"></span>
+                                    </a>
+                                </span>
+                                <input type="text" class="form-control" data-bind='value: firstName' />
+                            </div>
+                        </td>
+                        <td class="col-xs-4">
+                            <input type="text" class="form-control" data-bind='value: lastName' />
+                        </td>
+                        <td>
+                            <table>
+                                <tbody data-bind="foreach: phones">
+                                    <tr>
+                                        <td><input type="text" class="form-control" data-bind='value: type' /></td>
+                                        <td><input type="text" class="form-control" data-bind='value: number' /></td>
+                                        <td>
+                                            <a href='#' class="btn btn-danger" data-bind='click: $root.removePhone'>
+                                                <span class="fa fa-trash-o"></span>
+                                            </a>
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <br/>
+                            <a href='#' class="btn btn-success" data-bind='click: $root.addPhone'>Add Number</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+        <br/>
+        <div>
+            <button class="btn btn-default" data-bind='click: addContact'>Add a Contact</button>
+            <button class="btn btn-default" data-bind='click: save, enable: contacts().length > 0'>Save to JSON</button>
+        </div>
+        <br/>
+        <div>
+            <textarea class="form-control" data-bind='value: lastSavedJson' rows='5' cols='60'></textarea>
+        </div>
+    </div>
+</div>

@@ -1,0 +1,165 @@
+﻿<!doctype html>
+<html lang="us">
+<head>
+    <meta charset="utf-8">
+    <title>Swan Timeline</title>
+    <link href="css/start/jquery-ui-1.10.4.custom.min.css" rel="stylesheet">
+    <link href="css/swan.timeline.min.css" rel="stylesheet" />
+    <style>
+        .options {
+            display: inline-block;
+        }
+
+            .options div {
+                display: inline-block;
+                margin-right: 20px;
+            }
+    </style>
+</head>
+<body>
+    <fieldset class="options">
+        <div>
+            <label>Start time:</label>
+            <input type="text" id="startTime" value="2014/1/1" />
+        </div>
+        <div>
+            <label>End time:</label>
+            <input type="text" id="endTime" value="2016/12/31" />
+        </div>
+        <div>
+            <label>Show arrow:</label>
+            <input type="checkbox" id="showArrow" checked="checked" />
+        </div>
+        <div>
+            <label>Time scale position:</label>
+            <select id="timeScalePosition">
+                <option value="bottom" selected="selected">Bottom</option>
+                <option value="top">Top</option>
+            </select>
+        </div>
+        <div>
+            <label>Auto adjust time:</label>
+            <select id="autoAdjustTime">
+                <option value="none" selected="selected">None</option>
+                <option value="both">Both</option>
+                <option value="start">Start</option>
+                <option value="end">End</option>
+            </select>
+        </div>
+        <div>
+            <label>Smooth scroll:</label>
+            <select id="smoothScroll">
+                <option value="off">Off</option>
+                <option value="basic">Basic</option>
+                <option value="advanced" selected="selected">Advanced</option>
+            </select>
+        </div>
+        <div>
+            <label>Guides:</label>
+            <select id="guides">
+                <option value="none">None</option>
+                <option value="both" selected="selected">Both</option>
+                <option value="start">Start</option>
+                <option value="end">End</option>
+            </select>
+        </div>
+        <div>
+            <label>Show guides label:</label>
+            <input type="checkbox" id="showGuidesLabel" checked="checked" />
+        </div>
+        <div>
+            <label>Show slider:</label>
+            <input type="checkbox" id="showSlider" checked="checked" />
+        </div>
+        <div>
+            <label>Zoom:</label>
+            <input type="range" id="zoom" value="5" min="1" max="10" />
+        </div>
+        <div>
+            <label>Test data:</label>
+            <select id="testData">
+                <option value="1" selected="selected">1</option>
+                <option value="2">2</option>
+                <option value="3">3</option>
+            </select>
+        </div>
+        <button id="refresh">Refresh</button>
+    </fieldset>
+
+    <div id="timeline"></div>
+
+    <script src="js/jquery-1.11.0.min.js"></script>
+    <script src="js/jquery-ui-1.10.4.custom.min.js"></script>
+    <script src="js/jquery.mousewheel.js"></script>
+    <script src="js/swan.timeline.js"></script>
+    <script src="data/testdata1.js"></script>
+    <script src="data/testdata2.js"></script>
+    <script src="data/testdata3.js"></script>
+
+    <script>
+        var timeline;
+
+        $().ready(function () {
+
+            $('#autoAdjustTime').on('change', function (event) {
+                var value = $(this).val();
+                $('#startTime').attr('disabled', value === 'both' || value === 'start');
+                $('#endTime').attr('disabled', value === 'both' || value === 'end');
+            });
+
+            $('#guides').on('change', function(event) {
+                $('#showGuidesLabel').attr('disabled', $(this).val() === 'none');
+            });
+
+            $('#zoom').on('change', function(event) {
+                if (timeline) {
+                    timeline.timeline('zoom', $(this).val());
+                }
+            });
+
+            $('#refresh')
+                .on('click', showTimeline);
+
+            showTimeline();
+        });
+
+        function showTimeline() {
+            var testData = $('#testData').val();
+            //$.getJSON(testData, function (data) {
+            //    var options = {};
+            //    options.startTime = $('#startTime').val();
+            //    options.endTime = $('#endTime').val();
+            //    options.showArrow = $('#showArrow')[0].checked;
+            //    options.timeScalePosition = $('#timeScalePosition').val();
+            //    options.autoAdjustTime = $('#autoAdjustTime').val();
+            //    options.smoothScroll = $('#smoothScroll').val();
+            //    options.guides = $('#guides').val();
+            //    options.showGuidesLabel = $('#showGuidesLabel')[0].checked;
+            //    options.showSlider = $('#showSlider')[0].checked;
+            //    options.zoom = $('#zoom').val();
+            //    options.data = data;
+            //    timeline = $('#timeline').timeline(options);
+            //});
+
+            var options = {};
+            options.startTime = $('#startTime').val();
+            options.endTime = $('#endTime').val();
+            options.showArrow = $('#showArrow')[0].checked;
+            options.timeScalePosition = $('#timeScalePosition').val();
+            options.autoAdjustTime = $('#autoAdjustTime').val();
+            options.smoothScroll = $('#smoothScroll').val();
+            options.guides = $('#guides').val();
+            options.showGuidesLabel = $('#showGuidesLabel')[0].checked;
+            options.showSlider = $('#showSlider')[0].checked;
+            options.zoom = $('#zoom').val();
+            options.data = testData === '1'
+                ? testdata1
+                : testData === '2'
+                ? testdata2
+                : testdata3;
+            timeline = $('#timeline').timeline(options);
+        }
+    </script>
+</body>
+
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<title>jqtimeline - jQuery时间轴/时光轴插件官方演示_dowebok</title>
+<link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="css/jquery.jqtimeline.css">
+<script src="js/jquery-1.9.1.min.js"></script>
+<script src="js/jquery.jqtimeline.js"></script>
+</head>
+
+<body>
+<h1>jqtimeline - jQuery时间轴/时光轴插件官方演示</h1>
+
+<div class="menu">
+	<a href="index.html">演示1</a>
+	<a href="index_2.html" class="cur">官方演示</a>
+</div>
+
+<div class="longDemo demo">
+	<div id="longTimeLine"></div>
+</div>
+<div class="inner-wrap">
+	<div id="timeline-content" class="timeline-content" style="border:1px solid #999999; height:300px;width:100%;margin-top:10px">
+		<h3 ><span id="date_123" style="color:red"></span> <span id="event_title_123">Click on the events in the timeline above to see the result here.</span></h3>
+		<img src="img/1.jpg" style="display:none" />
+	</div>
+</div>
+
+<script type="text/javascript">
+function loadPage(event){
+	var title = event.name;
+	var img_src = "img/" +event.id+".jpg";
+	$('img','#timeline-content').attr('src' , img_src).show();
+	$('#event_title_123').html(title);
+	var d = event.on
+	$('#date_123').html(d.getDate()+"-"+ (d.getMonth() + 1) +"-"+d.getFullYear() + " : ");
+}
+
+var ev = [{
+	id : 1,
+	name : "Nintendo releases 3 DS.",
+	on : new Date(2011,2,27)
+},{
+	id : 2,
+	name : "Joined Facebook",
+	on : new Date(2011,2,17)
+},{
+	id : 3,
+	name : "Joined Twitter",
+	on : new Date(2011,5,30)
+},{
+	id : 4,
+	name : "Pirates of Black Cove released",
+	on : new Date(2011,7,5)
+},{
+	id : 6,
+	name : "Sony releases the PS Vita.",
+	on : new Date(2012,1,27)
+},{
+	id : 7,
+	name : "Nintendo releases the Wii U.",
+	on : new Date(2012,8,18)
+},{
+	id : 8,
+	name : "Max Payne 3: Painful Memories Map Pack",
+	on : new Date(2012,11,3)
+},{
+	id : 10,
+	name : "Battlefield 3: Aftermath",
+	on : new Date(2012,11,4)
+},{
+	id : 11,
+	name : "Guardians of Middle-earth",
+	on : new Date(2012,11,5)
+},{
+	id : 9,
+	name : "Sony can release PS 4",
+	on : new Date(2013,6,10)
+}]
+$('#longTimeLine').jqtimeline({
+	events : ev,
+	numYears:3,
+	startYear:2011,
+	click:function(e,event){
+		loadPage(event);
+	}
+});
+</script>
+
+
+
+
+
+
+
+
+
+
+<!-- 以下是统计和广告，与演示无关，不必理会 -->
+<style>
+h1 { margin: 40px; font: 32px Microsoft Yahei; text-align: center;}
+h2 { font: 24px Microsoft Yahei; text-align: center;}
+
+.menu { height: 30px; margin-bottom: 20px; padding: 10px; background-color: #f0f0f0; text-align: center;}
+.menu a { display: inline-block; height: 30px; padding: 0 20px; line-height: 30px; font-size: 14px; color: #333; text-decoration: none;}
+.menu a:hover { color: #000; background-color: #e9e9e9;}
+.menu .cur { background-color: #ddd !important; color: #000;}
+
+.vad { margin: 50px 0 5px; font-family: arial,宋体,sans-serif; text-align:center;}
+.vad a { display:inline-block; height: 30px; line-height: 30px; margin:0 5px; padding:0 20px; font-size:14px; text-align:center; color:#eee; text-decoration:none; background-color:#222;}
+.vad a:hover { color:#fff; background-color:#000;}
+
+.a728x90 { width: 728px; height: 90px; margin: 0 auto;}
+</style>
+
+<p class="vad">
+    <a href="http://www.dowebok.com/" target="_blank">dowebok.com</a>
+    <a href="http://www.dowebok.com/html/2013/42.html" target="_blank">说 明</a>
+    <a href="http://www.dowebok.com/plus/download.php?open=0&aid=42&cid=3" target="_blank">下 载</a>
+</p>
+
+</body>
+</html>

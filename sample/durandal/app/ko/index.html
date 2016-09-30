@@ -1,0 +1,26 @@
+﻿<section class="knockout-samples">
+  <div>
+    <div class="col-md-2">
+        <ul class="well nav nav-pills nav-stacked">
+            <li class="nav-header">Basic Examples</li>
+            
+            <!--ko foreach: introSamples-->
+            <li data-bind="css: { active: isActive }">
+                <a data-bind="attr: { href: hash }, text: title"></a>
+            </li>
+            <!--/ko-->
+
+            <li class="nav-header">Detailed Examples</li>
+
+            <!--ko foreach: detailedSamples-->
+            <li data-bind="css: { active: isActive }">
+                <a data-bind="attr: { href: hash }, text: title"></a>
+            </li>
+            <!--/ko-->
+        </ul>
+    </div>
+    <div class="col-md-10" style="padding: 0">
+      <!--ko router: { transition:'entrance', cacheViews:true }--><!--/ko-->
+    </div>
+  </div>
+</section>

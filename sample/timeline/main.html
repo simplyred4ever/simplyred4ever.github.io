@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>水平时间轴</title>
+
+    <meta charset="utf-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
+    <meta name="format-detection" content="telephone=no" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link type="text/css" rel='stylesheet' href='css/easyui.css' />
+    <style type="text/css">
+        * {
+            padding: 0;
+            margin: 0;
+            font-family: simsun;
+            font-size: 12px;
+        }
+
+        .record {
+            position: absolute;
+            background-color: white;
+            border: solid black 0px;
+            padding: 2px
+        }
+
+        .record div {
+            padding-left: 20px;
+        }
+
+        .record p,
+        .record a {
+            word-break: keep-all;
+            /* 不换行 */
+            white-space: nowrap;
+            /* 不换行 */
+            overflow: hidden;
+            /* 内容超出宽度时隐藏超出部分的内容 */
+            text-overflow: ellipsis;
+            /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
+        }
+
+        .record li {
+            list-style-type: none;
+        }
+    </style>
+    <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
+    <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
+    <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
+    <script type="text/javascript" src="js/main.js"></script>
+</head>
+
+<body>
+    <div id="timeline">
+
+        <fieldset>
+            <div>
+                <label>时段：</label>
+                <span><input type="radio" name="timeStep" value="1个月内"></input>1个月内</span>
+                <span><input type="radio" name="timeStep" value="3个月内"></input>3个月内</span>
+                <span><input type="radio" name="timeStep" value="1年内"></input>1年内</span>
+                <span><input type="radio" name="timeStep" value="自定义"></input>自定义</span>
+                <span>从</span><input id="timeFrom" class="easyui-datebox"></input>
+                <span>到</span><input id="timeTo" class="easyui-datebox"></input>
+            </div>
+            <div>
+                <span>操作者：<input id="operator" type="text"></input></span>
+                <span>数据包名称：<input id="packageName" type="text"></input></span>
+                <span>数据包编号：<input id="packageCode" type="text"></input></span>
+                <button data-bind="click: search">查询</button>
+            </div>
+        </fieldset>
+        <img style="position:absolute;left:10px;top:200px;" src="img/arrow_yellow.png" data-bind="visible:myItems().length > 0"/>
+        <!-- ko foreach: {data: myItems, as: 'item'} -->
+        <div class="record" data-bind="style:{'left': item.x + 'px' , 'top': item.y + 'px', 'height': $root.itemHeight + 'px'}">
+            <!-- ko if: item.type=='in' -->
+            <div data-bind="style:{'height':($root.itemHeight - (item.data.length + 2) * $root.rowHeight)+'px'}"></div>
+            <div>
+                <p data-bind="text: item.name"></p>
+                <p data-bind="text: item.desc"></p>
+                <ul data-bind="foreach: { data: item.data, as: 'doc'}">
+                    <li>
+                        <a data-bind="attr: {'href': doc.url}, text: doc.name"></a>
+                    </li>
+                </ul>
+            </div>
+            <img style="position:absolute;left:0px;top:0px;" data-bind="attr:{'src':'img/arrow_green.png'}" />
+            <!-- /ko -->
+            <!-- ko if: item.type=='out' -->
+            <div>
+                <p data-bind="text: item.name"></p>
+                <p data-bind="text: item.desc"></p>
+                <ul data-bind="foreach: { data: item.data, as: 'doc'}">
+                    <li>
+                        <a data-bind="attr: {'href': doc.url}, text: doc.name"></a>
+                    </li>
+                </ul>
+            </div>
+            <img style="position:absolute;left:0px;top:0px;" data-bind="attr:{'src':'img/arrow_red.png'}" />
+            <!-- /ko -->
+        </div>
+        <!-- /ko -->
+    </div>
+</body>
+
+</html>

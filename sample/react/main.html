@@ -1,0 +1,144 @@
+<!doctype html>
+<html>
+
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link type="text/css" href="/stylesheets/sample.css" media="screen" rel="stylesheet"/>
+    <script type="text/javascript" src="https://cdnjs.cloudflare.com/ajax/libs/babel-core/5.8.24/browser.js"></script>
+    <script type="text/javascript" src="https://npmcdn.com/react@latest/dist/react-with-addons.js"></script>
+    <script type="text/javascript" src="https://npmcdn.com/react-dom@latest/dist/react-dom.js"></script>
+    <script type="application/javascript;version=1.7" language="JavaScript 1.7">//<![CDATA[
+    var resources = [{'ResourceAddress': 'http://www.discoversdk.com', 'ResourceDescription':'Great site'}];
+
+    var MainApp = React.createClass({
+    	getInitialState: function() {
+    		return {items : resources};
+    	},
+    	addItems: function(newItem){
+    		resources = resources.concat([newItem]);
+    		this.setState({items: resources});
+    	},
+    	removeItem: function(itemIndex){
+    		resources.splice(itemIndex, 1);
+    		this.setState({items: resources});
+    	},
+    	render: function(){
+    		return (
+    			<fieldset>
+    			<div>
+    				<h3>Add Resources</h3>
+    				<AddResourceForm onFormSubmit={this.addItems} />
+    				<h3>List of Resources</h3>
+    				<RecourceList items={this.state.items} removeItem={this.removeItem} />
+    			</div>
+    			</fieldset>
+    		);
+    	}
+    });
+
+    var RecourceList = React.createClass({
+    	render: function() {
+    		var that = this;
+    		var createItem = function(itemText, index) {
+    			return (
+    				<ResourceListItem removeItem={that.props.removeItem} key={index}>{itemText}</ResourceListItem>
+    			);
+    		};
+
+    		return (
+    			<table cellPadding="0" cellSpacing="0">
+    				<thead>
+    					<tr>
+    						<th>Description</th>
+    						<th>Url</th>
+    						<th></th>
+    					</tr>
+    				</thead>
+    				<tbody>
+    					{this.props.items.map(createItem)}
+    				</tbody>
+    			</table>
+    		)
+    	}
+    });
+
+    var ResourceListItem = React.createClass({
+    	getInitialState: function() {
+    		return {ResourceDescription: this.props.children.ResourceDescription, ResourceAddress: this.props.children.ResourceAddress};
+    	},
+    	removeItem: function(e, index){
+    		this.props.removeItem(resources.indexOf(this.props.children));
+    	},
+    	updateDescription : function(e){
+    		resources[resources.indexOf(this.props.children)].ResourceDescription = e.target.value;
+    		this.setState({ResourceDescription: e.target.value});
+    	},
+    	updateAddress : function(e){
+    		resources[resources.indexOf(this.props.children)].ResourceAddress = e.target.value;
+    		this.setState({ResourceAddress: e.target.value});
+    	},
+    	render: function(){
+    		return (
+    			<tr>
+    			<td><input type="text" value={this.state.ResourceDescription} onChange={this.updateDescription} />{this.props.index}</td>
+    			<td><input type="text" value={this.state.ResourceAddress} onChange={this.updateAddress} /></td>
+    			<td><a className="btn" onClick={this.removeItem.bind(null, this.props.children)}>remove</a></td>
+    			</tr>
+    		);
+    	}
+    });
+
+    var AddResourceForm = React.createClass({
+    	getInitialState: function() {
+    		return {description: '', url: ''};
+    	},
+    	handleSubmit: function(e){
+    		e.preventDefault();
+    		if(this.state.url == "" || this.state.description == ""){
+    			return true;
+    		}
+    		var data = {'ResourceAddress': this.state.url, 'ResourceDescription': this.state.description};
+    		this.props.onFormSubmit(data);
+    		this.setState({description: '', url: ''});
+    		return;
+    	},
+    	onChangeDescription: function(e){
+    		this.setState({ description: e.target.value });
+    	},
+    	onChangeUrl: function(e){
+    		this.setState({ url: e.target.value });
+    	},
+    	render: function(){
+    		return (
+
+    			<form>
+    				<span>Description:</span>
+                	<input type="text" ref='description' onChange={this.onChangeDescription} value={this.state.description} />
+                	<span> URL:</span>
+                	<input type="text" ref='url' onChange={this.onChangeUrl} value={this.state.url}  />
+                	<a className="btn" name="submit" onClick={this.handleSubmit}>add</a>
+                </form>
+
+
+    		);
+    	}
+    });
+
+    ReactDOM.render(
+      <MainApp/>,
+      document.getElementById('content')
+    );
+    //]]>
+    </script>
+    <script src="https://facebook.github.io/react/js/jsfiddle-integration-babel.js"></script>
+</head>
+
+<body>
+    <h2>
+hello
+</h2>
+<div id="content"></div>
+</body>
+
+</html>

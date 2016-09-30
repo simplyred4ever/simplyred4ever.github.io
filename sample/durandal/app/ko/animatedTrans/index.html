@@ -1,0 +1,32 @@
+﻿<div>
+    <h1>Planets</h1>
+    <div class="well">
+      <div class="row">
+        <div class="col-md-6">
+            <div>
+                <button class="btn btn-default" data-bind='click: addPlanet.bind($data, "rock")'>Add a Rocky Planet</button>
+                <button class="btn btn-default" data-bind='click: addPlanet.bind($data, "gasgiant")'>Add a Gas Giant</button>
+                <label class="pull-right">
+                    Display Advanced Options
+                    <input type='checkbox' data-bind='checked: displayAdvancedOptions' />
+                </label>
+            </div>
+            <br/>
+            <div data-bind='fadeVisible: displayAdvancedOptions'>
+                <label>Show:</label>
+                <label class="radio"><input type='radio' name="type" value='all' data-bind='checked: typeToShow' />All</label>
+                <label class="radio"><input type='radio' name="type" value='rock' data-bind='checked: typeToShow' />Rocky planets</label>
+                <label class="radio"><input type='radio' name="type" value='gasgiant' data-bind='checked: typeToShow' />Gas giants</label>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div data-bind='template: {
+                    foreach: planetsToShow,
+                    beforeRemove: hidePlanetElement,
+                    afterAdd: showPlanetElement }'>
+                <div data-bind='attr: { "class": "planet " + type }, text: name'> </div>
+            </div>
+        </div>
+      </div>
+    </div>
+</div>

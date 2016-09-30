@@ -1,0 +1,19 @@
+﻿<div>
+    <h1>Simple List</h1>
+    <div class="well">
+        <form data-bind="submit: addItem">
+            <label>Add Item</label>
+            <div class="input-group">
+                <input class="form-control" data-bind='value: itemToAdd, valueUpdate: "afterkeydown"' />
+                <span class="input-group-btn">
+                    <button class="btn btn-default" type="submit" data-bind="enable: itemToAdd().length > 0">Add</button>
+                </span>
+            </div>
+            <br/>
+            <div>
+                <label>Your Items</label>
+                <select class="form-control" multiple="multiple" data-bind="options: items"></select>
+            </div>
+        </form>
+    </div>
+</div>
