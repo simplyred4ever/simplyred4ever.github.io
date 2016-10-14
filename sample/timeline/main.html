@@ -2,12 +2,12 @@
 <html>
 
 <head>
-    <title>水平时间轴</title>
-
-    <meta charset="utf-8" />
+    <meta http-equiv="content-type" content="text/html; charset=UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge, chrome=1" />
     <meta name="format-detection" content="telephone=no" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>水平时间轴</title>
+
     <link type="text/css" rel='stylesheet' href='css/easyui.css' />
     <style type="text/css">
         * {
@@ -17,6 +17,19 @@
             font-size: 12px;
         }
 
+        .timeline {
+            background-color: white;
+        }
+
+        .scale {
+            position: absolute;
+            padding-left: 60px;
+        }
+
+        .milestone {
+            width: 160px;
+        }
+
         .record {
             position: absolute;
             background-color: white;
@@ -24,11 +37,26 @@
             padding: 2px
         }
 
+        .record.highlight {
+            position: absolute;
+            background-color: #ffffcc;
+            padding: 2px;
+            z-index: 9999;
+        }
+
         .record div {
             padding-left: 20px;
         }
 
-        .record p,
+        .record p {
+            clear: both;
+        }
+
+        .record span {
+            display: block;
+            float: left;
+        }
+
         .record a {
             word-break: keep-all;
             /* 不换行 */
@@ -40,13 +68,28 @@
             /* 当对象内文本溢出时显示省略标记(...) ；需与overflow:hidden;一起使用。*/
         }
 
+        .more {
+            display: block;
+            float: right;
+            width: 160px;
+        }
+
         .record li {
             list-style-type: none;
+        }
+
+        .record img {
+            position: absolute;
+            left: 0;
+            top: 0;
+            cursor: pointer;
         }
     </style>
     <script type="text/javascript" src="js/jquery-1.9.1.min.js"></script>
     <script type="text/javascript" src="js/jquery.easyui.min.js"></script>
     <script type="text/javascript" src="js/knockout-3.4.0.js"></script>
+    <script type="text/javascript" src="js/moment.min.js"></script>
+    <script type="text/javascript" src="js/underscore.js"></script>
     <script type="text/javascript" src="js/main.js"></script>
 </head>
 
@@ -56,27 +99,43 @@
         <fieldset>
             <div>
                 <label>时段：</label>
-                <span><input type="radio" name="timeStep" value="1个月内"></input>1个月内</span>
-                <span><input type="radio" name="timeStep" value="3个月内"></input>3个月内</span>
-                <span><input type="radio" name="timeStep" value="1年内"></input>1年内</span>
-                <span><input type="radio" name="timeStep" value="自定义"></input>自定义</span>
-                <span>从</span><input id="timeFrom" class="easyui-datebox"></input>
-                <span>到</span><input id="timeTo" class="easyui-datebox"></input>
+                <span><input type="radio" name="timeStep" value="1M" data-bind="checked: timeStep,click: changeTimeStep"></input>1个月内</span>
+                <span><input type="radio" name="timeStep" value="3M" data-bind="checked: timeStep,click: changeTimeStep"></input>3个月内</span>
+                <span><input type="radio" name="timeStep" value="1Y" data-bind="checked: timeStep,click: changeTimeStep"></input>1年内</span>
+                <span><input type="radio" name="timeStep" value="DIY" data-bind="checked: timeStep,click: changeTimeStep"></input>自定义</span>
+                <span>从</span><input id="timeFrom" class="easyui-datebox" data-options="formatter:myformatter,parser:myparser,disabled:true"></input>
+                <span>到</span><input id="timeTo" class="easyui-datebox" data-options="formatter:myformatter,parser:myparser,disabled:true"></input>
             </div>
             <div>
-                <span>操作者：<input id="operator" type="text"></input></span>
-                <span>数据包名称：<input id="packageName" type="text"></input></span>
-                <span>数据包编号：<input id="packageCode" type="text"></input></span>
-                <button data-bind="click: search">查询</button>
+                <span>操作者：<input name="operator" type="text" data-bind="value: operator"></input></span>
+                <span>数据包名称：<input name="packageName" type="text" data-bind="value: packageName"></input></span>
+                <span>数据包编号：<input name="packageCode" type="text" data-bind="value: packageCode"></input></span>
+                <button name="search" data-bind="click: search">查询</button>
             </div>
         </fieldset>
-        <img style="position:absolute;left:10px;top:200px;" src="img/arrow_yellow.png" data-bind="visible:myItems().length > 0"/>
+        <img style="position:absolute;left:10px;top:200px;" src="img/arrow_yellow.png" data-bind="click:unhighlight" />
+        <!-- ko foreach: {data: myBigScales, as: 'scale'} -->
+        <span class="scale" data-bind="style:{'left': scale.value + 'px', 'top': '253px'}">
+            <span style="margin-left:-3px;vertical-align: top;"data-bind="text: scale.text">&nbsp;</span>
+        </span>
+        <!-- /ko -->
+        <!-- ko foreach: {data: myScales, as: 'scale'} -->
+        <span class="scale" data-bind="style:{'left': scale.value + 'px', 'top': '264px'}">
+            <img style="margin-left:-8px;margin-top:-2px" src="img/scale.png"/><span style="margin-left:2px;vertical-align: top;"data-bind="text: scale.text">&nbsp;</span>
+        </span>
+        <!-- /ko -->
+        <!-- ko foreach: {data: myMilestones, as: 'milestone'} -->
+        <div class="milestone scale" data-bind="style:{'left': milestone.value + 'px', 'top': '220px'}">
+            <img src="img/milestone.png"/>
+            <div style="margin-left:-46px" data-bind="text: milestone.text">&nbsp;</div>
+        </div>
+        <!-- /ko -->
         <!-- ko foreach: {data: myItems, as: 'item'} -->
         <div class="record" data-bind="style:{'left': item.x + 'px' , 'top': item.y + 'px', 'height': $root.itemHeight + 'px'}">
             <!-- ko if: item.type=='in' -->
             <div data-bind="style:{'height':($root.itemHeight - (item.data.length + 2) * $root.rowHeight)+'px'}"></div>
             <div>
-                <p data-bind="text: item.name"></p>
+                <p><span data-bind="text: item.name">&nbsp;</span><a style='float:right;' data-bind="attr: {'href': item.id}">更多信息</a></p>
                 <p data-bind="text: item.desc"></p>
                 <ul data-bind="foreach: { data: item.data, as: 'doc'}">
                     <li>
@@ -84,11 +143,11 @@
                     </li>
                 </ul>
             </div>
-            <img style="position:absolute;left:0px;top:0px;" data-bind="attr:{'src':'img/arrow_green.png'}" />
+            <img data-bind="attr:{'src':'img/arrow_green.png'},event:{click:function(data, event) {$root.highlight(event)}}" />
             <!-- /ko -->
             <!-- ko if: item.type=='out' -->
             <div>
-                <p data-bind="text: item.name"></p>
+                <p><span data-bind="text: item.name">&nbsp;</span><a style='float:right;' data-bind="attr: {'href': item.id}">更多信息</a></p>
                 <p data-bind="text: item.desc"></p>
                 <ul data-bind="foreach: { data: item.data, as: 'doc'}">
                     <li>
@@ -96,7 +155,7 @@
                     </li>
                 </ul>
             </div>
-            <img style="position:absolute;left:0px;top:0px;" data-bind="attr:{'src':'img/arrow_red.png'}" />
+            <img data-bind="attr:{'src':'img/arrow_red.png'},event:{click:function(data, event) {$root.highlight(event)}}" />
             <!-- /ko -->
         </div>
         <!-- /ko -->

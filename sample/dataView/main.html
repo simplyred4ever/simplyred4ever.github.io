@@ -17,12 +17,12 @@
 		<script language="javascript" src="js/commons/jquery-1.10.2.min.js" type="text/javascript" charset="utf-8"></script>
 
 		<script language="javascript" src="js/commons/easyui.min.js" type="text/javascript" charset="utf-8"></script>
-		
+
 		<script language="javascript" src="js/commons/easyui.datagrid.js" type="text/javascript" charset="utf-8"></script>
 		<!-- 解决resize及其它问题的一些插件-->
 		<script language="javascript" src="js/commons/common.js" type="text/javascript" charset="utf-8"></script>
 	</head>
-	<BODY onload="getTypeData();">
+	<body onload="getTypeData();">
 		<div class="wrapper workflow" id="js_layout">
 			<div data-options="region:'center',split:true">
 				<div id="toolbar" class="datagrid-toolbar noborder-e noborder-w" style="line-height:28px;padding:0px 2px 0 10px;">
@@ -31,7 +31,7 @@
 					<a href="javascript:void(0);" id="normal" class="ico2 icon-normal" title="还原" data-options="plain:true,iconCls:'icon-normal'">&nbsp;&nbsp;</a>
 					<a href="javascript:void(0);" id="fullScreen" class="ico2 icon-fullScreen fullScreen" title="全屏" data-options="plain:true,iconCls:'icon-fullScreen'">&nbsp;&nbsp;</a>
 				</div>
-				
+
 				<div id="embedObjDiv" width="100%" height="100%" style="position:absolute;overflow:auto;">
 						<!--[if lt IE 9]>
 						<embed id="embedObj" name="embedObj" style="min-width:100%;min-height:100%;width:100%;height:100%;" src="svg/dataView.svg" type="image/svg+xml" wmode="transparent"></embed>
@@ -45,9 +45,9 @@
 				</div>
 			</div>
 		</div>
-		
+
 		<script type="text/javascript">
-			
+
 			// svg上下文
 			function svg() {
 				if (document.getElementById('embedObj')) {
@@ -56,9 +56,9 @@
 					return  document.getElementById('frameObj').contentWindow;
 				}
 			}
-				
+
 			$(document).ready(function(){
-			
+
 				//getData();
 				$("#js_layout").layout({fit:true,fxSpeed:"normal"});
 
@@ -78,16 +78,16 @@
 						$('#fullScreen').prop('title', '全屏');
 					}
 				};
-				
+
 				$(window).wresize(winResize);
-				
+
 				winResize();
 				/*
 					关联类型初始化
 				*/
 				var getTypeData = window.getTypeData = function (){
 
-					
+
 					/*测试*/
 					$.when(
 						$.getJSON('json/color.json'),
@@ -99,9 +99,9 @@
 						window.typeJson = $.parseJSON(typeJson[2].responseText);
 						setTimeout('svg().init(true)', 1000);
 					});
-					
+
 				}
-				
+
 				/**
 				 *	放大
 				 */
@@ -120,17 +120,17 @@
 				$('#normal').click(function (){
 					svg().aerialView.zoomTo(1);
 				});
-				
+
 				var openWin = window.openWin = function (id){
 					//此处id为条目的id   打开得页面应该是条目的详情页
 					window.open('http://www.baidu.com');
 				}
 
-				
+
 				$('#fullScreen').click(function (){
 					var el = document.documentElement;
 
-				    var rfs = el.requestFullScreen || el.webkitRequestFullScreen || 
+				    var rfs = el.requestFullScreen || el.webkitRequestFullScreen ||
 
 				    el.mozRequestFullScreen || el.msRequestFullScreen;
 
@@ -152,7 +152,7 @@
 				});
 
 			});
-				
+
 		</script>
-	</BODY>
+	</body>
 </html>
